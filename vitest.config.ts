@@ -4,6 +4,11 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   plugins: [react()],
+  css: {
+    modules: {
+      generateScopedName: "[local]",
+    },
+  },
   test: {
     environment: "jsdom",
     include: ["**/*.test.ts", "**/*.test.tsx"],

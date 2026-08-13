@@ -1,0 +1,36 @@
+@use "tokens" as *;
+
+.root {
+  min-height: 34px;
+  padding: 6px 12px;
+  border-radius: $radius-pill;
+  border: 1px solid rgba(28, 28, 46, 0.12);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  background: rgba(28, 28, 46, 0.04);
+  color: rgba(28, 28, 46, 0.62);
+  transition: transform 0.15s;
+}
+
+.root:hover {
+  transform: scale(1.06);
+}
+
+.root:active {
+  transform: scale(0.95);
+}
+
+.active {
+  background: $purple;
+  color: #fff;
+  border-color: $purple;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root:hover,
+  .root:active {
+    transform: none;
+  }
+}

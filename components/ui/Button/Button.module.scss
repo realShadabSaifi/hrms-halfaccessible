@@ -1,0 +1,66 @@
+@use "tokens" as *;
+
+.root {
+  min-height: 44px;
+  padding: 12px 20px;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  font-weight: 700;
+  transition:
+    transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1),
+    background 0.2s;
+}
+
+.root:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.root:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.primary {
+  background: $purple;
+  color: #fff;
+  border-radius: $radius-btn;
+  font-family: var(--font-display), system-ui, sans-serif;
+}
+
+.primary:hover:not(:disabled) {
+  background: $purple-hover;
+  transform: scale(1.02);
+}
+
+.ghost {
+  background: rgba(91, 45, 142, 0.06);
+  color: $purple;
+  border: 1px solid rgba(91, 45, 142, 0.35);
+  border-radius: $radius-pill;
+}
+
+.ghost:hover:not(:disabled) {
+  background: rgba(91, 45, 142, 0.12);
+}
+
+.danger {
+  background: rgba(239, 68, 68, 0.12);
+  color: #dc2626;
+  border-radius: $radius-pill;
+}
+
+.success {
+  background: rgba(16, 185, 129, 0.15);
+  color: #047857;
+  border-radius: $radius-pill;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root,
+  .primary:hover:not(:disabled),
+  .root:active:not(:disabled) {
+    transform: none;
+    transition: none;
+  }
+}

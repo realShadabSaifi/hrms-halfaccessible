@@ -1,0 +1,23 @@
+@use "tokens" as *;
+
+.root {
+  position: fixed;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: $ink;
+  color: #fff;
+  border-radius: $radius-pill;
+  padding: 12px 24px;
+  font-size: 13.5px;
+  font-weight: 600;
+  z-index: 100;
+  box-shadow: 0 12px 40px rgba(28, 28, 46, 0.35);
+  animation: toastIn 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .root {
+    animation: none;
+  }
+}
