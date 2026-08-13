@@ -4,9 +4,25 @@ export function computeDashboardStats(input: {
   unreadAnnouncements: number;
 }) {
   return [
-    { label: "pending leaves", value: String(input.pendingLeaves), sub: "waiting on a human" },
-    { label: "upcoming holidays", value: String(input.upcomingHolidays), sub: "burgers on the calendar" },
-    { label: "unread news", value: String(input.unreadAnnouncements), sub: "announcements to catch" },
+    {
+      label: "pending leaves",
+      value: String(input.pendingLeaves),
+      sub: input.pendingLeaves
+        ? "waiting on your lead. patience."
+        : "all clear. go touch grass.",
+    },
+    {
+      label: "next holiday",
+      value: String(input.upcomingHolidays),
+      sub: "burgers on the calendar",
+    },
+    {
+      label: "unread announcements",
+      value: String(input.unreadAnnouncements),
+      sub: input.unreadAnnouncements
+        ? "one involves samosas. hurry."
+        : "you're all caught up 😌",
+    },
   ];
 }
 

@@ -40,7 +40,7 @@ export default async function DashboardPage() {
 
   const today = new Date().toLocaleDateString("en-IN", {
     weekday: "long",
-    month: "short",
+    month: "long",
     day: "numeric",
   });
 

@@ -14,7 +14,7 @@ export function StatCards({
       {cards.map((s, i) => (
         <motion.div
           key={s.label}
-          className={`${styles.card} ${i === 0 ? styles.featured : ""}`}
+          className={styles.card}
           initial={reduce ? false : { opacity: 0, y: 18 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.45, delay: i * 0.06, ease: [0.16, 1, 0.3, 1] }}

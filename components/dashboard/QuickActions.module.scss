@@ -1,20 +1,20 @@
 @use "tokens" as *;
 
 .row {
-  display: flex;
-  gap: 10px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
   margin-bottom: 28px;
 }
 
 .btn {
   display: flex;
-  flex: 1;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
   min-height: 44px;
-  padding: 12px 16px;
-  border-radius: 14px;
-  border: 1px solid rgba(91, 45, 142, 0.22);
+  padding: 18px 20px;
+  border-radius: 18px;
+  border: 1px solid rgba(91, 45, 142, 0.18);
   text-decoration: none;
   color: $ink;
   background: $accent-wash;
@@ -24,14 +24,14 @@
 }
 
 .btn:hover {
-  transform: scale(1.02);
-  background: rgba(91, 45, 142, 0.14);
+  transform: scale(1.03);
+  background: rgba(91, 45, 142, 0.1);
 }
 
 .icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
   background: $purple;
   color: #fff;
   display: flex;
@@ -42,7 +42,7 @@
 
 .label {
   display: block;
-  font-size: 14px;
+  font-size: 14.5px;
   font-weight: 700;
 }
 
@@ -55,7 +55,7 @@
 
 @media (max-width: 767px) {
   .row {
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
 }
 

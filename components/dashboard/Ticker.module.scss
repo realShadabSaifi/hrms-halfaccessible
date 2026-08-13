@@ -3,8 +3,8 @@
 .wrap {
   overflow: hidden;
   border-radius: 12px;
-  background: $accent-wash;
-  border: 1px solid rgba(91, 45, 142, 0.22);
+  background: rgba(91, 45, 142, 0.07);
+  border: 1px solid rgba(91, 45, 142, 0.16);
   margin-bottom: 26px;
   white-space: nowrap;
 }
@@ -18,7 +18,7 @@
 .text {
   font-size: 13px;
   font-weight: 600;
-  color: $accent-text;
+  color: var(--ha-ticker-text);
   padding-right: 60px;
 }
 
