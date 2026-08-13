@@ -21,7 +21,7 @@
   padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
   background: $card;
   border-top: 1px solid var(--ha-line);
-  box-shadow: 0 -8px 24px rgba(24, 24, 27, 0.06);
+  box-shadow: 0 -8px 24px rgba(28, 28, 46, 0.06);
 }
 
 .tab {
@@ -45,7 +45,7 @@
 }
 
 .tabActive {
-  color: $accent-text;
+  color: $purple;
 }
 
 .dot {
