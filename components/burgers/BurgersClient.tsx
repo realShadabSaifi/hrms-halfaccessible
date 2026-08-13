@@ -58,7 +58,7 @@ export function BurgersClient({
           {confirmed.map((ch) => (
             <span
               key={ch.id}
-              className="rounded-full border border-emerald-500/30 bg-emerald-500/15 px-3.5 py-1.5 text-[12.5px] font-bold text-emerald-700 dark:text-emerald-300"
+              className="rounded-full border border-emerald-500/30 bg-emerald-500/15 px-3.5 py-1.5 text-[12.5px] font-bold text-emerald-700"
             >
               🍔 {ch.holiday_on}
             </span>
@@ -90,7 +90,7 @@ export function BurgersClient({
                   <Badge status={badge} />
                   <span className="flex-1" />
                   {h.countdown ? (
-                    <span className="font-mono text-xs font-bold tabular-nums text-ha-accent-text">
+                    <span className="text-xs font-bold tabular-nums text-[#2563EB]">
                       ⏳ {h.countdown}
                     </span>
                   ) : null}
@@ -98,19 +98,19 @@ export function BurgersClient({
                 <div className="text-sm font-semibold">{h.title}</div>
                 <div className="mb-3.5 text-[12.5px] text-ha-muted">{h.reason}</div>
                 <div className="mb-1.5 flex items-center gap-2.5">
-                  <span className="w-11 font-mono text-[13px] tabular-nums">🍔 {h.yes}</span>
+                  <span className="w-11 text-[13px] tabular-nums">🍔 {h.yes}</span>
                   <span className="h-2.5 flex-1 overflow-hidden rounded-full bg-ha-line">
                     <span
-                      className="block h-full rounded-full bg-ha-accent transition-[width] duration-500"
+                      className="block h-full rounded-full bg-ha-teal-bar transition-[width] duration-500"
                       style={{ width: `${pct}%` }}
                     />
                   </span>
-                  <span className="w-11 text-right font-mono text-[13px] tabular-nums">👎 {h.no}</span>
+                  <span className="w-11 text-right text-[13px] tabular-nums">👎 {h.no}</span>
                 </div>
                 {h.status === "voting" ? (
                   <div className="mt-3 flex gap-2.5">
                     <Button
-                      className="flex-1"
+                      className="flex-1 !border !border-[rgba(0,155,141,.35)] !bg-[rgba(0,155,141,.1)] !text-[#00816F]"
                       onClick={async () => {
                         const r = await voteHoliday(h.id, "yes");
                         if (r.ok && r.rain) setRain((x) => !x || true);

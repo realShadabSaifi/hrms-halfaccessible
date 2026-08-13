@@ -69,7 +69,13 @@ export function CxoClient({
               <span className="rounded-full bg-ha-accent-wash px-2.5 py-1 text-[11px] font-bold text-ha-accent-text">
                 {cx.window_label}
               </span>
-              <span className="rounded-full bg-emerald-500/15 px-2.5 py-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-300">
+              <span
+                className="rounded-full px-2.5 py-1 text-[11px] font-bold"
+                style={{
+                  background: cx.slots_remaining <= 1 ? "rgba(239,68,68,.1)" : "rgba(16,185,129,.13)",
+                  color: cx.slots_remaining <= 1 ? "#B91C1C" : "#047857",
+                }}
+              >
                 {cx.slots_remaining} slots
               </span>
             </div>

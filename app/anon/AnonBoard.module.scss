@@ -54,6 +54,20 @@
   border: $border-card;
   background: $card;
   box-shadow: $shadow-card;
+  transition:
+    transform 0.2s,
+    border-color 0.2s;
+}
+
+.post:hover {
+  transform: translateX(4px);
+  border-color: rgba(0, 155, 141, 0.35);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .post:hover {
+    transform: none;
+  }
 }
 
 .meta {
@@ -75,7 +89,6 @@
 .date {
   font-size: 11.5px;
   color: $muted;
-  font-family: var(--font-mono), ui-monospace, monospace;
 }
 
 .body {

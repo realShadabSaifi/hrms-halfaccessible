@@ -71,7 +71,7 @@ export function TeamClient({
                   </span>
                 ))}
               </div>
-              <div className="font-mono text-[11px] text-ha-muted">joined {m.joined_at}</div>
+              <div className="text-[11px] text-ha-muted">joined {m.joined_at}</div>
             </button>
           ))}
         </div>
@@ -145,7 +145,7 @@ export function TeamClient({
                   ))}
                 </div>
                 <div className="flex items-center">
-                  <span className="flex-1 font-mono text-xs text-ha-muted">joined {open.joined_at}</span>
+                  <span className="flex-1 text-xs text-ha-muted">joined {open.joined_at}</span>
                   {open.id === me ? (
                     <Button variant="ghost" onClick={() => setEditing(true)}>
                       edit my profile

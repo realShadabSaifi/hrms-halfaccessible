@@ -118,7 +118,7 @@ export function CultureClient({
           >
             <span className="mb-2 flex items-center gap-2.5">
               <span className="flex-1 text-sm font-bold">{to.name}</span>
-              <span className="font-mono text-xs font-bold tabular-nums text-ha-accent-text">{to.votes} votes</span>
+              <span className="text-xs font-bold tabular-nums text-ha-accent-text">{to.votes} votes</span>
               {to.mine ? (
                 <span className="rounded-full bg-ha-accent px-2 py-0.5 text-[10.5px] font-bold text-white">
                   your pick
@@ -127,7 +127,7 @@ export function CultureClient({
             </span>
             <span className="block h-2 overflow-hidden rounded-full bg-ha-line">
               <span
-                className="block h-full rounded-full bg-ha-accent"
+                className="block h-full rounded-full bg-ha-teal-bar"
                 style={{ width: `${Math.round((to.votes / total) * 100)}%` }}
               />
             </span>
@@ -135,7 +135,7 @@ export function CultureClient({
         ))}
         {role === "admin" && poll?.open ? (
           <Button variant="ghost" className="mt-3.5 w-full" onClick={() => closeTrip(poll.id)}>
-            close poll and announce winner
+            close poll & announce winner (admin)
           </Button>
         ) : null}
       </div>
