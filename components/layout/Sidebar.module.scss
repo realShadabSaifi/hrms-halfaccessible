@@ -5,10 +5,8 @@
   flex: none;
   display: flex;
   flex-direction: column;
-  background: $card;
-  border: $border-card;
-  box-shadow: $shadow-card;
-  border-radius: $radius-shell;
+  background: #fff;
+  border-right: 1px solid rgba(28, 28, 46, 0.08);
   padding: 16px 14px 14px;
   gap: 4px;
   min-height: 0;

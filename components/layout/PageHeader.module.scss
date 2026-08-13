@@ -2,8 +2,8 @@
 
 .header {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  align-items: baseline;
+  gap: 14px;
   margin-bottom: 22px;
   animation: fadeIn 0.4s ease;
 }
@@ -19,7 +19,13 @@
 .sub {
   font-size: 13px;
   color: $muted;
-  max-width: 65ch;
+}
+
+@media (max-width: 767px) {
+  .header {
+    flex-direction: column;
+    gap: 4px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

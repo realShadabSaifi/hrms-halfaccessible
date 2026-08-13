@@ -14,4 +14,10 @@ describe("getNavItems", () => {
     expect(items.some((i) => i.id === "users")).toBe(true);
     expect(items.find((i) => i.id === "ann")?.badge).toBe(2);
   });
+
+  it("uses v2 canvas titles", () => {
+    const items = getNavItems("admin");
+    expect(items.find((i) => i.id === "burgers")?.title).toBe("burger holidays 🍔");
+    expect(items.find((i) => i.id === "users")?.sub).toBe("admin only. handle with care 🧤");
+  });
 });

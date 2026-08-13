@@ -21,7 +21,7 @@ const BASE: NavItem[] = [
     id: "burgers",
     href: "/burgers",
     label: "burger holidays",
-    title: "burger holidays",
+    title: "burger holidays 🍔",
     sub: "democracy, but delicious",
   },
   {
@@ -66,7 +66,7 @@ const USERS: NavItem = {
   href: "/users",
   label: "user management",
   title: "user management",
-  sub: "admin only. handle with care.",
+  sub: "admin only. handle with care 🧤",
 };
 
 export function getNavItems(role: ProfileRole, unreadAnnouncements = 0): (NavItem & { badge: number | null })[] {
