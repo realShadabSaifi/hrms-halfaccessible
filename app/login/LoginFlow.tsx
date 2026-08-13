@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { AuthShell } from "@/components/layout/AuthShell";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
 import { startLoginAction, verifyLoginAction } from "./actions";
@@ -60,49 +61,46 @@ export function LoginFlow() {
   }
 
   return (
-    <main id="main" className={styles.page}>
-      <div className={styles.card}>
-        <div className={styles.brand}>halfAccessible</div>
-        <h1 className={styles.headline}>the portal. no corporate BS.</h1>
-        <p className={styles.sub}>email, then the code from your authenticator.</p>
-        {step === "email" ? (
-          <form action={onEmail} className={styles.form}>
-            <TextField
-              label="email"
-              name="email"
-              type="email"
-              autoComplete="email"
-              required
-              placeholder="you@halfaccessible.com"
-            />
-            {error ? <p className={styles.error}>{error}</p> : null}
-            <Button type="submit" disabled={pending}>
-              continue
-            </Button>
-          </form>
-        ) : (
-          <form action={onCode} className={styles.form}>
-            <TextField
-              label="authenticator code"
-              name="code"
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              pattern="\d{6}"
-              maxLength={6}
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              required
-            />
-            {error ? <p className={styles.error}>{error}</p> : null}
-            <Button type="submit" disabled={pending}>
-              let me in
-            </Button>
-          </form>
-        )}
-        <p className={styles.switch}>
-          first time here? <a href="/signup">set up your authenticator</a>
-        </p>
-      </div>
-    </main>
+    <AuthShell>
+      <h1 className={styles.headline}>the portal. no corporate BS.</h1>
+      <p className={styles.sub}>email, then the code from your authenticator.</p>
+      {step === "email" ? (
+        <form action={onEmail} className={styles.form}>
+          <TextField
+            label="email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            required
+            placeholder="you@halfaccessible.com"
+          />
+          {error ? <p className={styles.error}>{error}</p> : null}
+          <Button type="submit" pending={pending}>
+            continue
+          </Button>
+        </form>
+      ) : (
+        <form action={onCode} className={styles.form}>
+          <TextField
+            label="authenticator code"
+            name="code"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            pattern="\d{6}"
+            maxLength={6}
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            required
+          />
+          {error ? <p className={styles.error}>{error}</p> : null}
+          <Button type="submit" pending={pending}>
+            let me in
+          </Button>
+        </form>
+      )}
+      <p className={styles.switch}>
+        first time here? <a href="/signup">set up your authenticator</a>
+      </p>
+    </AuthShell>
   );
 }

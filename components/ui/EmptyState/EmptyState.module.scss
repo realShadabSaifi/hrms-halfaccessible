@@ -1,0 +1,30 @@
+@use "tokens" as *;
+
+.root {
+  padding: 36px 20px;
+  text-align: center;
+}
+
+.icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+  color: $accent-text;
+}
+
+.title {
+  margin: 0;
+  font-weight: 650;
+  font-size: 15px;
+}
+
+.body {
+  margin: 6px auto 0;
+  max-width: 42ch;
+  font-size: 13px;
+  color: $muted;
+}
+
+.action {
+  margin-top: 16px;
+}

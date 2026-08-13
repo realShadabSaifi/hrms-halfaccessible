@@ -1,0 +1,115 @@
+@use "tokens" as *;
+
+.wrap {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .wrap {
+    display: block;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 30;
+  }
+}
+
+.bar {
+  display: flex;
+  gap: 4px;
+  padding: 8px 10px calc(8px + env(safe-area-inset-bottom));
+  background: $card;
+  border-top: 1px solid var(--ha-line);
+  box-shadow: 0 -8px 24px rgba(24, 24, 27, 0.06);
+}
+
+.tab {
+  position: relative;
+  flex: 1;
+  min-height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  border: none;
+  background: transparent;
+  color: $muted;
+  text-decoration: none;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 4px 2px;
+}
+
+.tabActive {
+  color: $accent-text;
+}
+
+.dot {
+  position: absolute;
+  top: 4px;
+  right: 22%;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #dc2626;
+}
+
+.sheet {
+  margin: 0 10px 8px;
+  background: $card;
+  border: $border-card;
+  border-radius: $radius-shell;
+  box-shadow: $shadow-card;
+  padding: 10px;
+}
+
+.sheetHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 10px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  color: $muted;
+}
+
+.close {
+  min-width: 44px;
+  min-height: 44px;
+  border: none;
+  background: $accent-wash;
+  color: $ink;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.sheetLink {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: $ink;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.sheetActive {
+  background: $purple;
+  color: #fff;
+}
+
+.badge {
+  background: #dc2626;
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 700;
+  border-radius: 99px;
+  padding: 2px 7px;
+}

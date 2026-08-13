@@ -1,30 +1,36 @@
 @use "tokens" as *;
 
-.card {
-  background: $card;
-  border: $border-card;
-  box-shadow: $shadow-card;
-  border-radius: $radius-card;
-  padding: 22px;
+.wrap {
+  max-width: 720px;
 }
 
 .title {
   font-family: var(--font-display), system-ui, sans-serif;
   font-weight: 700;
   font-size: 16px;
-  margin-bottom: 14px;
+  margin-bottom: 8px;
 }
 
 .row {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 4px;
-  border-bottom: 1px solid rgba(28, 28, 46, 0.06);
+  align-items: baseline;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--ha-line);
   font-size: 13.5px;
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.body {
+  flex: 1;
 }
 
 .time {
   font-size: 11.5px;
-  color: rgba(28, 28, 46, 0.48);
+  color: $muted;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
 }

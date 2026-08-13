@@ -1,34 +1,66 @@
 @import "tailwindcss";
 
+/* z-index: grain 1, skip 10, mobile-nav 30, toast 40, modal 50 */
+
 :root {
-  --ha-bg: #f6f6fa;
-  --ha-ink: #1c1c2e;
-  --ha-purple: #5b2d8e;
-  --ha-purple-hover: #6b3aa3;
-  --ha-teal: #009b8d;
-  --ha-teal-link: #00816f;
-  --ha-card: #ffffff;
-  --ha-radius-card: 20px;
-  --ha-radius-btn: 14px;
+  --ha-bg: #f4f4f5;
+  --ha-ink: #18181b;
+  --ha-muted: #52525b;
+  --ha-surface: #ffffff;
+  --ha-line: rgba(24, 24, 27, 0.08);
+  --ha-accent: #5b2d8e;
+  --ha-accent-hover: #6b3aa3;
+  --ha-accent-text: #5b2d8e;
+  --ha-accent-wash: rgba(91, 45, 142, 0.08);
+  --ha-accent-ring: rgba(91, 45, 142, 0.45);
+  --ha-card: var(--ha-surface);
+  --ha-radius-card: 16px;
+  --ha-radius-btn: 12px;
   --ha-radius-input: 10px;
   --ha-radius-pill: 999px;
-  --ha-focus: 3px solid rgba(91, 45, 142, 0.45);
-  --ha-shadow-card: 0 1px 3px rgba(28, 28, 46, 0.05);
-  --ha-border-card: 1px solid rgba(28, 28, 46, 0.09);
-  --font-body: var(--font-inter), system-ui, sans-serif;
-  --font-display: var(--font-space), system-ui, sans-serif;
+  --ha-radius-shell: 20px;
+  --ha-focus: 3px solid var(--ha-accent-ring);
+  --ha-shadow-card: 0 1px 3px rgba(24, 24, 27, 0.06);
+  --ha-border-card: 1px solid var(--ha-line);
+  --ha-danger: #b91c1c;
+  --font-body: var(--font-geist), system-ui, sans-serif;
+  --font-display: var(--font-geist), system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
   color-scheme: light;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --ha-bg: #12121c;
-    --ha-ink: #f3f3f8;
-    --ha-card: #1c1c2e;
-    --ha-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.35);
-    --ha-border-card: 1px solid rgba(243, 243, 248, 0.1);
+    --ha-bg: #0e0e12;
+    --ha-ink: #f4f4f5;
+    --ha-muted: #a1a1aa;
+    --ha-surface: #18181f;
+    --ha-line: rgba(244, 244, 245, 0.1);
+    --ha-accent-text: #c4b5fd;
+    --ha-accent-wash: rgba(196, 181, 253, 0.12);
+    --ha-accent-ring: rgba(196, 181, 253, 0.5);
+    --ha-shadow-card: 0 1px 3px rgba(0, 0, 0, 0.28);
+    --ha-danger: #f87171;
     color-scheme: dark;
   }
+}
+
+@theme inline {
+  --color-ha-bg: var(--ha-bg);
+  --color-ha-ink: var(--ha-ink);
+  --color-ha-muted: var(--ha-muted);
+  --color-ha-surface: var(--ha-surface);
+  --color-ha-line: var(--ha-line);
+  --color-ha-accent: var(--ha-accent);
+  --color-ha-accent-hover: var(--ha-accent-hover);
+  --color-ha-accent-text: var(--ha-accent-text);
+  --color-ha-accent-wash: var(--ha-accent-wash);
+  --color-ha-danger: var(--ha-danger);
+  --radius-ha-lg: var(--ha-radius-card);
+  --radius-ha-md: var(--ha-radius-btn);
+  --radius-ha-sm: var(--ha-radius-input);
+  --font-ha-sans: var(--font-body);
+  --font-ha-mono: var(--font-mono);
 }
 
 * {
@@ -44,6 +76,24 @@ body {
   font-family: var(--font-body);
 }
 
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+}
+
+@media (prefers-color-scheme: dark) {
+  body::before {
+    opacity: 0.06;
+    mix-blend-mode: overlay;
+  }
+}
+
 h1,
 h2,
 h3,
@@ -51,16 +101,20 @@ h3,
   font-family: var(--font-display);
 }
 
+.font-mono {
+  font-family: var(--font-mono);
+}
+
 a {
-  color: var(--ha-teal-link);
+  color: var(--ha-accent-text);
 }
 
 a:hover {
-  color: var(--ha-purple);
+  color: var(--ha-accent-hover);
 }
 
 ::selection {
-  background: var(--ha-purple);
+  background: var(--ha-accent);
   color: #fff;
 }
 
@@ -74,11 +128,11 @@ a:hover {
   position: absolute;
   left: 12px;
   top: -40px;
-  z-index: 200;
-  background: var(--ha-purple);
+  z-index: 10;
+  background: var(--ha-accent);
   color: #fff;
   padding: 8px 14px;
-  border-radius: 10px;
+  border-radius: var(--ha-radius-btn);
   font-weight: 700;
 }
 
@@ -197,5 +251,9 @@ a:hover {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  body::before {
+    display: none;
   }
 }

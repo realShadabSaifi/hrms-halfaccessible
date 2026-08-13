@@ -42,17 +42,17 @@ export function CultureClient({
     <div className="pageEnter grid items-start gap-5 md:grid-cols-2">
       <div className="flex flex-col gap-5">
         <form
-          className="rounded-[20px] border border-[rgba(28,28,46,0.09)] bg-white p-6"
+          className="rounded-ha-lg border border-ha-line bg-ha-surface p-6 shadow-[var(--ha-shadow-card)]"
           action={async (fd) => {
             await submitParty(String(fd.get("occasion")), vibe, String(fd.get("date")));
           }}
         >
           <div className="font-[family-name:var(--font-display)] text-[17px] font-bold">request a party</div>
-          <p className="mb-4 text-xs text-[rgba(28,28,46,0.55)]">
+          <p className="mb-4 text-xs text-ha-muted">
             company budget. lead approves. that&apos;s the whole process.
           </p>
           <TextField name="occasion" label="occasion" placeholder="e.g. we survived the migration" />
-          <div className="mb-2 mt-3 text-[11.5px] font-bold uppercase tracking-wider text-[rgba(28,28,46,0.55)]">
+          <div className="mb-2 mt-3 text-[11.5px] font-bold uppercase tracking-wider text-ha-muted">
             vibe
           </div>
           <div className="mb-3.5 flex flex-wrap gap-2">
@@ -67,14 +67,14 @@ export function CultureClient({
             send to lead
           </Button>
         </form>
-        <div className="rounded-[20px] border border-[rgba(28,28,46,0.09)] bg-white p-[22px]">
+        <div className="rounded-ha-lg border border-ha-line bg-ha-surface p-[22px] shadow-[var(--ha-shadow-card)]">
           <div className="mb-3.5 font-[family-name:var(--font-display)] text-base font-bold">party queue</div>
           {parties.map((pr) => (
-            <div key={pr.id} className="border-b border-[rgba(28,28,46,0.06)] py-2.5">
+            <div key={pr.id} className="border-b border-ha-line py-2.5">
               <div className="flex items-center gap-2.5">
                 <span className="min-w-0 flex-1">
                   <span className="block text-[13.5px] font-semibold">{pr.occasion}</span>
-                  <span className="block text-xs text-[rgba(28,28,46,0.55)]">
+                  <span className="block text-xs text-ha-muted">
                     {pr.vibe} · {pr.preferred_on ?? "TBD"} · asked by {pr.by}
                   </span>
                 </span>
@@ -97,11 +97,11 @@ export function CultureClient({
           ))}
         </div>
       </div>
-      <div className="rounded-[20px] border border-[rgba(28,28,46,0.09)] bg-white p-6">
+      <div className="rounded-ha-lg border border-ha-line bg-ha-surface p-6 shadow-[var(--ha-shadow-card)]">
         <div className="font-[family-name:var(--font-display)] text-[17px] font-bold">
           FY27 team trip - where to?
         </div>
-        <p className="mb-4 text-xs text-[rgba(28,28,46,0.55)]">
+        <p className="mb-4 text-xs text-ha-muted">
           {poll?.open ? "admin opened the poll. vote or forever hold your peace." : "poll closed - winner announced"}
         </p>
         {poll?.options.map((to) => (
@@ -110,24 +110,24 @@ export function CultureClient({
             type="button"
             disabled={!poll.open}
             onClick={() => voteTrip(to.id)}
-            className="mb-2.5 block w-full rounded-[14px] border px-4 py-3.5 text-left"
+            className="mb-2.5 block w-full rounded-ha-md border px-4 py-3.5 text-left"
             style={{
-              background: to.mine ? "rgba(91,45,142,0.06)" : "rgba(28,28,46,0.02)",
-              borderColor: to.mine ? "rgba(91,45,142,0.4)" : "rgba(28,28,46,0.1)",
+              background: to.mine ? "var(--ha-accent-wash)" : "transparent",
+              borderColor: to.mine ? "var(--ha-accent)" : "var(--ha-line)",
             }}
           >
             <span className="mb-2 flex items-center gap-2.5">
               <span className="flex-1 text-sm font-bold">{to.name}</span>
-              <span className="text-xs font-bold tabular-nums text-[#5B2D8E]">{to.votes} votes</span>
+              <span className="font-mono text-xs font-bold tabular-nums text-ha-accent-text">{to.votes} votes</span>
               {to.mine ? (
-                <span className="rounded-full bg-[#5B2D8E] px-2 py-0.5 text-[10.5px] font-bold text-white">
+                <span className="rounded-full bg-ha-accent px-2 py-0.5 text-[10.5px] font-bold text-white">
                   your pick
                 </span>
               ) : null}
             </span>
-            <span className="block h-2 overflow-hidden rounded-full bg-[rgba(28,28,46,0.07)]">
+            <span className="block h-2 overflow-hidden rounded-full bg-ha-line">
               <span
-                className="block h-full rounded-full bg-[#009B8D]"
+                className="block h-full rounded-full bg-ha-accent"
                 style={{ width: `${Math.round((to.votes / total) * 100)}%` }}
               />
             </span>

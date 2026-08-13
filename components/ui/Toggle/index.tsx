@@ -24,11 +24,7 @@ export function Toggle({
       </span>
       <span>
         <span className="block text-[13.5px] font-bold">{label}</span>
-        {hint ? (
-          <span className="mt-0.5 block text-[11.5px] text-[rgba(28,28,46,0.6)]">
-            {hint}
-          </span>
-        ) : null}
+        {hint ? <span className={styles.hint}>{hint}</span> : null}
       </span>
     </button>
   );

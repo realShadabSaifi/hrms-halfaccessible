@@ -1,11 +1,11 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { getNavItems } from "@/lib/layout/navItems";
 import type { Profile } from "@/lib/types";
 import { PageHeader } from "./PageHeader";
 import { Sidebar } from "./Sidebar";
+import { MobileNav } from "./MobileNav";
 import styles from "./AppShell.module.scss";
 
 export function AppShell({
@@ -23,17 +23,11 @@ export function AppShell({
   return (
     <div className={styles.shell}>
       <Sidebar profile={profile} unread={unread} />
-      <nav className={styles.topnav} aria-label="primary">
-        {items.map((item) => (
-          <Link key={item.id} href={item.href}>
-            {item.label}
-          </Link>
-        ))}
-      </nav>
       <div id="main" className={styles.main}>
         <PageHeader pathname={pathname} role={profile.role} />
         {children}
       </div>
+      <MobileNav items={items} />
     </div>
   );
 }

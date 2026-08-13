@@ -23,3 +23,18 @@ export function decryptSecret(ciphertext: Buffer, iv: Buffer): string {
   decipher.setAuthTag(tag);
   return Buffer.concat([decipher.update(data), decipher.final()]).toString("utf8");
 }
+
+/** PostgREST bytea wire format. Node Buffers JSON-serialize as `{type:"Buffer"}` and get rejected. */
+export function toBytea(buf: Buffer): string {
+  return `\\x${buf.toString("hex")}`;
+}
+
+export function fromBytea(value: unknown): Buffer {
+  if (Buffer.isBuffer(value)) return value;
+  if (value instanceof Uint8Array) return Buffer.from(value);
+  if (typeof value === "string") {
+    if (value.startsWith("\\x")) return Buffer.from(value.slice(2), "hex");
+    return Buffer.from(value, "base64");
+  }
+  throw new Error("bad ciphertext");
+}

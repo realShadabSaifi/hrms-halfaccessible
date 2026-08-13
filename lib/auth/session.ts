@@ -3,9 +3,10 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { isValidEmail } from "@/lib/auth/email";
 import { rateLimit } from "@/lib/rateLimit";
-import { decryptSecret, encryptSecret } from "@/lib/totp/encrypt";
+import { decryptSecret, encryptSecret, fromBytea, toBytea } from "@/lib/totp/encrypt";
 import { qrDataUrl } from "@/lib/totp/qr";
 import { generateTotpSecret, totpUri, verifyTotp } from "@/lib/totp/verify";
+import { roleForNewUser } from "@/lib/auth/firstUser";
 
 export async function mintSession(email: string) {
   const admin = createAdminClient();
@@ -22,13 +23,6 @@ export async function mintSession(email: string) {
     token_hash: data.properties.hashed_token,
   });
   if (verifyError) throw new Error(verifyError.message);
-}
-
-function asBuffer(value: unknown): Buffer {
-  if (Buffer.isBuffer(value)) return value;
-  if (value instanceof Uint8Array) return Buffer.from(value);
-  if (typeof value === "string") return Buffer.from(value, "base64");
-  throw new Error("bad ciphertext");
 }
 
 export async function startSignup(emailRaw: string) {
@@ -57,16 +51,25 @@ export async function startSignup(emailRaw: string) {
     userId = data.user.id;
   }
 
+  const { count: adminCount } = await admin
+    .from("profiles")
+    .select("id", { count: "exact", head: true })
+    .eq("role", "admin");
+  if (roleForNewUser(adminCount ?? 0) === "admin") {
+    await admin.from("profiles").update({ role: "admin" }).eq("id", userId);
+  }
+
   const secret = process.env.E2E_TOTP_SECRET || generateTotpSecret();
   const { ciphertext, iv } = encryptSecret(secret);
-  await admin.from("totp_credentials").upsert({
+  const { error: totpError } = await admin.from("totp_credentials").upsert({
     user_id: userId,
-    secret_ciphertext: ciphertext,
-    secret_iv: iv,
+    secret_ciphertext: toBytea(ciphertext),
+    secret_iv: toBytea(iv),
     verified_at: null,
     failed_attempts: 0,
     locked_until: null,
   });
+  if (totpError) return { error: "setup_failed" as const };
 
   const otpauthUrl = totpUri(email, secret);
   return { otpauthUrl, qrDataUrl: await qrDataUrl(otpauthUrl), secret };
@@ -86,7 +89,7 @@ export async function confirmSignup(emailRaw: string, code: string) {
     .maybeSingle();
   if (!cred) return { ok: false as const, error: "expired_setup" as const };
 
-  const secret = decryptSecret(asBuffer(cred.secret_ciphertext), asBuffer(cred.secret_iv));
+  const secret = decryptSecret(fromBytea(cred.secret_ciphertext), fromBytea(cred.secret_iv));
   if (!verifyTotp(secret, code)) return { ok: false as const, error: "invalid_code" as const };
 
   const now = new Date().toISOString();
@@ -141,7 +144,7 @@ export async function verifyLogin(emailRaw: string, code: string) {
     return { ok: false as const, error: "locked" as const };
   }
 
-  const secret = decryptSecret(asBuffer(cred.secret_ciphertext), asBuffer(cred.secret_iv));
+  const secret = decryptSecret(fromBytea(cred.secret_ciphertext), fromBytea(cred.secret_iv));
   if (!verifyTotp(secret, code)) {
     const failed = (cred.failed_attempts ?? 0) + 1;
     const locked_until = failed >= 5 ? new Date(Date.now() + 15 * 60_000).toISOString() : null;

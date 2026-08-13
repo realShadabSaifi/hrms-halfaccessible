@@ -1,0 +1,93 @@
+@use "tokens" as *;
+
+.page {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100dvh;
+  background: $bg;
+}
+
+.visual {
+  position: relative;
+  min-height: 100dvh;
+  overflow: hidden;
+}
+
+.image {
+  object-fit: cover;
+}
+
+.scrim {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(14, 14, 18, 0.15) 0%,
+    rgba(14, 14, 18, 0.55) 100%
+  );
+}
+
+.manifesto {
+  position: absolute;
+  left: 36px;
+  bottom: 40px;
+  margin: 0;
+  max-width: 14ch;
+  color: #f4f4f5;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: clamp(2.4rem, 4vw, 4.2rem);
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+.manifesto span {
+  display: block;
+  font-size: 0.42em;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  opacity: 0.82;
+  margin-top: 10px;
+}
+
+.panel {
+  display: grid;
+  place-items: center;
+  padding: 32px 24px;
+}
+
+.card {
+  width: 100%;
+  max-width: 440px;
+}
+
+.brand {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 700;
+  color: $accent-text;
+  font-size: 20px;
+  letter-spacing: -0.02em;
+}
+
+@media (max-width: 767px) {
+  .page {
+    grid-template-columns: 1fr;
+  }
+
+  .visual {
+    display: none;
+  }
+
+  .panel {
+    min-height: 100dvh;
+    padding: 32px 20px;
+  }
+
+  .card {
+    background: $card;
+    border: $border-card;
+    box-shadow: $shadow-card;
+    border-radius: $radius-card;
+    padding: 32px 28px;
+  }
+}

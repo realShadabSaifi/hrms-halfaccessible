@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { AppShell } from "@/components/layout/AppShell";
 import { getCurrentProfile } from "@/lib/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -37,7 +38,15 @@ export default async function AnonPage() {
   }
 
   return (
-    <main id="main" className="min-h-[100dvh] px-4 py-10">
+    <main id="main" className="min-h-[100dvh] bg-ha-bg px-4 py-10">
+      <div className="mx-auto mb-8 flex max-w-[640px] items-center justify-between">
+        <Link href="/" className="font-[family-name:var(--font-display)] text-lg font-bold text-ha-accent-text no-underline">
+          halfAccessible
+        </Link>
+        <Link href="/login" className="text-sm font-bold">
+          log in
+        </Link>
+      </div>
       {board}
     </main>
   );

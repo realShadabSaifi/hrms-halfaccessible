@@ -1,7 +1,9 @@
 import { Badge } from "@/components/ui/Badge";
 import { Card } from "@/components/ui/Card";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { LEAVE_TYPES } from "@/lib/validators/leave";
 import type { LeaveRow } from "@/app/(portal)/leaves/actions";
+import { Leaf } from "@phosphor-icons/react/dist/ssr";
 
 function range(from: string, to: string) {
   const f = (d: string) =>
@@ -16,7 +18,7 @@ export function LeaveHistory({ rows }: { rows: LeaveRow[] }) {
         your leave history 🧾
       </div>
       {rows.length === 0 ? (
-        <p className="text-sm text-[rgba(28,28,46,0.55)]">no leaves yet. touch grass sometime.</p>
+        <EmptyState icon={<Leaf size={28} />} title="no leaves yet. touch grass sometime." />
       ) : (
         rows.map((l) => {
           const meta = LEAVE_TYPES.find((t) => t.type === l.type);
@@ -27,13 +29,13 @@ export function LeaveHistory({ rows }: { rows: LeaveRow[] }) {
                 ? "Approved"
                 : "Rejected";
           return (
-            <div key={l.id} className="flex items-center gap-3 border-b border-[rgba(28,28,46,0.06)] py-2.5">
+            <div key={l.id} className="flex items-center gap-3 border-b border-ha-line py-2.5">
               <span className="text-lg">{meta?.emoji}</span>
               <span className="min-w-0 flex-1">
                 <span className="block text-[13.5px] font-semibold">
                   {meta?.name} · {range(l.starts_on, l.ends_on)}
                 </span>
-                <span className="block truncate text-xs text-[rgba(28,28,46,0.55)]">
+                <span className="block truncate text-xs text-ha-muted">
                   {l.reason || "no reason given (valid)"}
                 </span>
               </span>

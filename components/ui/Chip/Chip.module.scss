@@ -4,22 +4,22 @@
   min-height: 34px;
   padding: 6px 12px;
   border-radius: $radius-pill;
-  border: 1px solid rgba(28, 28, 46, 0.12);
+  border: 1px solid var(--ha-line);
   cursor: pointer;
   font-family: inherit;
   font-size: 12px;
   font-weight: 600;
-  background: rgba(28, 28, 46, 0.04);
-  color: rgba(28, 28, 46, 0.62);
-  transition: transform 0.15s;
+  background: $accent-wash;
+  color: $muted;
+  transition: transform 0.15s, background 0.2s, color 0.2s;
 }
 
 .root:hover {
-  transform: scale(1.06);
+  transform: scale(1.04);
 }
 
 .root:active {
-  transform: scale(0.95);
+  transform: scale(0.98);
 }
 
 .active {

@@ -2,8 +2,8 @@
 
 .header {
   display: flex;
-  align-items: baseline;
-  gap: 14px;
+  flex-direction: column;
+  gap: 4px;
   margin-bottom: 22px;
   animation: fadeIn 0.4s ease;
 }
@@ -13,11 +13,13 @@
   font-weight: 700;
   font-size: 26px;
   letter-spacing: -0.02em;
+  line-height: 1.15;
 }
 
 .sub {
   font-size: 13px;
-  color: rgba(28, 28, 46, 0.55);
+  color: $muted;
+  max-width: 65ch;
 }
 
 @media (prefers-reduced-motion: reduce) {

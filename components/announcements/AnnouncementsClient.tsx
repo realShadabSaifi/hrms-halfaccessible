@@ -8,10 +8,12 @@ import {
 } from "@/app/(portal)/announcements/actions";
 import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { TextArea } from "@/components/ui/TextArea";
 import { TextField } from "@/components/ui/TextField";
 import { sortAnnouncements } from "@/lib/announcements/pin";
 import type { ProfileRole } from "@/lib/types";
+import { Megaphone } from "@phosphor-icons/react";
 
 const CATS = ["General", "Culture", "Policy", "Shoutout", "Event", "Update"];
 const EMOJIS = ["👍", "🔥", "❤️", "🎉", "💯"];
@@ -49,7 +51,7 @@ export function AnnouncementsClient({
     <div className="pageEnter">
       {lead ? (
         <form
-          className="mb-5 max-w-[720px] rounded-[20px] border border-[rgba(91,45,142,0.3)] bg-white p-[22px]"
+          className="mb-5 max-w-[720px] rounded-ha-lg border border-ha-accent/30 bg-ha-surface p-[22px] shadow-[var(--ha-shadow-card)]"
           action={async (fd) => {
             await postAnnouncement({
               title: String(fd.get("title")),
@@ -87,28 +89,31 @@ export function AnnouncementsClient({
         ))}
       </div>
       <div className="flex max-w-[720px] flex-col gap-4">
+        {list.length === 0 ? (
+          <EmptyState icon={<Megaphone size={28} />} title="nothing here yet. the quiet is loud." />
+        ) : null}
         {list.map((an) => (
           <article
             key={an.id}
-            className="rounded-[20px] border bg-white px-6 py-[22px]"
-            style={{ borderColor: an.pinned ? "rgba(91,45,142,0.35)" : "rgba(28,28,46,0.09)" }}
+            className="rounded-ha-lg border bg-ha-surface px-6 py-[22px] shadow-[var(--ha-shadow-card)]"
+            style={{ borderColor: an.pinned ? "var(--ha-accent)" : "var(--ha-line)" }}
           >
             <div className="mb-2 flex items-center gap-2.5">
               {an.pinned ? (
-                <span className="rounded-full bg-[#5B2D8E] px-2.5 py-0.5 text-[11px] font-bold text-white">
+                <span className="rounded-full bg-ha-accent px-2.5 py-0.5 text-[11px] font-bold text-white">
                   PINNED
                 </span>
               ) : null}
-              <span className="rounded-full bg-[rgba(0,155,141,0.1)] px-2.5 py-0.5 text-[11px] font-bold text-[#00816F]">
+              <span className="rounded-full bg-ha-accent-wash px-2.5 py-0.5 text-[11px] font-bold text-ha-accent-text">
                 {an.category}
               </span>
               <span className="flex-1" />
-              <span className="text-[11.5px] text-[rgba(28,28,46,0.48)]">
+              <span className="font-mono text-[11.5px] text-ha-muted">
                 {new Date(an.created_at).toLocaleDateString("en-IN", { month: "short", day: "numeric" })}
               </span>
             </div>
             <h2 className="mb-1.5 font-[family-name:var(--font-display)] text-[17px] font-bold">{an.title}</h2>
-            <p className="mb-3.5 whitespace-pre-wrap text-sm leading-relaxed text-[rgba(28,28,46,0.75)]">
+            <p className="mb-3.5 whitespace-pre-wrap text-sm leading-relaxed text-ha-ink/80">
               {an.body}
             </p>
             <div className="flex gap-2">
@@ -116,20 +121,20 @@ export function AnnouncementsClient({
                 <button
                   key={e}
                   type="button"
-                  className="inline-flex min-h-[34px] items-center gap-1 rounded-full border border-[rgba(28,28,46,0.12)] px-3 text-[13px]"
+                  className="inline-flex min-h-[34px] items-center gap-1 rounded-full border border-ha-line px-3 text-[13px]"
                   onClick={() => reactAnnouncement(an.id, e)}
                 >
-                  {e} <span className="text-[11.5px] tabular-nums">{an.reacts[e] ?? 0}</span>
+                  {e} <span className="font-mono text-[11.5px] tabular-nums">{an.reacts[e] ?? 0}</span>
                 </button>
               ))}
             </div>
           </article>
         ))}
-        <div className="rounded-[20px] border border-dashed border-[rgba(28,28,46,0.18)] bg-[rgba(28,28,46,0.03)] px-6 py-[22px]">
+        <div className="rounded-ha-lg border border-dashed border-ha-line bg-ha-accent-wash px-6 py-[22px]">
           <div className="mb-2.5 font-[family-name:var(--font-display)] text-[15px] font-bold">
             the legal stuff
           </div>
-          <div className="grid gap-2 text-[13px] leading-relaxed text-[rgba(28,28,46,0.72)]">
+          <div className="grid gap-2 text-[13px] leading-relaxed text-ha-ink/80">
             <div>
               <b>POSH Act 2013</b> - zero tolerance. full stop. report anything, anytime, to Sana or the IC.
             </div>
@@ -139,7 +144,7 @@ export function AnnouncementsClient({
             <div>
               <b>Payment of Gratuity Act 1972</b> - covered. long-timers, you&apos;re taken care of.
             </div>
-            <div className="text-xs text-[rgba(28,28,46,0.55)]">
+            <div className="text-xs text-ha-muted">
               your employment contract takes precedence over anything on this portal.
             </div>
           </div>

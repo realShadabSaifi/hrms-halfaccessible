@@ -10,20 +10,25 @@
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: rgba(28, 28, 46, 0.55);
+  color: $muted;
   margin-bottom: 6px;
 }
 
 .input {
   width: 100%;
-  background: #fff;
-  border: 1px solid rgba(28, 28, 46, 0.16);
+  background: $card;
+  border: 1px solid var(--ha-line);
   border-radius: $radius-input;
   padding: 10px 12px;
   color: $ink;
   font-family: inherit;
   font-size: 13.5px;
   resize: vertical;
+}
+
+.input::placeholder {
+  color: $muted;
+  opacity: 0.85;
 }
 
 .hint,
@@ -34,9 +39,9 @@
 }
 
 .error {
-  color: #b91c1c;
+  color: $danger;
 }
 
 .hint {
-  color: rgba(28, 28, 46, 0.55);
+  color: $muted;
 }

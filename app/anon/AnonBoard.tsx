@@ -4,8 +4,10 @@ import { useMemo, useState } from "react";
 import { postAnon, upvoteAnon } from "./actions";
 import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { TextArea } from "@/components/ui/TextArea";
 import { Toast } from "@/components/ui/Toast";
+import { ChatTeardrop } from "@phosphor-icons/react";
 import styles from "./AnonBoard.module.scss";
 
 const CATS = [
@@ -86,6 +88,9 @@ export function PostList({
           </Chip>
         ))}
       </div>
+      {visible.length === 0 ? (
+        <EmptyState icon={<ChatTeardrop size={28} />} title="the void is empty. yeet something." />
+      ) : null}
       {visible.map((p) => (
         <article key={p.id} className={styles.post}>
           <div className={styles.meta}>

@@ -26,30 +26,30 @@ export function UsersClient({
 
   return (
     <div className="pageEnter grid items-start gap-5 md:grid-cols-[1.3fr_0.7fr]">
-      <div className="rounded-[20px] border border-[rgba(28,28,46,0.09)] bg-white p-[22px]">
+      <div className="rounded-ha-lg border border-ha-line bg-ha-surface p-[22px] shadow-[var(--ha-shadow-card)]">
         <div className="font-[family-name:var(--font-display)] text-base font-bold">the roster</div>
-        <p className="mb-3.5 text-xs text-[rgba(28,28,46,0.55)]">
+        <p className="mb-3.5 text-xs text-ha-muted">
           roles, access, authenticators. deactivating keeps their history - we don&apos;t erase people.
         </p>
         {rows.map((u) => (
           <div
             key={u.id}
-            className="flex flex-wrap items-center gap-3 border-b border-[rgba(28,28,46,0.06)] py-3"
+            className="flex flex-wrap items-center gap-3 border-b border-ha-line py-3"
             style={{ opacity: u.active ? 1 : 0.5 }}
           >
             <Avatar initials={initials(u.full_name)} color={u.avatar_color} />
             <span className="min-w-[150px] flex-1">
               <span className="block text-[13.5px] font-semibold">
                 {u.full_name} {u.id === me ? "(you)" : ""}{" "}
-                <span className="ml-1 rounded-full bg-[rgba(28,28,46,0.06)] px-2 py-0.5 text-[10.5px] font-bold">
+                <span className="ml-1 rounded-full bg-ha-accent-wash px-2 py-0.5 text-[10.5px] font-bold">
                   {u.active ? "active" : "away"}
                 </span>
               </span>
-              <span className="block text-[11.5px] text-[rgba(28,28,46,0.55)]">
+              <span className="block text-[11.5px] text-ha-muted">
                 {u.designation} · {u.department} · joined {u.joined_at}
               </span>
             </span>
-            <span className="flex gap-1 rounded-full border border-[rgba(28,28,46,0.08)] bg-[rgba(28,28,46,0.03)] p-0.5">
+            <span className="flex gap-1 rounded-full border border-ha-line bg-ha-bg p-0.5">
               {ROLES.map((r) => (
                 <Chip key={r} active={u.role === r} onClick={() => setRole(u.id, r)}>
                   {r}
@@ -66,7 +66,7 @@ export function UsersClient({
         ))}
       </div>
       <form
-        className="rounded-[20px] border border-[rgba(28,28,46,0.09)] bg-white p-6"
+        className="rounded-ha-lg border border-ha-line bg-ha-surface p-6 shadow-[var(--ha-shadow-card)]"
         action={async (fd) => {
           const r = await addHuman({
             email: String(fd.get("email")),
@@ -79,7 +79,7 @@ export function UsersClient({
         }}
       >
         <div className="font-[family-name:var(--font-display)] text-[17px] font-bold">add a human</div>
-        <p className="mb-4 text-xs text-[rgba(28,28,46,0.55)]">
+        <p className="mb-4 text-xs text-ha-muted">
           they&apos;ll set up an authenticator on first login. no passwords, ever.
         </p>
         <TextField name="name" label="full name" placeholder="e.g. Zara Khan" />
@@ -87,7 +87,7 @@ export function UsersClient({
         <TextField name="email" label="email" type="email" required />
         <div className="h-3" />
         <TextField name="title" label="designation" placeholder="e.g. Chaos Coordinator" />
-        <div className="mb-2 mt-3 text-[11.5px] font-bold uppercase tracking-wider text-[rgba(28,28,46,0.55)]">
+        <div className="mb-2 mt-3 text-[11.5px] font-bold uppercase tracking-wider text-ha-muted">
           department
         </div>
         <div className="mb-3.5 flex flex-wrap gap-1.5">
@@ -97,7 +97,7 @@ export function UsersClient({
             </Chip>
           ))}
         </div>
-        <div className="mb-2 text-[11.5px] font-bold uppercase tracking-wider text-[rgba(28,28,46,0.55)]">
+        <div className="mb-2 text-[11.5px] font-bold uppercase tracking-wider text-ha-muted">
           portal role
         </div>
         <div className="mb-4 flex gap-1.5">

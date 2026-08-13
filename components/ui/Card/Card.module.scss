@@ -7,11 +7,3 @@
   border-radius: $radius-card;
   padding: 22px;
 }
-
-@media (prefers-color-scheme: dark) {
-  .root {
-    background: var(--ha-card);
-    border: var(--ha-border-card);
-    box-shadow: var(--ha-shadow-card);
-  }
-}

@@ -5,12 +5,15 @@
   flex: none;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid rgba(28, 28, 46, 0.08);
-  background: #fff;
+  background: $card;
+  border: $border-card;
+  box-shadow: $shadow-card;
+  border-radius: $radius-shell;
   padding: 16px 14px 14px;
   gap: 4px;
   min-height: 0;
   overflow-y: auto;
+  align-self: stretch;
 }
 
 .brand {
@@ -22,16 +25,17 @@
   font-weight: 700;
   font-size: 20px;
   letter-spacing: -0.02em;
-  color: $purple;
+  color: $accent-text;
 }
 
 .tag {
   font-size: 11.5px;
-  color: rgba(28, 28, 46, 0.55);
+  color: $muted;
   margin-top: 2px;
 }
 
 .link {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -42,19 +46,28 @@
   text-decoration: none;
   font-size: 14px;
   font-weight: 600;
-  color: rgba(28, 28, 46, 0.65);
+  color: $muted;
+  isolation: isolate;
   transition:
     transform 0.15s ease,
-    background 0.2s;
+    color 0.2s;
 }
 
 .link:hover {
   transform: translateX(4px);
+  color: $ink;
 }
 
 .active {
-  background: $purple;
   color: #fff;
+}
+
+.pill {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: 14px;
+  background: $purple;
 }
 
 .badge {
@@ -85,11 +98,32 @@
 
 .role {
   font-size: 11px;
-  color: rgba(28, 28, 46, 0.55);
+  color: $muted;
 }
 
-.mobile {
-  display: none;
+.logout {
+  margin-top: 4px;
+  border: none;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  color: $accent-text;
+}
+
+.dev {
+  margin-bottom: 8px;
+  border-radius: 16px;
+  border: 1px solid var(--ha-line);
+  background: $accent-wash;
+  padding: 12px;
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: $muted;
 }
 
 @media (max-width: 767px) {

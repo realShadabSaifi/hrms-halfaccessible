@@ -4,6 +4,7 @@ export type { BadgeStatus } from "./Badge";
 export { Button } from "./Button";
 export { Card } from "./Card";
 export { Chip } from "./Chip";
+export { EmptyState } from "./EmptyState";
 export { TextArea } from "./TextArea";
 export { TextField } from "./TextField";
 export { Toast } from "./Toast";

@@ -34,7 +34,7 @@ export function LeaveForm() {
   return (
     <form action={onSubmit} className={styles.card}>
       <div className={styles.title}>request a leave 📝</div>
-      <div className="mb-2 text-[11.5px] font-bold uppercase tracking-wider text-[rgba(28,28,46,0.55)]">
+      <div className="mb-2 text-[11.5px] font-bold uppercase tracking-wider text-ha-muted">
         type
       </div>
       <div className={styles.chips}>

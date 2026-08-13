@@ -10,15 +10,15 @@ const actions = [
 
 export function QuickActions() {
   return (
-    <div className={styles.grid}>
+    <div className={styles.row}>
       {actions.map(({ href, label, sub, Icon }) => (
         <Link key={href} href={href} className={styles.btn}>
           <span className={styles.icon}>
-            <Icon size={20} />
+            <Icon size={18} />
           </span>
           <span>
-            <span className="block text-[14.5px] font-bold">{label}</span>
-            <span className="mt-0.5 block text-xs text-[rgba(28,28,46,0.6)]">{sub}</span>
+            <span className={styles.label}>{label}</span>
+            <span className={styles.sub}>{sub}</span>
           </span>
         </Link>
       ))}

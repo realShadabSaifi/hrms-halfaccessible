@@ -7,9 +7,11 @@
   cursor: pointer;
   font-family: inherit;
   font-weight: 700;
+  border-radius: $radius-btn;
   transition:
     transform 0.18s cubic-bezier(0.2, 0.8, 0.2, 1),
-    background 0.2s;
+    background 0.2s,
+    opacity 0.2s;
 }
 
 .root:disabled {
@@ -17,48 +19,60 @@
   cursor: not-allowed;
 }
 
+.root[aria-busy="true"] {
+  opacity: 0.55;
+}
+
 .root:active:not(:disabled) {
-  transform: scale(0.96);
+  transform: scale(0.98);
 }
 
 .primary {
   background: $purple;
   color: #fff;
-  border-radius: $radius-btn;
   font-family: var(--font-display), system-ui, sans-serif;
 }
 
 .primary:hover:not(:disabled) {
   background: $purple-hover;
-  transform: scale(1.02);
 }
 
 .ghost {
-  background: rgba(91, 45, 142, 0.06);
-  color: $purple;
+  background: $accent-wash;
+  color: $accent-text;
   border: 1px solid rgba(91, 45, 142, 0.35);
-  border-radius: $radius-pill;
 }
 
 .ghost:hover:not(:disabled) {
-  background: rgba(91, 45, 142, 0.12);
+  background: rgba(91, 45, 142, 0.14);
 }
 
 .danger {
   background: rgba(239, 68, 68, 0.12);
   color: #dc2626;
-  border-radius: $radius-pill;
 }
 
 .success {
   background: rgba(16, 185, 129, 0.15);
   color: #047857;
-  border-radius: $radius-pill;
+}
+
+@media (prefers-color-scheme: dark) {
+  .danger {
+    color: #f87171;
+  }
+
+  .success {
+    color: #34d399;
+  }
+
+  .ghost {
+    border-color: rgba(196, 181, 253, 0.35);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .root,
-  .primary:hover:not(:disabled),
   .root:active:not(:disabled) {
     transform: none;
     transition: none;

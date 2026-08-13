@@ -25,9 +25,9 @@ export function TeamRequests({
   );
 
   return (
-    <div className="rounded-[20px] border border-[rgba(91,45,142,0.3)] bg-white p-[22px] shadow-[0_1px_3px_rgba(28,28,46,0.05)]">
+    <div className="rounded-ha-lg border border-ha-accent/30 bg-ha-surface p-[22px] shadow-[var(--ha-shadow-card)]">
       <div className="font-[family-name:var(--font-display)] text-base font-bold">team requests 👀</div>
-      <p className="mb-3 text-xs text-[rgba(28,28,46,0.55)]">you have the power. use it kindly.</p>
+      <p className="mb-3 text-xs text-ha-muted">you have the power. use it kindly.</p>
       <div className="mb-3 flex flex-wrap gap-1.5">
         {["All", "Pending", "Approved", "Rejected"].map((f) => (
           <Chip key={f} active={filter === f} onClick={() => setFilter(f)}>
@@ -41,7 +41,7 @@ export function TeamRequests({
         const status =
           tl.status === "pending" ? "Pending" : tl.status === "approved" ? "Approved" : "Rejected";
         return (
-          <div key={tl.id} className="border-b border-[rgba(28,28,46,0.06)] py-3">
+          <div key={tl.id} className="border-b border-ha-line py-3">
             <div className="mb-2 flex items-center gap-2.5">
               <Avatar
                 initials={initials(person?.full_name ?? "?")}
@@ -52,7 +52,7 @@ export function TeamRequests({
                 <span className="block text-[13.5px] font-semibold">
                   {person?.full_name} · {meta?.emoji} {meta?.name}
                 </span>
-                <span className="block text-xs text-[rgba(28,28,46,0.55)]">
+                <span className="block text-xs text-ha-muted">
                   {tl.starts_on} - {tl.reason}
                 </span>
               </span>
@@ -61,7 +61,7 @@ export function TeamRequests({
             {tl.status === "pending" ? (
               <div className="flex flex-wrap items-center gap-2 pl-10">
                 <input
-                  className="min-h-9 min-w-[140px] flex-1 rounded-full border border-[rgba(28,28,46,0.14)] px-3.5 text-xs"
+                  className="min-h-9 min-w-[140px] flex-1 rounded-full border border-ha-line bg-ha-surface px-3.5 text-xs text-ha-ink"
                   placeholder="optional note…"
                   value={notes[tl.id] ?? ""}
                   onChange={(e) => setNotes((n) => ({ ...n, [tl.id]: e.target.value }))}
@@ -74,7 +74,7 @@ export function TeamRequests({
                 </Button>
               </div>
             ) : tl.decision_note ? (
-              <div className="pl-10 text-xs italic text-[rgba(28,28,46,0.6)]">note: {tl.decision_note}</div>
+              <div className="pl-10 text-xs italic text-ha-muted">note: {tl.decision_note}</div>
             ) : null}
           </div>
         );

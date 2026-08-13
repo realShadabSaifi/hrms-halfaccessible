@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion, useReducedMotion } from "motion/react";
 import {
   Crown,
   Detective,
@@ -40,6 +41,7 @@ export function Sidebar({
   unread: number;
 }) {
   const pathname = usePathname();
+  const reduce = useReducedMotion();
   const items = getNavItems(profile.role, unread);
 
   return (
@@ -57,6 +59,13 @@ export function Sidebar({
             href={item.href}
             className={`${styles.link} ${active ? styles.active : ""}`}
           >
+            {active ? (
+              <motion.span
+                layoutId={reduce ? undefined : "nav-active"}
+                className={styles.pill}
+                transition={{ type: "spring", stiffness: 380, damping: 34 }}
+              />
+            ) : null}
             <Icon size={20} />
             <span style={{ flex: 1 }}>{item.label}</span>
             {item.badge ? <span className={styles.badge}>{item.badge}</span> : null}
@@ -65,9 +74,7 @@ export function Sidebar({
       })}
       <div className={styles.spacer} />
       {process.env.NEXT_PUBLIC_DEV_ROLE_SWITCH === "1" ? (
-        <div className="mb-2 rounded-2xl border border-[rgba(28,28,46,0.08)] bg-[rgba(28,28,46,0.04)] p-3 text-[10.5px] font-bold uppercase tracking-wider text-[rgba(28,28,46,0.5)]">
-          viewing as {profile.role} (dev)
-        </div>
+        <div className={styles.dev}>viewing as {profile.role} (dev)</div>
       ) : null}
       <div className={styles.me}>
         <Avatar initials={initials(profile.full_name)} color={profile.avatar_color} />
@@ -75,7 +82,7 @@ export function Sidebar({
           <div className={styles.name}>{profile.full_name || "new human"}</div>
           <div className={styles.role}>{profile.role}</div>
           <form action={signOut}>
-            <button type="submit" className="mt-1 text-[11px] font-bold text-[#5B2D8E]">
+            <button type="submit" className={styles.logout}>
               log out
             </button>
           </form>
