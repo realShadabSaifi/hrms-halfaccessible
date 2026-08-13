@@ -1,8 +1,12 @@
+import "server-only";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import type { Profile, ProfileRole } from "@/lib/types";
 
 export async function getCurrentProfile(): Promise<Profile | null> {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    return null;
+  }
   const supabase = await createClient();
   const {
     data: { user },
@@ -29,11 +33,4 @@ export async function requireRole(roles: ProfileRole[]): Promise<Profile> {
   const profile = await requireProfile();
   if (!roles.includes(profile.role)) redirect("/");
   return profile;
-}
-
-export function initials(name: string): string {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  if (parts.length === 0) return "?";
-  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
-  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }
