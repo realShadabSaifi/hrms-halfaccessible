@@ -1,0 +1,12 @@
+{
+  "crons": [
+    {
+      "path": "/api/cron/resolve-burgers",
+      "schedule": "*/5 * * * *"
+    },
+    {
+      "path": "/api/cron/expire-anon",
+      "schedule": "0 3 * * *"
+    }
+  ]
+}

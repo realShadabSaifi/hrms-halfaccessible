@@ -75,6 +75,8 @@ export function SignupFlow() {
           </form>
         ) : (
           <>
+            {/* QR is a generated data URL, not a remote asset */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img className={styles.qr} src={qr} alt="authenticator QR code" />
             {secret ? (
               <p className={styles.secret} aria-label="manual setup key">

@@ -37,7 +37,7 @@ export async function startSignup(emailRaw: string) {
   if (!rateLimit(`signup:${email}`)) return { error: "invalid_email" as const };
 
   const admin = createAdminClient();
-  const { data: users } = await admin.auth.admin.listUsers();
+  const { data: users } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
   const existing = users.users.find((u) => u.email?.toLowerCase() === email);
 
   if (existing?.app_metadata?.totp_verified) {
@@ -75,7 +75,7 @@ export async function startSignup(emailRaw: string) {
 export async function confirmSignup(emailRaw: string, code: string) {
   const email = emailRaw.trim().toLowerCase();
   const admin = createAdminClient();
-  const { data: users } = await admin.auth.admin.listUsers();
+  const { data: users } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
   const user = users.users.find((u) => u.email?.toLowerCase() === email);
   if (!user) return { ok: false as const, error: "expired_setup" as const };
 
@@ -108,7 +108,7 @@ export async function startLogin(emailRaw: string) {
     return { error: "unknown" as const };
   }
   const admin = createAdminClient();
-  const { data: users } = await admin.auth.admin.listUsers();
+  const { data: users } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
   const user = users.users.find((u) => u.email?.toLowerCase() === email);
   if (!user) return { error: "unknown" as const };
 
@@ -127,7 +127,7 @@ export async function startLogin(emailRaw: string) {
 export async function verifyLogin(emailRaw: string, code: string) {
   const email = emailRaw.trim().toLowerCase();
   const admin = createAdminClient();
-  const { data: users } = await admin.auth.admin.listUsers();
+  const { data: users } = await admin.auth.admin.listUsers({ page: 1, perPage: 1000 });
   const user = users.users.find((u) => u.email?.toLowerCase() === email);
   if (!user) return { ok: false as const, error: "invalid_code" as const };
 
