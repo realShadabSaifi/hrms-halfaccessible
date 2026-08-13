@@ -19,4 +19,8 @@ describe("v2 canvas tokens", () => {
     expect(tokens.radiusBtn).toBe("14px");
     expect(tokens.radiusInput).toBe("10px");
   });
+
+  it("does not advertise Geist as the type stack", () => {
+    expect(tokens).not.toHaveProperty("fontGeist");
+  });
 });

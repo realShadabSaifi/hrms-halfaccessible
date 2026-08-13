@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import "./globals.scss";
 
-const geist = Geist({
+const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-geist",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-inter",
   display: "swap",
 });
 
-const geistMono = Geist_Mono({
+const space = Space_Grotesk({
   subsets: ["latin"],
-  variable: "--font-geist-mono",
+  weight: ["500", "700"],
+  variable: "--font-space",
   display: "swap",
 });
 
@@ -26,7 +28,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${geist.variable} ${geistMono.variable}`}>
+      <body className={`${inter.variable} ${space.variable}`}>
         <a className="skip-link" href="#main">
           skip to content
         </a>
