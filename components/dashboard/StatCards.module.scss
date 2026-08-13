@@ -1,0 +1,57 @@
+@use "tokens" as *;
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+  margin-bottom: 28px;
+}
+
+.card {
+  background: $card;
+  border: $border-card;
+  box-shadow: $shadow-card;
+  border-radius: $radius-card;
+  padding: 22px;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 28px rgba(91, 45, 142, 0.12);
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(28, 28, 46, 0.55);
+}
+
+.value {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 36px;
+  margin: 8px 0 4px;
+  color: $purple;
+}
+
+.sub {
+  font-size: 12.5px;
+  color: rgba(28, 28, 46, 0.6);
+}
+
+@media (max-width: 767px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card:hover {
+    transform: none;
+  }
+}

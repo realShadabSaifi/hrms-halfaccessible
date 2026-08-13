@@ -1,0 +1,37 @@
+@use "tokens" as *;
+
+.wrap {
+  margin-bottom: 28px;
+}
+
+.hi {
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 42px;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+
+.wave {
+  display: inline-block;
+  transform-origin: 70% 70%;
+  animation: wave 2.2s ease infinite;
+}
+
+.sub {
+  font-size: 15px;
+  color: rgba(28, 28, 46, 0.6);
+  margin-top: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .wave {
+    animation: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .hi {
+    font-size: 32px;
+  }
+}

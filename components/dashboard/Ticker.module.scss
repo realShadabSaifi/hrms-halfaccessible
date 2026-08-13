@@ -1,0 +1,32 @@
+@use "tokens" as *;
+
+.wrap {
+  overflow: hidden;
+  border-radius: 12px;
+  background: rgba(91, 45, 142, 0.07);
+  border: 1px solid rgba(91, 45, 142, 0.16);
+  margin-bottom: 26px;
+  white-space: nowrap;
+}
+
+.track {
+  display: inline-flex;
+  animation: marquee 24s linear infinite;
+  padding: 9px 0;
+}
+
+.text {
+  font-size: 13px;
+  font-weight: 600;
+  color: #3d1e60;
+  padding-right: 60px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .track {
+    animation: none;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
