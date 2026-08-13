@@ -1,27 +1,22 @@
 import { describe, expect, it } from "vitest";
 import { tokens } from "./tokens";
 
-describe("overhaul design tokens", () => {
-  it("keeps the brand purple accent", () => {
+describe("v2 canvas tokens", () => {
+  it("uses the canvas canvas, ink, and purple", () => {
+    expect(tokens.bg).toBe("#F6F6FA");
+    expect(tokens.ink).toBe("#1C1C2E");
     expect(tokens.purple).toBe("#5B2D8E");
+    expect(tokens.purpleHover).toBe("#6B3AA3");
   });
 
-  it("uses a cool zinc canvas", () => {
-    expect(tokens.bg).toBe("#f4f4f5");
+  it("restores teal as the second accent", () => {
+    expect(tokens.teal).toBe("#00816F");
+    expect(tokens.tealBar).toBe("#009B8D");
   });
 
-  it("uses zinc ink", () => {
-    expect(tokens.ink).toBe("#18181b");
-  });
-
-  it("does not ship a second teal accent", () => {
-    expect(tokens).not.toHaveProperty("teal");
-    expect(tokens).not.toHaveProperty("tealLink");
-  });
-
-  it("uses the overhaul radius scale", () => {
-    expect(tokens.radiusCard).toBe("16px");
-    expect(tokens.radiusBtn).toBe("12px");
-    expect(tokens.radiusShell).toBe("20px");
+  it("uses the canvas radius scale", () => {
+    expect(tokens.radiusCard).toBe("20px");
+    expect(tokens.radiusBtn).toBe("14px");
+    expect(tokens.radiusInput).toBe("10px");
   });
 });
