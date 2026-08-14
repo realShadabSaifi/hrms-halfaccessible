@@ -4,14 +4,16 @@ import { useMemo, useState } from "react";
 import { saveProfile } from "@/app/(portal)/team/actions";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
+import { Chip } from "@/components/ui/Chip";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { TextArea } from "@/components/ui/TextArea";
+import { TextField } from "@/components/ui/TextField";
+import { Toast } from "@/components/ui/Toast";
 import { initials } from "@/lib/names";
+import { AVATAR_SWATCHES, DEPARTMENTS, parseSkills } from "@/lib/profiles/details";
 import { matchesMember } from "@/lib/team/search";
 import type { Profile } from "@/lib/types";
 import { MagnifyingGlass, X } from "@phosphor-icons/react";
-
-const SWATCHES = ["#7048B6", "#0E9488", "#D97706", "#DB2777", "#0284C7", "#65A30D"];
 
 export function TeamClient({
   members,
@@ -23,15 +25,32 @@ export function TeamClient({
   const [q, setQ] = useState("");
   const [open, setOpen] = useState<Profile | null>(null);
   const [editing, setEditing] = useState(false);
+  const [fullName, setFullName] = useState("");
+  const [designation, setDesignation] = useState("");
+  const [department, setDepartment] = useState<(typeof DEPARTMENTS)[number]>("Engineering");
+  const [skillsRaw, setSkillsRaw] = useState("");
   const [bio, setBio] = useState("");
-  const [color, setColor] = useState("");
+  const [color, setColor] = useState(AVATAR_SWATCHES[0]);
+  const [toast, setToast] = useState<string | null>(null);
   const list = useMemo(() => members.filter((m) => matchesMember(m, q)), [members, q]);
 
   function openProfile(m: Profile) {
     setOpen(m);
     setEditing(false);
+    setFullName(m.full_name);
+    setDesignation(m.designation);
+    setDepartment(
+      DEPARTMENTS.includes(m.department as (typeof DEPARTMENTS)[number])
+        ? (m.department as (typeof DEPARTMENTS)[number])
+        : "Engineering",
+    );
+    setSkillsRaw(m.skills.join(", "));
     setBio(m.bio);
-    setColor(m.avatar_color);
+    setColor(
+      AVATAR_SWATCHES.includes(m.avatar_color as (typeof AVATAR_SWATCHES)[number])
+        ? (m.avatar_color as (typeof AVATAR_SWATCHES)[number])
+        : AVATAR_SWATCHES[0],
+    );
   }
 
   return (
@@ -82,18 +101,20 @@ export function TeamClient({
           onClick={() => setOpen(null)}
         >
           <div
-            className="w-[440px] max-w-[90vw] rounded-[24px] bg-ha-surface p-8 shadow-[var(--ha-shadow-card)]"
+            className="max-h-[90vh] w-[440px] max-w-[90vw] overflow-y-auto rounded-[24px] bg-ha-surface p-8 shadow-[var(--ha-shadow-card)]"
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
             aria-label="profile"
           >
             <div className="mb-4 flex gap-4">
-              <Avatar initials={initials(open.full_name)} color={editing ? color : open.avatar_color} size="lg" />
+              <Avatar initials={initials(editing ? fullName : open.full_name)} color={editing ? color : open.avatar_color} size="lg" />
               <div className="flex-1 pt-1">
-                <div className="font-[family-name:var(--font-display)] text-[22px] font-bold">{open.full_name}</div>
-                <div className="mt-1 text-[13.5px] font-semibold" style={{ color: open.avatar_color }}>
-                  {open.designation} · {open.department}
+                <div className="font-[family-name:var(--font-display)] text-[22px] font-bold">
+                  {editing ? fullName || open.full_name : open.full_name}
+                </div>
+                <div className="mt-1 text-[13.5px] font-semibold" style={{ color: editing ? color : open.avatar_color }}>
+                  {editing ? `${designation} · ${department}` : `${open.designation} · ${open.department}`}
                 </div>
               </div>
               <button
@@ -107,12 +128,32 @@ export function TeamClient({
             </div>
             {editing ? (
               <>
-                <TextArea value={bio} onChange={(e) => setBio(e.target.value)} rows={3} />
+                <TextField label="full name" value={fullName} onChange={(e) => setFullName(e.target.value)} />
+                <div className="h-3" />
+                <TextField label="designation" value={designation} onChange={(e) => setDesignation(e.target.value)} />
+                <div className="mb-2 mt-3 text-[11.5px] font-bold uppercase tracking-wider text-ha-muted">
+                  department
+                </div>
+                <div className="mb-3.5 flex flex-wrap gap-1.5">
+                  {DEPARTMENTS.map((d) => (
+                    <Chip key={d} active={department === d} onClick={() => setDepartment(d)}>
+                      {d}
+                    </Chip>
+                  ))}
+                </div>
+                <TextField
+                  label="skills"
+                  hint="comma-separated"
+                  value={skillsRaw}
+                  onChange={(e) => setSkillsRaw(e.target.value)}
+                />
+                <div className="h-3" />
+                <TextArea label="bio" value={bio} onChange={(e) => setBio(e.target.value)} rows={3} />
                 <div className="mb-2 mt-3 text-[11.5px] font-bold uppercase tracking-wider text-ha-muted">
                   avatar color
                 </div>
                 <div className="mb-4 flex gap-2">
-                  {SWATCHES.map((c) => (
+                  {AVATAR_SWATCHES.map((c) => (
                     <button
                       key={c}
                       type="button"
@@ -126,9 +167,22 @@ export function TeamClient({
                 <Button
                   className="w-full"
                   onClick={async () => {
-                    await saveProfile(bio, color);
-                    setOpen({ ...open, bio, avatar_color: color });
+                    const details = {
+                      full_name: fullName,
+                      designation,
+                      department,
+                      skills: parseSkills(skillsRaw),
+                      bio,
+                      avatar_color: color,
+                    };
+                    const r = await saveProfile(details);
+                    if (!r.ok) {
+                      setToast(r.error ?? "nope");
+                      return;
+                    }
+                    setOpen({ ...open, ...details });
                     setEditing(false);
+                    setToast("saved.");
                   }}
                 >
                   save
@@ -157,6 +211,7 @@ export function TeamClient({
           </div>
         </div>
       ) : null}
+      <Toast message={toast} />
     </div>
   );
 }
