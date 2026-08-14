@@ -9,11 +9,54 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { TextArea } from "@/components/ui/TextArea";
 import { TextField } from "@/components/ui/TextField";
 import { Toast } from "@/components/ui/Toast";
+import { buildTree, filterTree, type TreeNode } from "@/lib/hierarchy/tree";
 import { initials } from "@/lib/names";
 import { AVATAR_SWATCHES, parseSkills } from "@/lib/profiles/details";
-import { matchesMember } from "@/lib/team/search";
 import type { Department, Profile } from "@/lib/types";
 import { MagnifyingGlass, X } from "@phosphor-icons/react";
+
+function TreeRows({
+  nodes,
+  depth,
+  me,
+  onOpen,
+}: {
+  nodes: TreeNode<Profile>[];
+  depth: number;
+  me: string;
+  onOpen: (m: Profile) => void;
+}) {
+  return (
+    <>
+      {nodes.map((n) => (
+        <div key={n.person.id}>
+          <button
+            type="button"
+            onClick={() => onOpen(n.person)}
+            className="flex w-full items-center gap-3 rounded-[8px] px-3 py-2.5 text-left hover:bg-ha-accent-wash"
+            style={{ paddingLeft: 12 + depth * 22 }}
+          >
+            {depth > 0 ? (
+              <span aria-hidden className="mr-1 h-6 w-0.5 shrink-0 bg-[rgba(116,99,212,0.25)]" />
+            ) : null}
+            <Avatar initials={initials(n.person.full_name)} color={n.person.avatar_color} />
+            <span className="min-w-0">
+              <span className="block font-[family-name:var(--font-display)] text-[15.5px] font-bold">
+                {n.person.full_name} {n.person.id === me ? "(you)" : ""}
+              </span>
+              <span className="block text-[12.5px] font-semibold" style={{ color: n.person.avatar_color }}>
+                {n.person.designation} · {n.person.department}
+              </span>
+            </span>
+          </button>
+          {n.children.length > 0 ? (
+            <TreeRows nodes={n.children} depth={depth + 1} me={me} onOpen={onOpen} />
+          ) : null}
+        </div>
+      ))}
+    </>
+  );
+}
 
 export function TeamClient({
   members,
@@ -34,7 +77,7 @@ export function TeamClient({
   const [bio, setBio] = useState("");
   const [color, setColor] = useState<(typeof AVATAR_SWATCHES)[number]>(AVATAR_SWATCHES[0]);
   const [toast, setToast] = useState<string | null>(null);
-  const list = useMemo(() => members.filter((m) => matchesMember(m, q)), [members, q]);
+  const tree = useMemo(() => filterTree(buildTree(members), q), [members, q]);
 
   function openProfile(m: Profile) {
     setOpen(m);
@@ -60,38 +103,21 @@ export function TeamClient({
         value={q}
         onChange={(e) => setQ(e.target.value)}
       />
-      {list.length === 0 ? (
+      {members.length === 0 ? (
+        <EmptyState
+          icon={<MagnifyingGlass size={28} />}
+          title="nobody here yet"
+          body="the roster is empty. ask an admin to add a human."
+        />
+      ) : tree.length === 0 ? (
         <EmptyState
           icon={<MagnifyingGlass size={28} />}
           title="nobody matches that vibe"
           body='try a name, role, dept, or skill - like "figma" or "engineering"'
         />
       ) : (
-        <div className="grid grid-cols-[repeat(auto-fill,minmax(240px,1fr))] gap-4">
-          {list.map((m) => (
-            <button
-              key={m.id}
-              type="button"
-              onClick={() => openProfile(m)}
-              className="rounded-ha-lg border border-ha-line bg-ha-surface p-5 text-left shadow-[var(--ha-shadow-card)] transition hover:-translate-y-1.5"
-            >
-              <Avatar initials={initials(m.full_name)} color={m.avatar_color} size="lg" className="mb-3" />
-              <div className="font-[family-name:var(--font-display)] text-[15.5px] font-bold">
-                {m.full_name} {m.id === me ? "(you)" : ""}
-              </div>
-              <div className="mb-2 mt-0.5 text-[12.5px] font-semibold" style={{ color: m.avatar_color }}>
-                {m.designation} · {m.department}
-              </div>
-              <div className="mb-2.5 flex flex-wrap gap-1">
-                {m.skills.map((sk) => (
-                  <span key={sk} className="rounded-full bg-ha-accent-wash px-2 py-0.5 text-[10.5px] font-semibold">
-                    {sk}
-                  </span>
-                ))}
-              </div>
-              <div className="text-[11px] text-ha-muted">joined {m.joined_at}</div>
-            </button>
-          ))}
+        <div className="rounded-ha-lg border border-ha-line bg-ha-surface p-2 shadow-[var(--ha-shadow-card)]">
+          <TreeRows nodes={tree} depth={0} me={me} onOpen={openProfile} />
         </div>
       )}
       {open ? (
