@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Baloo_2, Nunito } from "next/font/google";
 import "./globals.scss";
 
-const inter = Inter({
+const baloo = Baloo_2({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-inter",
+  weight: ["500", "600", "700"],
+  variable: "--font-baloo",
   display: "swap",
 });
 
-const space = Space_Grotesk({
+const nunito = Nunito({
   subsets: ["latin"],
-  weight: ["500", "700"],
-  variable: "--font-space",
+  weight: ["400", "600", "700", "800"],
+  variable: "--font-nunito",
   display: "swap",
 });
 
@@ -27,7 +27,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${space.variable}`}>
+    <html lang="en" className={`${baloo.variable} ${nunito.variable}`}>
       <body>
         <a className="skip-link" href="#main">
           skip to content
