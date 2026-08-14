@@ -4,6 +4,11 @@ import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth";
 import { departmentNames } from "@/lib/departments/list";
+import {
+  departmentTaken,
+  removeDepartmentError,
+  validateDepartmentName,
+} from "@/lib/departments/validate";
 import { validateProfileDetails, type ProfileDetails } from "@/lib/profiles/details";
 import { USER_MANAGER_ROLES } from "@/lib/rls/policies";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -103,5 +108,80 @@ export async function resetAuthenticator(userId: string) {
     app_metadata: { ...data.user?.app_metadata, totp_verified: false },
   });
   revalidatePath("/users");
+  return { ok: true as const };
+}
+
+export async function addDepartment(name: string) {
+  await requireRole(["super_admin"]);
+  const err = validateDepartmentName(name);
+  if (err) return { ok: false as const, error: err };
+  const admin = createAdminClient();
+  const names = await departmentNames();
+  if (departmentTaken(name, names)) return { ok: false as const, error: "name taken" };
+  const { data: last } = await admin
+    .from("departments")
+    .select("sort")
+    .order("sort", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  const { error } = await admin.from("departments").insert({
+    name: name.trim(),
+    sort: (last?.sort ?? 0) + 1,
+  });
+  if (error) return { ok: false as const, error: error.message };
+  revalidatePath("/users");
+  revalidatePath("/team");
+  return { ok: true as const };
+}
+
+export async function renameDepartment(id: string, name: string) {
+  await requireRole(["super_admin"]);
+  const err = validateDepartmentName(name);
+  if (err) return { ok: false as const, error: err };
+  const admin = createAdminClient();
+  const { data: current } = await admin
+    .from("departments")
+    .select("id, name")
+    .eq("id", id)
+    .maybeSingle();
+  if (!current) return { ok: false as const, error: "missing" };
+  const others = (await admin.from("departments").select("name").neq("id", id)).data ?? [];
+  if (departmentTaken(name, others.map((r) => r.name))) {
+    return { ok: false as const, error: "name taken" };
+  }
+  const next = name.trim();
+  const { error } = await admin.from("departments").update({ name: next }).eq("id", id);
+  if (error) return { ok: false as const, error: error.message };
+  await admin.from("profiles").update({ department: next }).eq("department", current.name);
+  revalidatePath("/users");
+  revalidatePath("/team");
+  return { ok: true as const };
+}
+
+export async function removeDepartment(id: string) {
+  await requireRole(["super_admin"]);
+  const admin = createAdminClient();
+  const { data: current } = await admin
+    .from("departments")
+    .select("id, name")
+    .eq("id", id)
+    .maybeSingle();
+  if (!current) return { ok: false as const, error: "missing" };
+  const { count: inUseCount } = await admin
+    .from("profiles")
+    .select("id", { count: "exact", head: true })
+    .eq("department", current.name);
+  const { count: totalCount } = await admin
+    .from("departments")
+    .select("id", { count: "exact", head: true });
+  const blocked = removeDepartmentError({
+    inUseCount: inUseCount ?? 0,
+    totalCount: totalCount ?? 0,
+  });
+  if (blocked) return { ok: false as const, error: blocked };
+  const { error } = await admin.from("departments").delete().eq("id", id);
+  if (error) return { ok: false as const, error: error.message };
+  revalidatePath("/users");
+  revalidatePath("/team");
   return { ok: true as const };
 }
