@@ -18,3 +18,9 @@ export type Profile = {
 export type LeaveType = "sick" | "personal" | "festival" | "emergency" | "other";
 export type LeaveStatus = "pending" | "approved" | "rejected";
 export type HolidayStatus = "voting" | "approved" | "rejected";
+
+export type AppSettings = {
+  app_name: string;
+  logo_path: string | null;
+  logo_url: string | null;
+};
