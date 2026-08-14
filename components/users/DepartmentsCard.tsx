@@ -35,6 +35,13 @@ export function DepartmentsCard({
               variant="ghost"
               onClick={async () => {
                 const r = await renameDepartment(d.id, value);
+                if (r.ok) {
+                  setDrafts((prev) => {
+                    const next = { ...prev };
+                    delete next[d.id];
+                    return next;
+                  });
+                }
                 onToast(r.ok ? "renamed." : r.error ?? "nope");
               }}
             >
@@ -44,6 +51,13 @@ export function DepartmentsCard({
               variant="ghost"
               onClick={async () => {
                 const r = await removeDepartment(d.id);
+                if (r.ok) {
+                  setDrafts((prev) => {
+                    const next = { ...prev };
+                    delete next[d.id];
+                    return next;
+                  });
+                }
                 onToast(r.ok ? "removed." : r.error ?? "nope");
               }}
             >

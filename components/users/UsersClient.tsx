@@ -61,10 +61,12 @@ export function UsersClient({
     if (dept && !names.has(dept)) setDept(fallback);
     setDraft((prev) => {
       if (!prev) return prev;
-      const safe = names.has(prev.department) ? prev.department : fallback;
+      if (names.has(prev.department)) return prev;
+      const refreshed = editingId ? rows.find((r) => r.id === editingId)?.department : undefined;
+      const safe = refreshed && names.has(refreshed) ? refreshed : fallback;
       return safe === prev.department ? prev : { ...prev, department: safe };
     });
-  }, [departments, dept]);
+  }, [departments, dept, editingId, rows]);
 
   function openDetails(u: Profile) {
     if (editingId === u.id) {
