@@ -3,6 +3,7 @@ import {
   canDecideLeave,
   canDeleteAnonMessage,
   canInsertAnnouncement,
+  canManageSettings,
   canManageUsers,
   canSelectTotpCredentials,
   canViewTeamLeaves,
@@ -39,5 +40,11 @@ describe("RLS policy contract", () => {
   it("only admins manage users", () => {
     expect(canManageUsers("lead")).toBe(false);
     expect(canManageUsers("admin")).toBe(true);
+  });
+
+  it("only admins change portal settings", () => {
+    expect(canManageSettings("employee")).toBe(false);
+    expect(canManageSettings("lead")).toBe(false);
+    expect(canManageSettings("admin")).toBe(true);
   });
 });

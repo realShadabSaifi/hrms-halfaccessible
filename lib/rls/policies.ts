@@ -23,3 +23,7 @@ export function canInsertAnnouncement(role: ProfileRole): boolean {
 export function canManageUsers(role: ProfileRole): boolean {
   return role === "admin";
 }
+
+export function canManageSettings(role: ProfileRole): boolean {
+  return role === "admin";
+}
