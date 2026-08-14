@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+  CalendarBlank,
   Crown,
   Detective,
   DotsThree,
@@ -25,6 +26,7 @@ const PRIMARY = new Set(["dash", "leaves", "burgers", "anon"]);
 const icons: Record<string, React.ComponentType<{ size?: number }>> = {
   dash: House,
   leaves: Leaf,
+  holidays: CalendarBlank,
   burgers: Hamburger,
   anon: Detective,
   team: Users,

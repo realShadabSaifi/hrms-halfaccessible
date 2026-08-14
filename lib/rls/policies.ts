@@ -43,3 +43,7 @@ export function canManageSettings(role: ProfileRole): boolean {
 export function canManageDepartments(role: ProfileRole): boolean {
   return isSuperAdmin(role);
 }
+
+export function canManageHolidays(role: ProfileRole): boolean {
+  return isAdminRole(role) || isSuperAdmin(role);
+}

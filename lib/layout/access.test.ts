@@ -6,6 +6,7 @@ describe("portal access", () => {
     expect(afterAuthPath("super_admin")).toBe("/settings");
     expect(canVisitPath("super_admin", "/settings")).toBe(true);
     expect(canVisitPath("super_admin", "/users")).toBe(true);
+    expect(canVisitPath("super_admin", "/holidays")).toBe(true);
     expect(canVisitPath("super_admin", "/")).toBe(false);
     expect(canVisitPath("super_admin", "/anon")).toBe(false);
   });
@@ -15,5 +16,11 @@ describe("portal access", () => {
     expect(canVisitPath("admin", "/users")).toBe(true);
     expect(canVisitPath("admin", "/settings")).toBe(false);
     expect(canVisitPath("employee", "/users")).toBe(false);
+  });
+
+  it("lets everyone visit holidays", () => {
+    expect(canVisitPath("employee", "/holidays")).toBe(true);
+    expect(canVisitPath("lead", "/holidays")).toBe(true);
+    expect(canVisitPath("admin", "/holidays")).toBe(true);
   });
 });

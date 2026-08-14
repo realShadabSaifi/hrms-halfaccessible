@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion, useReducedMotion } from "motion/react";
 import {
+  CalendarBlank,
   Crown,
   Detective,
   GearSix,
@@ -26,6 +27,7 @@ import styles from "./Sidebar.module.scss";
 const icons: Record<string, React.ComponentType<{ size?: number }>> = {
   dash: House,
   leaves: Leaf,
+  holidays: CalendarBlank,
   burgers: Hamburger,
   anon: Detective,
   team: Users,

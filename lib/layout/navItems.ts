@@ -8,6 +8,14 @@ export type NavItem = {
   sub: string;
 };
 
+const HOLIDAYS: NavItem = {
+  id: "holidays",
+  href: "/holidays",
+  label: "holidays",
+  title: "holiday calendar",
+  sub: "official days off. marked by admin.",
+};
+
 const BASE: NavItem[] = [
   { id: "dash", href: "/", label: "home", title: "home", sub: "the daily download" },
   {
@@ -17,6 +25,7 @@ const BASE: NavItem[] = [
     title: "leave management",
     sub: "inform → handoff → go. that's it.",
   },
+  HOLIDAYS,
   {
     id: "burgers",
     href: "/burgers",
@@ -79,7 +88,7 @@ const SETTINGS: NavItem = {
 
 export function getNavItems(role: ProfileRole, unreadAnnouncements = 0): (NavItem & { badge: number | null })[] {
   const items =
-    role === "super_admin" ? [SETTINGS, USERS] : role === "admin" ? [...BASE, USERS] : BASE;
+    role === "super_admin" ? [SETTINGS, USERS, HOLIDAYS] : role === "admin" ? [...BASE, USERS] : BASE;
   return items.map((item) => ({
     ...item,
     badge: item.id === "ann" && unreadAnnouncements > 0 ? unreadAnnouncements : null,

@@ -4,6 +4,7 @@ import {
   canDeleteAnonMessage,
   canInsertAnnouncement,
   canManageDepartments,
+  canManageHolidays,
   canManageSettings,
   canManageUsers,
   canSelectTotpCredentials,
@@ -57,5 +58,12 @@ describe("RLS policy contract", () => {
     expect(canManageDepartments("lead")).toBe(false);
     expect(canManageDepartments("admin")).toBe(false);
     expect(canManageDepartments("super_admin")).toBe(true);
+  });
+
+  it("admins and super_admins manage company holidays", () => {
+    expect(canManageHolidays("employee")).toBe(false);
+    expect(canManageHolidays("lead")).toBe(false);
+    expect(canManageHolidays("admin")).toBe(true);
+    expect(canManageHolidays("super_admin")).toBe(true);
   });
 });
