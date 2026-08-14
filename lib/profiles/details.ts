@@ -1,4 +1,3 @@
-export const DEPARTMENTS = ["Engineering", "Design", "Product", "HR", "Marketing"] as const;
 export const AVATAR_SWATCHES = ["#7048B6", "#0E9488", "#D97706", "#DB2777", "#0284C7", "#65A30D"] as const;
 
 export type ProfileDetails = {
@@ -10,14 +9,12 @@ export type ProfileDetails = {
   avatar_color: string;
 };
 
-export function validateProfileDetails(input: ProfileDetails): string | null {
+export function validateProfileDetails(input: ProfileDetails, departments: string[]): string | null {
   const name = input.full_name.trim();
   if (!name) return "name required";
   if (name.length > 80) return "name too long";
   if (input.designation.trim().length > 80) return "title too long";
-  if (!DEPARTMENTS.includes(input.department as (typeof DEPARTMENTS)[number])) {
-    return "invalid department";
-  }
+  if (!departments.includes(input.department)) return "invalid department";
   const skills = input.skills.map((s) => s.trim()).filter(Boolean);
   if (skills.length > 12) return "too many skills";
   if (skills.some((s) => s.length > 40)) return "skill too long";

@@ -2,12 +2,13 @@
 
 import { revalidatePath } from "next/cache";
 import { requireProfile } from "@/lib/auth";
+import { departmentNames } from "@/lib/departments/list";
 import { validateProfileDetails, type ProfileDetails } from "@/lib/profiles/details";
 import { createClient } from "@/lib/supabase/server";
 
 export async function saveProfile(details: ProfileDetails) {
   const profile = await requireProfile();
-  const err = validateProfileDetails(details);
+  const err = validateProfileDetails(details, await departmentNames());
   if (err) return { ok: false as const, error: err };
   const supabase = await createClient();
   const { error } = await supabase

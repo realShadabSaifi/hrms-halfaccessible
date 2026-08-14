@@ -3,6 +3,7 @@
 import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth";
+import { departmentNames } from "@/lib/departments/list";
 import { validateProfileDetails, type ProfileDetails } from "@/lib/profiles/details";
 import { USER_MANAGER_ROLES } from "@/lib/rls/policies";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -19,6 +20,8 @@ export async function addHuman(input: {
   await requireRole(USER_MANAGER_ROLES);
   const err = validateInvite(input);
   if (err) return { ok: false as const, error: err };
+  const names = await departmentNames();
+  if (!names.includes(input.department)) return { ok: false as const, error: "invalid department" };
   const admin = createAdminClient();
   const { data, error } = await admin.auth.admin.createUser({
     email: input.email.trim().toLowerCase(),
@@ -46,7 +49,7 @@ export async function addHuman(input: {
 
 export async function updateHumanDetails(userId: string, details: ProfileDetails) {
   await requireRole(USER_MANAGER_ROLES);
-  const err = validateProfileDetails(details);
+  const err = validateProfileDetails(details, await departmentNames());
   if (err) return { ok: false as const, error: err };
   const admin = createAdminClient();
   const { data: target } = await admin.from("profiles").select("role").eq("id", userId).maybeSingle();
