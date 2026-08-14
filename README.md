@@ -43,8 +43,8 @@ Open [http://localhost:3000/signup](http://localhost:3000/signup).
 
 Vercel cron (see `vercel.json`):
 
-- `/api/cron/resolve-burgers` every 5 minutes
-- `/api/cron/expire-anon` nightly
+- `/api/cron/resolve-burgers` once a day at 03:00 UTC
+- `/api/cron/expire-anon` once a day at 03:00 UTC
 
 Send `Authorization: Bearer $CRON_SECRET`.
 
