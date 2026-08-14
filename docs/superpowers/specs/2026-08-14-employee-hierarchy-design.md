@@ -12,6 +12,7 @@ Admin and super admin build a reporting tree on `/users` by dragging people. Eve
 - Deactivate auto-unassigns that person’s reports (`manager_id = null`). Reactivate does not restore those links.
 - Moving a person keeps their subtree. Only that person’s `manager_id` changes.
 - Cycles and self-manage are rejected. Copy stays lowercase and casual.
+- Never show `super_admin` to anyone. They do not appear on `/users`, `/team`, or any other people list or name label. They cannot sit in the tree as a manager or a report. The word `super_admin` is not shown in the UI. Super admin can still use `/users` to build the tree; they are just not a row in it.
 
 ## Data
 
@@ -32,17 +33,19 @@ No extra table. Existing profile columns stay as they are.
 - Do not open a write RLS policy that lets authenticated users change `manager_id`.
 - Tighten `profiles_update_self` (or add a trigger) so a self-edit cannot change `manager_id`. Service-role writes still work (`auth.uid()` is null).
 - Leads and employees never call `setManager`.
+- `isVisiblePerson(role)` is true for every role except `super_admin`. `/users` and `/team` load only visible people. Leave and culture name lookups skip them too.
 
 ## Validation
 
 Pure helpers in `lib/hierarchy/`:
 
 - `wouldCycle(personId, managerId, people)` — true if `managerId` is `personId` or sits in `personId`’s current subtree.
-- `validateManager(personId, managerId, people)` — `null` manager is valid (unassign). Unknown person or manager id → `unknown person`. Cycle / self → `that would loop the tree`. Same manager already set → treat as success at the action layer (no-op), not an error.
+- `validateManager(personId, managerId, people)` — `null` manager is valid (unassign). Unknown person or manager id → `unknown person`. Cycle / self → `that would loop the tree`. A `super_admin` id as person or manager is `unknown person`. Same manager already set → treat as success at the action layer (no-op), not an error.
+- `isVisiblePerson(role)` — false only for `super_admin`.
 - `buildTree(people)` — people whose `manager_id` is null, or whose manager is not in the given set, are roots. Children nest under their manager. Roots and each child list sort by `full_name`.
 - `filterTree(nodes, query)` — reuse `matchesMember` for the query. Keep a node if it or any descendant matches. Ancestors of a match stay visible so the path is readable. Empty query returns the full tree.
 
-`people` is the in-memory roster passed into the helper (all profiles on `/users`, active-only on `/team`).
+`people` is the in-memory roster passed into the helper (visible profiles on `/users`, visible active profiles on `/team`). Super admin is never in that set. If someone’s `manager_id` points at a hidden or inactive profile, `buildTree` treats them as a root.
 
 ## Mutations
 
@@ -58,7 +61,7 @@ All return `{ ok: true } | { ok: false, error: string }`.
 Roster stays a flat list (roles, edit details, deactivate, add human unchanged).
 
 - Unassign strip at the top of the roster: “drop here to make them a root.”
-- Every row is draggable and a drop target, including leads, admins, inactive people, and super_admin.
+- Every visible row is draggable and a drop target, including leads, admins, and inactive people. Super admin is not in the list.
 - Drop A on B → `setManager(A, B)`. Drop A on the strip → `setManager(A, null)`.
 - Hover / drag-over uses accent `#7463D4` border and wash. Dragged row opacity `0.35`.
 - Forbidden drop (self or cycle): no write, toast `that would loop the tree`.
@@ -73,7 +76,7 @@ Roster stays a flat list (roles, edit details, deactivate, add human unchanged).
 - Click a row → existing profile modal. Self-edit fields unchanged. Modal does not edit `manager_id`.
 - No drag on this page.
 - Empty roster: existing empty state. Search with no hits: existing “nobody matches that vibe.”
-- Inactive people are not loaded (existing query). If someone’s manager is inactive, `buildTree` treats them as a root.
+- Inactive people and `super_admin` are not loaded. If someone’s manager is inactive or hidden, `buildTree` treats them as a root.
 
 ## Tests
 
@@ -83,6 +86,7 @@ Roster stays a flat list (roles, edit details, deactivate, add human unchanged).
 - `setManager` gated to admin / super_admin (policy helper or action test).
 - Deactivate clears reports; reactivate does not restore. Failed deactivate leaves reports intact.
 - Self-update cannot change `manager_id`.
+- `isVisiblePerson("super_admin")` is false; other roles true. Super admin never appears in `/users` or `/team` fixtures.
 
 Manual: admin drag on `/users` nests and unassigns; cycle toasts; `/team` shows the tree and search keeps the path; employee cannot change reporting.
 
