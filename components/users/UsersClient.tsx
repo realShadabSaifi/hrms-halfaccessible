@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { addHuman, resetAuthenticator, setActive, setRole, updateHumanDetails } from "@/app/(portal)/users/actions";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
@@ -54,6 +54,17 @@ export function UsersClient({
   const [toast, setToast] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<EditDraft | null>(null);
+
+  useEffect(() => {
+    const names = new Set(departments.map((d) => d.name));
+    const fallback = departments[0]?.name ?? "";
+    if (dept && !names.has(dept)) setDept(fallback);
+    setDraft((prev) => {
+      if (!prev) return prev;
+      const safe = names.has(prev.department) ? prev.department : fallback;
+      return safe === prev.department ? prev : { ...prev, department: safe };
+    });
+  }, [departments, dept]);
 
   function openDetails(u: Profile) {
     if (editingId === u.id) {

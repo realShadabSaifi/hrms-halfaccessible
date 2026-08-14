@@ -25,6 +25,7 @@ export function DepartmentsCard({
         return (
           <div key={d.id} className="mb-3 flex flex-wrap items-end gap-2">
             <TextField
+              id={`dept-${d.id}`}
               label="name"
               value={value}
               onChange={(e) => setDrafts({ ...drafts, [d.id]: e.target.value })}
@@ -53,6 +54,7 @@ export function DepartmentsCard({
       })}
       <div className="mt-4 flex flex-wrap items-end gap-2 border-t border-ha-line pt-4">
         <TextField
+          id="new-department"
           label="new department"
           value={next}
           onChange={(e) => setNext(e.target.value)}
