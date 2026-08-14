@@ -4,7 +4,7 @@ import { QuickActions } from "@/components/dashboard/QuickActions";
 import { StatCards } from "@/components/dashboard/StatCards";
 import { Ticker } from "@/components/dashboard/Ticker";
 import { requireProfile } from "@/lib/auth";
-import { computeDashboardStats } from "@/lib/dashboard/stats";
+import { computeDashboardStats, pickNextHoliday } from "@/lib/dashboard/stats";
 import { buildTickerChips } from "@/lib/dashboard/ticker";
 import { createClient } from "@/lib/supabase/server";
 
@@ -27,14 +27,21 @@ export default async function DashboardPage() {
   const profile = await requireProfile();
   const supabase = await createClient();
 
-  const [{ count: pendingLeaves }, { data: holidays }, { count: unread }, { data: activity }, { data: tripPoll }] =
-    await Promise.all([
+  const [
+    { count: pendingLeaves },
+    { data: holidays },
+    { data: companyHolidays },
+    { count: unread },
+    { data: activity },
+    { data: tripPoll },
+  ] = await Promise.all([
       supabase
         .from("leave_requests")
         .select("id", { count: "exact", head: true })
         .eq("requester_id", profile.id)
         .eq("status", "pending"),
       supabase.from("burger_holidays").select("holiday_on, status, voting_closes_at").eq("status", "approved"),
+      supabase.from("company_holidays").select("holiday_on, title"),
       supabase
         .from("announcements")
         .select("id", { count: "exact", head: true })
@@ -75,7 +82,7 @@ export default async function DashboardPage() {
       <StatCards
         cards={computeDashboardStats({
           pendingLeaves: pendingLeaves ?? 0,
-          upcomingHolidays: holidays?.length ?? 0,
+          nextHoliday: pickNextHoliday(companyHolidays ?? [], new Date().toISOString().slice(0, 10)),
           unreadAnnouncements: unread ?? 0,
         })}
       />
