@@ -37,6 +37,8 @@ declare
   in_use int;
   total_count int;
 begin
+  lock table public.departments in share row exclusive mode;
+
   select name into dept_name
   from public.departments
   where id = p_id
@@ -45,6 +47,8 @@ begin
   if not found then
     raise exception 'missing';
   end if;
+
+  perform id from public.profiles where department = dept_name for update;
 
   select count(*)::int into in_use
   from public.profiles
@@ -65,3 +69,8 @@ begin
   where id = p_id;
 end;
 $$;
+
+revoke all on function public.rename_department(uuid, text) from public, anon, authenticated;
+revoke all on function public.remove_department(uuid) from public, anon, authenticated;
+grant execute on function public.rename_department(uuid, text) to service_role;
+grant execute on function public.remove_department(uuid) to service_role;
