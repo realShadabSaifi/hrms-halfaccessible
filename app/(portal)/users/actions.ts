@@ -150,9 +150,13 @@ export async function renameDepartment(id: string, name: string) {
     return { ok: false as const, error: "name taken" };
   }
   const next = name.trim();
-  const { error } = await admin.from("departments").update({ name: next }).eq("id", id);
-  if (error) return { ok: false as const, error: error.message };
-  await admin.from("profiles").update({ department: next }).eq("department", current.name);
+  const { error: deptError } = await admin.from("departments").update({ name: next }).eq("id", id);
+  if (deptError) return { ok: false as const, error: deptError.message };
+  const { error: profileError } = await admin
+    .from("profiles")
+    .update({ department: next })
+    .eq("department", current.name);
+  if (profileError) return { ok: false as const, error: profileError.message };
   revalidatePath("/users");
   revalidatePath("/team");
   return { ok: true as const };
@@ -167,16 +171,20 @@ export async function removeDepartment(id: string) {
     .eq("id", id)
     .maybeSingle();
   if (!current) return { ok: false as const, error: "missing" };
-  const { count: inUseCount } = await admin
+  const { count: inUseCount, error: inUseError } = await admin
     .from("profiles")
     .select("id", { count: "exact", head: true })
     .eq("department", current.name);
-  const { count: totalCount } = await admin
+  if (inUseError) return { ok: false as const, error: inUseError.message };
+  if (inUseCount == null) return { ok: false as const, error: "could not count in-use profiles" };
+  const { count: totalCount, error: totalError } = await admin
     .from("departments")
     .select("id", { count: "exact", head: true });
+  if (totalError) return { ok: false as const, error: totalError.message };
+  if (totalCount == null) return { ok: false as const, error: "could not count departments" };
   const blocked = removeDepartmentError({
-    inUseCount: inUseCount ?? 0,
-    totalCount: totalCount ?? 0,
+    inUseCount,
+    totalCount,
   });
   if (blocked) return { ok: false as const, error: blocked };
   const { error } = await admin.from("departments").delete().eq("id", id);
