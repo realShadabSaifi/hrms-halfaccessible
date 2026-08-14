@@ -4,11 +4,7 @@ import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth";
 import { departmentNames } from "@/lib/departments/list";
-import {
-  departmentTaken,
-  removeDepartmentError,
-  validateDepartmentName,
-} from "@/lib/departments/validate";
+import { departmentTaken, validateDepartmentName } from "@/lib/departments/validate";
 import { validateProfileDetails, type ProfileDetails } from "@/lib/profiles/details";
 import { USER_MANAGER_ROLES } from "@/lib/rls/policies";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -139,24 +135,15 @@ export async function renameDepartment(id: string, name: string) {
   const err = validateDepartmentName(name);
   if (err) return { ok: false as const, error: err };
   const admin = createAdminClient();
-  const { data: current } = await admin
-    .from("departments")
-    .select("id, name")
-    .eq("id", id)
-    .maybeSingle();
-  if (!current) return { ok: false as const, error: "missing" };
   const others = (await admin.from("departments").select("name").neq("id", id)).data ?? [];
   if (departmentTaken(name, others.map((r) => r.name))) {
     return { ok: false as const, error: "name taken" };
   }
-  const next = name.trim();
-  const { error: deptError } = await admin.from("departments").update({ name: next }).eq("id", id);
-  if (deptError) return { ok: false as const, error: deptError.message };
-  const { error: profileError } = await admin
-    .from("profiles")
-    .update({ department: next })
-    .eq("department", current.name);
-  if (profileError) return { ok: false as const, error: profileError.message };
+  const { error } = await admin.rpc("rename_department", {
+    p_id: id,
+    p_name: name.trim(),
+  });
+  if (error) return { ok: false as const, error: error.message };
   revalidatePath("/users");
   revalidatePath("/team");
   return { ok: true as const };
@@ -165,29 +152,7 @@ export async function renameDepartment(id: string, name: string) {
 export async function removeDepartment(id: string) {
   await requireRole(["super_admin"]);
   const admin = createAdminClient();
-  const { data: current } = await admin
-    .from("departments")
-    .select("id, name")
-    .eq("id", id)
-    .maybeSingle();
-  if (!current) return { ok: false as const, error: "missing" };
-  const { count: inUseCount, error: inUseError } = await admin
-    .from("profiles")
-    .select("id", { count: "exact", head: true })
-    .eq("department", current.name);
-  if (inUseError) return { ok: false as const, error: inUseError.message };
-  if (inUseCount == null) return { ok: false as const, error: "could not count in-use profiles" };
-  const { count: totalCount, error: totalError } = await admin
-    .from("departments")
-    .select("id", { count: "exact", head: true });
-  if (totalError) return { ok: false as const, error: totalError.message };
-  if (totalCount == null) return { ok: false as const, error: "could not count departments" };
-  const blocked = removeDepartmentError({
-    inUseCount,
-    totalCount,
-  });
-  if (blocked) return { ok: false as const, error: blocked };
-  const { error } = await admin.from("departments").delete().eq("id", id);
+  const { error } = await admin.rpc("remove_department", { p_id: id });
   if (error) return { ok: false as const, error: error.message };
   revalidatePath("/users");
   revalidatePath("/team");
