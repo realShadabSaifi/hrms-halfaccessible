@@ -1,32 +1,17 @@
-@use "tokens" as *;
-
 .wrap {
-  overflow: hidden;
-  border-radius: 12px;
-  background: rgba(91, 45, 142, 0.07);
-  border: 1px solid rgba(91, 45, 142, 0.16);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
   margin-bottom: 26px;
-  white-space: nowrap;
 }
 
-.track {
-  display: inline-flex;
-  animation: marquee 24s linear infinite;
-  padding: 9px 0;
-}
-
-.text {
+.chip {
+  border-radius: 8px;
+  background: rgba(116, 99, 212, 0.07);
+  border: 1px solid rgba(116, 99, 212, 0.16);
+  padding: 9px 16px;
   font-size: 13px;
   font-weight: 600;
-  color: var(--ha-ticker-text);
-  padding-right: 60px;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .track {
-    animation: none;
-    display: block;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
+  color: var(--ha-soft);
+  white-space: nowrap;
 }

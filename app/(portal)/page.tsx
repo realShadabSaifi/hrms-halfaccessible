@@ -5,13 +5,29 @@ import { StatCards } from "@/components/dashboard/StatCards";
 import { Ticker } from "@/components/dashboard/Ticker";
 import { requireProfile } from "@/lib/auth";
 import { computeDashboardStats } from "@/lib/dashboard/stats";
+import { buildTickerChips } from "@/lib/dashboard/ticker";
 import { createClient } from "@/lib/supabase/server";
+
+function hoursUntil(iso: string | null | undefined): string | null {
+  if (!iso) return null;
+  const ms = new Date(iso).getTime() - Date.now();
+  if (!Number.isFinite(ms) || ms <= 0) return null;
+  return `${Math.max(1, Math.ceil(ms / 3_600_000))}h`;
+}
+
+function shortHoliday(iso: string): string {
+  return new Date(`${iso}T00:00:00`).toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+  });
+}
 
 export default async function DashboardPage() {
   const profile = await requireProfile();
   const supabase = await createClient();
 
-  const [{ count: pendingLeaves }, { data: holidays }, { count: unread }, { data: activity }] =
+  const [{ count: pendingLeaves }, { data: holidays }, { count: unread }, { data: activity }, { data: tripPoll }] =
     await Promise.all([
       supabase
         .from("leave_requests")
@@ -28,6 +44,7 @@ export default async function DashboardPage() {
         .select("id, body, created_at")
         .order("created_at", { ascending: false })
         .limit(5),
+      supabase.from("trip_polls").select("id, open").eq("open", true).limit(1).maybeSingle(),
     ]);
 
   const { data: voting } = await supabase
@@ -44,13 +61,16 @@ export default async function DashboardPage() {
     day: "numeric",
   });
 
-  const ticker = voting
-    ? `burger holiday vote closing soon for "${voting.title}"  ·  be nice, it's free  ·  `
-    : "be nice, it's free  ·  inform, handoff, go  ·  ";
-
   return (
     <div className="pageEnter">
-      <Ticker text={ticker} />
+      <Ticker
+        items={buildTickerChips({
+          votingTitle: voting?.title ?? null,
+          countdown: hoursUntil(voting?.voting_closes_at),
+          confirmed: (holidays ?? []).map((h) => shortHoliday(h.holiday_on)),
+          tripOpen: Boolean(tripPoll?.open),
+        })}
+      />
       <Greeting fullName={profile.full_name} today={today} />
       <StatCards
         cards={computeDashboardStats({

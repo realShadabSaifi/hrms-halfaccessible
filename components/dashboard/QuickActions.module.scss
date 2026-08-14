@@ -13,8 +13,8 @@
   gap: 14px;
   min-height: 44px;
   padding: 18px 20px;
-  border-radius: 18px;
-  border: 1px solid rgba(91, 45, 142, 0.18);
+  border-radius: 10px;
+  border: 1px solid rgba(116, 99, 212, 0.18);
   text-decoration: none;
   color: $ink;
   background: $accent-wash;
@@ -25,13 +25,13 @@
 
 .btn:hover {
   transform: scale(1.03);
-  background: rgba(91, 45, 142, 0.1);
+  background: rgba(116, 99, 212, 0.1);
 }
 
 .icon {
   width: 42px;
   height: 42px;
-  border-radius: 12px;
+  border-radius: 8px;
   background: $purple;
   color: #fff;
   display: flex;
