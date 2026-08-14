@@ -1,0 +1,188 @@
+@use "tokens" as *;
+
+.roster {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.drop {
+  min-height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1.5px dashed rgba(57, 50, 90, 0.16);
+  border-radius: 12px;
+  background: $bg;
+  color: $muted;
+  font-size: 12.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.dropHot {
+  border-color: $purple;
+  background: $accent-wash;
+  color: $ink;
+}
+
+.forest {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.node {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.handle {
+  flex: none;
+  color: $muted;
+  font-size: 14px;
+  letter-spacing: 1px;
+  user-select: none;
+  cursor: grab;
+}
+
+.card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: min(260px, 100%);
+  min-height: 64px;
+  padding: 10px 12px;
+  border: 1px solid rgba(57, 50, 90, 0.09);
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: $shadow-card;
+  text-align: left;
+  cursor: grab;
+  transition: transform 0.15s ease;
+}
+
+.card:hover {
+  transform: translateY(-6px);
+}
+
+.over {
+  outline: 2px solid $purple;
+  background: $accent-wash;
+}
+
+.dragging {
+  opacity: 0.35;
+}
+
+.away {
+  opacity: 0.5;
+}
+
+.copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.name {
+  display: block;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.2;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.title {
+  display: block;
+  margin-top: 2px;
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pill {
+  display: inline-block;
+  margin-left: 6px;
+  border-radius: 99px;
+  background: $accent-wash;
+  padding: 2px 8px;
+  font-size: 10.5px;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.panel {
+  width: min(420px, 100%);
+  margin: 10px 0 4px 28px;
+  padding: 16px;
+  border: 1px solid rgba(57, 50, 90, 0.09);
+  border-radius: 12px;
+  background: $bg;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.kids {
+  position: relative;
+  margin-left: 28px;
+  padding-left: 22px;
+}
+
+.kids::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 32px;
+  width: 2px;
+  background: rgba(116, 99, 212, 0.28);
+}
+
+.child {
+  position: relative;
+  padding-top: 16px;
+}
+
+.child::before {
+  content: "";
+  position: absolute;
+  left: -22px;
+  top: 46px;
+  width: 22px;
+  height: 2px;
+  background: rgba(116, 99, 212, 0.28);
+}
+
+.child:last-child::after {
+  content: "";
+  position: absolute;
+  left: -22px;
+  top: 48px;
+  bottom: 0;
+  width: 2px;
+  background: $card;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card:hover {
+    transform: none;
+  }
+}

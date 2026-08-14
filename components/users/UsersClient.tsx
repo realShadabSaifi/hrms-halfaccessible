@@ -16,6 +16,7 @@ import { initials } from "@/lib/names";
 import { AVATAR_SWATCHES, parseSkills } from "@/lib/profiles/details";
 import { isVisiblePerson } from "@/lib/profiles/visible";
 import type { Department, Profile, ProfileRole } from "@/lib/types";
+import rosterStyles from "./UsersRoster.module.scss";
 
 const ROLES: ProfileRole[] = ["employee", "lead", "admin"];
 
@@ -30,7 +31,6 @@ type EditDraft = {
 
 type RosterTreeProps = {
   nodes: TreeNode<Profile>[];
-  depth: number;
   me: string;
   dragId: string | null;
   overId: string | null;
@@ -49,7 +49,6 @@ type RosterTreeProps = {
 
 function RosterTree({
   nodes,
-  depth,
   me,
   dragId,
   overId,
@@ -69,88 +68,81 @@ function RosterTree({
     <>
       {nodes.map((n) => {
         const u = n.person;
-        const over = overId === u.id && dragId && dragId !== u.id;
+        const over = Boolean(overId === u.id && dragId && dragId !== u.id);
+        const open = editingId === u.id;
         return (
-          <div key={u.id}>
-            <div
-              draggable
-              onDragStart={(e) => {
-                e.dataTransfer.effectAllowed = "move";
-                onDragId(u.id);
-              }}
-              onDragEnd={() => {
-                onDragId(null);
-                onOverId(null);
-              }}
-              onDragOver={(e) => {
-                e.preventDefault();
-                onOverId(u.id);
-              }}
-              onDrop={(e) => {
-                e.preventDefault();
-                onDrop(u.id);
-              }}
-              onKeyDown={(e) => onRowKeyDown(e, u.id)}
-              tabIndex={0}
-              aria-grabbed={dragId === u.id}
-              className="flex flex-wrap items-center gap-3 rounded-[8px] py-2.5 pr-2"
-              style={{
-                paddingLeft: 12 + depth * 22,
-                opacity: dragId === u.id ? 0.35 : u.active ? 1 : 0.5,
-                outline: over ? "2px solid #7463D4" : undefined,
-                background: over ? "rgba(116,99,212,0.05)" : undefined,
-                cursor: "grab",
-              }}
-            >
-              {depth > 0 ? (
-                <span aria-hidden className="mr-1 h-6 w-0.5 shrink-0 bg-[rgba(116,99,212,0.25)]" />
-              ) : null}
-              <span aria-hidden className="select-none text-[14px] tracking-widest text-ha-muted">
-                ⠿
-              </span>
-              <Avatar initials={initials(u.full_name)} color={u.avatar_color} />
-              <span className="min-w-[150px] flex-1">
-                <span className="block font-[family-name:var(--font-display)] text-[15.5px] font-bold">
-                  {u.full_name} {u.id === me ? "(you)" : ""}{" "}
-                  <span className="ml-1 rounded-full bg-ha-accent-wash px-2 py-0.5 text-[10.5px] font-bold">
-                    {u.active ? "active" : "away"}
+          <div key={u.id} className={rosterStyles.node}>
+            <div className={rosterStyles.row}>
+              <div
+                draggable
+                onDragStart={(e) => {
+                  e.dataTransfer.effectAllowed = "move";
+                  onDragId(u.id);
+                }}
+                onDragEnd={() => {
+                  onDragId(null);
+                  onOverId(null);
+                }}
+                onDragOver={(e) => {
+                  e.preventDefault();
+                  onOverId(u.id);
+                }}
+                onDrop={(e) => {
+                  e.preventDefault();
+                  onDrop(u.id);
+                }}
+                onKeyDown={(e) => onRowKeyDown(e, u.id)}
+                tabIndex={0}
+                aria-grabbed={dragId === u.id}
+                className={`${rosterStyles.card} ${over ? rosterStyles.over : ""} ${
+                  dragId === u.id ? rosterStyles.dragging : ""
+                } ${u.active ? "" : rosterStyles.away}`}
+              >
+                <span aria-hidden className={rosterStyles.handle}>
+                  ⠿
+                </span>
+                <Avatar initials={initials(u.full_name)} color={u.avatar_color} size="sm" />
+                <span className={rosterStyles.copy}>
+                  <span className={rosterStyles.name}>
+                    {u.full_name}
+                    {u.id === me ? <span className={rosterStyles.pill}>you</span> : null}
+                    {u.active ? null : <span className={rosterStyles.pill}>away</span>}
+                  </span>
+                  <span className={rosterStyles.title} style={{ color: u.avatar_color }}>
+                    {u.designation} · {u.department}
                   </span>
                 </span>
-                <span className="block text-[12.5px] font-semibold" style={{ color: u.avatar_color }}>
-                  {u.designation} · {u.department}
-                </span>
-              </span>
-              <span
-                className="flex gap-1 rounded-full border border-ha-line bg-ha-bg p-0.5"
-                onMouseDown={(e) => e.stopPropagation()}
-                onPointerDown={(e) => e.stopPropagation()}
-              >
-                {ROLES.map((r) => (
-                  <Chip key={r} active={u.role === r} onClick={() => setRole(u.id, r)}>
-                    {r}
-                  </Chip>
-                ))}
-              </span>
-              <span onMouseDown={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()} className="flex flex-wrap gap-1">
-                <Button variant="ghost" onClick={() => onOpenDetails(u)}>
-                  {editingId === u.id ? "close details" : "edit details"}
-                </Button>
-                <Button variant="ghost" onClick={() => resetAuthenticator(u.id)}>
-                  reset authenticator
-                </Button>
-                <Button
-                  variant="ghost"
-                  onClick={async () => {
-                    const r = await setActive(u.id, !u.active);
-                    if (!r.ok) onToast(r.error ?? "nope");
-                  }}
-                >
-                  {u.active ? "deactivate" : "reactivate"}
-                </Button>
-              </span>
+              </div>
+              <Button variant="ghost" onClick={() => onOpenDetails(u)}>
+                {open ? "close" : "manage"}
+              </Button>
             </div>
-            {editingId === u.id && draft ? (
-              <div className="mb-3 ml-8 rounded-ha-lg border border-ha-line bg-ha-bg p-4">
+            {open && draft ? (
+              <div className={rosterStyles.panel}>
+                <div className="mb-2 text-[11.5px] font-bold uppercase tracking-wider text-ha-muted">
+                  portal role
+                </div>
+                <div className="mb-4 flex flex-wrap gap-1.5">
+                  {ROLES.map((r) => (
+                    <Chip key={r} active={u.role === r} onClick={() => setRole(u.id, r)}>
+                      {r}
+                    </Chip>
+                  ))}
+                </div>
+                <div className={rosterStyles.actions}>
+                  <Button variant="ghost" onClick={() => resetAuthenticator(u.id)}>
+                    reset authenticator
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    onClick={async () => {
+                      const r = await setActive(u.id, !u.active);
+                      if (!r.ok) onToast(r.error ?? "nope");
+                    }}
+                  >
+                    {u.active ? "deactivate" : "reactivate"}
+                  </Button>
+                </div>
                 <TextField
                   label="full name"
                   value={draft.fullName}
@@ -230,24 +222,29 @@ function RosterTree({
               </div>
             ) : null}
             {n.children.length > 0 ? (
-              <RosterTree
-                nodes={n.children}
-                depth={depth + 1}
-                me={me}
-                dragId={dragId}
-                overId={overId}
-                editingId={editingId}
-                draft={draft}
-                departments={departments}
-                onDragId={onDragId}
-                onOverId={onOverId}
-                onDrop={onDrop}
-                onRowKeyDown={onRowKeyDown}
-                onOpenDetails={onOpenDetails}
-                onDraft={onDraft}
-                onToast={onToast}
-                onCloseDetails={onCloseDetails}
-              />
+              <div className={rosterStyles.kids}>
+                {n.children.map((child) => (
+                  <div key={child.person.id} className={rosterStyles.child}>
+                    <RosterTree
+                      nodes={[child]}
+                      me={me}
+                      dragId={dragId}
+                      overId={overId}
+                      editingId={editingId}
+                      draft={draft}
+                      departments={departments}
+                      onDragId={onDragId}
+                      onOverId={onOverId}
+                      onDrop={onDrop}
+                      onRowKeyDown={onRowKeyDown}
+                      onOpenDetails={onOpenDetails}
+                      onDraft={onDraft}
+                      onToast={onToast}
+                      onCloseDetails={onCloseDetails}
+                    />
+                  </div>
+                ))}
+              </div>
             ) : null}
           </div>
         );
@@ -362,53 +359,49 @@ export function UsersClient({
     <div className="pageEnter grid items-start gap-5 md:grid-cols-[1.3fr_0.7fr]">
       <div className="rounded-ha-lg border border-ha-line bg-ha-surface p-[22px] shadow-[var(--ha-shadow-card)]">
         <div className="font-[family-name:var(--font-display)] text-base font-bold">the roster</div>
-        <p className="mb-3.5 text-xs text-ha-muted">
-          roles, access, authenticators. drag someone onto a person to nest them. deactivating keeps their history - we
-          don&apos;t erase people.
+        <p className="mb-5 text-xs text-ha-muted">
+          drag onto a person to nest them. manage opens roles and access. deactivating keeps their history.
         </p>
-        <div
-          role="button"
-          tabIndex={0}
-          aria-label="drop here to make them a root"
-          onDragOver={(e) => {
-            e.preventDefault();
-            setOverId("unassign");
-          }}
-          onDrop={(e) => {
-            e.preventDefault();
-            void dropOn(null);
-          }}
-          onKeyDown={(e) => onRowKeyDown(e, null)}
-          className="mb-3 rounded-[10px] border border-dashed px-3 py-2 text-[12px] font-semibold text-ha-muted"
-          style={{
-            borderColor: overId === "unassign" && dragId ? "#7463D4" : "rgba(57,50,90,0.12)",
-            background: overId === "unassign" && dragId ? "rgba(116,99,212,0.05)" : "transparent",
-          }}
-        >
-          drop here to make them a root
-        </div>
-        <div className="rounded-[10px] border border-ha-line bg-ha-bg/40 p-2">
-          <RosterTree
-            nodes={tree}
-            depth={0}
-            me={me}
-            dragId={dragId}
-            overId={overId}
-            editingId={editingId}
-            draft={draft}
-            departments={departments}
-            onDragId={setDragId}
-            onOverId={setOverId}
-            onDrop={(id) => void dropOn(id)}
-            onRowKeyDown={onRowKeyDown}
-            onOpenDetails={openDetails}
-            onDraft={setDraft}
-            onToast={setToast}
-            onCloseDetails={() => {
-              setEditingId(null);
-              setDraft(null);
+        <div className={rosterStyles.roster}>
+          <div
+            role="button"
+            tabIndex={0}
+            aria-label="drop here to make them a root"
+            onDragOver={(e) => {
+              e.preventDefault();
+              setOverId("unassign");
             }}
-          />
+            onDrop={(e) => {
+              e.preventDefault();
+              void dropOn(null);
+            }}
+            onKeyDown={(e) => onRowKeyDown(e, null)}
+            className={`${rosterStyles.drop} ${overId === "unassign" && dragId ? rosterStyles.dropHot : ""}`}
+          >
+            drop here to make them a root
+          </div>
+          <div className={rosterStyles.forest}>
+            <RosterTree
+              nodes={tree}
+              me={me}
+              dragId={dragId}
+              overId={overId}
+              editingId={editingId}
+              draft={draft}
+              departments={departments}
+              onDragId={setDragId}
+              onOverId={setOverId}
+              onDrop={(id) => void dropOn(id)}
+              onRowKeyDown={onRowKeyDown}
+              onOpenDetails={openDetails}
+              onDraft={setDraft}
+              onToast={setToast}
+              onCloseDetails={() => {
+                setEditingId(null);
+                setDraft(null);
+              }}
+            />
+          </div>
         </div>
       </div>
       <div className="grid gap-5">
