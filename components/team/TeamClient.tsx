@@ -10,24 +10,26 @@ import { TextArea } from "@/components/ui/TextArea";
 import { TextField } from "@/components/ui/TextField";
 import { Toast } from "@/components/ui/Toast";
 import { initials } from "@/lib/names";
-import { AVATAR_SWATCHES, DEPARTMENTS, parseSkills } from "@/lib/profiles/details";
+import { AVATAR_SWATCHES, parseSkills } from "@/lib/profiles/details";
 import { matchesMember } from "@/lib/team/search";
-import type { Profile } from "@/lib/types";
+import type { Department, Profile } from "@/lib/types";
 import { MagnifyingGlass, X } from "@phosphor-icons/react";
 
 export function TeamClient({
   members,
   me,
+  departments,
 }: {
   members: Profile[];
   me: string;
+  departments: Department[];
 }) {
   const [q, setQ] = useState("");
   const [open, setOpen] = useState<Profile | null>(null);
   const [editing, setEditing] = useState(false);
   const [fullName, setFullName] = useState("");
   const [designation, setDesignation] = useState("");
-  const [department, setDepartment] = useState<(typeof DEPARTMENTS)[number]>("Engineering");
+  const [department, setDepartment] = useState(departments[0]?.name ?? "");
   const [skillsRaw, setSkillsRaw] = useState("");
   const [bio, setBio] = useState("");
   const [color, setColor] = useState(AVATAR_SWATCHES[0]);
@@ -39,11 +41,8 @@ export function TeamClient({
     setEditing(false);
     setFullName(m.full_name);
     setDesignation(m.designation);
-    setDepartment(
-      DEPARTMENTS.includes(m.department as (typeof DEPARTMENTS)[number])
-        ? (m.department as (typeof DEPARTMENTS)[number])
-        : "Engineering",
-    );
+    const names = departments.map((d) => d.name);
+    setDepartment(names.includes(m.department) ? m.department : (departments[0]?.name ?? ""));
     setSkillsRaw(m.skills.join(", "));
     setBio(m.bio);
     setColor(
@@ -135,9 +134,9 @@ export function TeamClient({
                   department
                 </div>
                 <div className="mb-3.5 flex flex-wrap gap-1.5">
-                  {DEPARTMENTS.map((d) => (
-                    <Chip key={d} active={department === d} onClick={() => setDepartment(d)}>
-                      {d}
+                  {departments.map((d) => (
+                    <Chip key={d.id} active={department === d.name} onClick={() => setDepartment(d.name)}>
+                      {d.name}
                     </Chip>
                   ))}
                 </div>
