@@ -30,3 +30,11 @@ export type Department = {
   name: string;
   sort: number;
 };
+
+export type CompanyHoliday = {
+  id: string;
+  holiday_on: string;
+  title: string;
+  created_by: string | null;
+  created_at: string;
+};
