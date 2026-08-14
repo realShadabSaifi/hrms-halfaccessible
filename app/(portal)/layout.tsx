@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
 import { requireProfile } from "@/lib/auth";
 import { getAppSettings } from "@/lib/branding/settings";
+import { afterAuthPath, canVisitPath } from "@/lib/layout/access";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function PortalLayout({
@@ -28,8 +29,10 @@ export default async function PortalLayout({
   }
 
   const h = await headers();
-  const path = h.get("x-pathname");
-  if ((path === "/users" || path === "/settings") && profile.role !== "admin") redirect("/");
+  const path = h.get("x-pathname") ?? "/";
+  if (!canVisitPath(profile.role, path)) {
+    redirect(afterAuthPath(profile.role));
+  }
 
   return (
     <AppShell profile={profile} unread={unread} settings={settings}>

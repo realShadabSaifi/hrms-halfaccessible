@@ -6,6 +6,7 @@ import { AuthShell } from "@/components/layout/AuthShell";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
 import type { AppSettings } from "@/lib/types";
+import { pathAfterAuth } from "@/app/login/afterAuth";
 import { confirmSignupAction, startSignupAction } from "./actions";
 import styles from "./SignupFlow.module.scss";
 
@@ -55,7 +56,7 @@ export function SignupFlow({ settings }: { settings: AppSettings }) {
       return;
     }
     setDone(true);
-    router.push("/");
+    router.push(await pathAfterAuth());
     router.refresh();
   }
 

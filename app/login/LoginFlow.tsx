@@ -6,6 +6,7 @@ import { AuthShell } from "@/components/layout/AuthShell";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
 import type { AppSettings } from "@/lib/types";
+import { pathAfterAuth } from "./afterAuth";
 import { startLoginAction, verifyLoginAction } from "./actions";
 import styles from "./LoginFlow.module.scss";
 
@@ -59,7 +60,7 @@ export function LoginFlow({ settings }: { settings: AppSettings }) {
       return;
     }
     setDone(true);
-    router.push("/");
+    router.push(await pathAfterAuth());
     router.refresh();
   }
 

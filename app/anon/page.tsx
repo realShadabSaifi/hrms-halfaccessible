@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { AppShell } from "@/components/layout/AppShell";
 import { BrandLockup } from "@/components/layout/BrandLockup";
 import { getCurrentProfile } from "@/lib/auth";
 import { getAppSettings } from "@/lib/branding/settings";
+import { afterAuthPath, canVisitPath } from "@/lib/layout/access";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { AnonBoard } from "./AnonBoard";
@@ -30,6 +32,9 @@ export default async function AnonPage() {
 
   const profile = await getCurrentProfile();
   const settings = await getAppSettings();
+  if (profile && !canVisitPath(profile.role, "/anon")) {
+    redirect(afterAuthPath(profile.role));
+  }
   if (profile?.totp_verified_at && profile.active) {
     const supabase = await createClient();
     const { count } = await supabase.from("announcements").select("id", { count: "exact", head: true });

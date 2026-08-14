@@ -44,6 +44,25 @@ export function MobileNav({ items }: { items: Item[] }) {
   const more = items.filter((i) => !PRIMARY.has(i.id));
   const moreActive = more.some((i) => i.href === pathname);
 
+  if (items.length === 1) {
+    const item = items[0];
+    const Icon = icons[item.id] ?? House;
+    const active = pathname === item.href;
+    return (
+      <nav className={styles.wrap} aria-label="mobile">
+        <div className={styles.bar}>
+          <Link
+            href={item.href}
+            className={`${styles.tab} ${active ? styles.tabActive : ""}`}
+          >
+            <Icon size={20} />
+            <span>{item.label}</span>
+          </Link>
+        </div>
+      </nav>
+    );
+  }
+
   return (
     <nav className={styles.wrap} aria-label="mobile">
       {open ? (
