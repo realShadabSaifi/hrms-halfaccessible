@@ -13,44 +13,66 @@ import { buildTree, filterTree, type TreeNode } from "@/lib/hierarchy/tree";
 import { initials } from "@/lib/names";
 import { AVATAR_SWATCHES, parseSkills } from "@/lib/profiles/details";
 import type { Department, Profile } from "@/lib/types";
-import { MagnifyingGlass, X } from "@phosphor-icons/react";
+import { ArrowLeft, MagnifyingGlass, X } from "@phosphor-icons/react";
+import treeStyles from "./TeamTree.module.scss";
 
-function TreeRows({
+function PersonCard({
+  person,
+  mine,
+  onOpen,
+}: {
+  person: Profile;
+  mine: boolean;
+  onOpen: (m: Profile) => void;
+}) {
+  return (
+    <div className={treeStyles.row}>
+      <button
+        type="button"
+        onClick={() => onOpen(person)}
+        className={`${treeStyles.card} ${mine ? treeStyles.mine : ""}`}
+        aria-current={mine ? "true" : undefined}
+      >
+        <Avatar initials={initials(person.full_name)} color={person.avatar_color} size="sm" />
+        <span className={treeStyles.copy}>
+          <span className={treeStyles.name}>{person.full_name}</span>
+          <span className={treeStyles.title} style={{ color: person.avatar_color }}>
+            {person.designation} · {person.department}
+          </span>
+        </span>
+      </button>
+      {mine ? (
+        <span className={treeStyles.here}>
+          <ArrowLeft size={14} weight="bold" aria-hidden />
+          you are here
+        </span>
+      ) : null}
+    </div>
+  );
+}
+
+function TreeBranch({
   nodes,
-  depth,
   me,
   onOpen,
 }: {
   nodes: TreeNode<Profile>[];
-  depth: number;
   me: string;
   onOpen: (m: Profile) => void;
 }) {
   return (
     <>
       {nodes.map((n) => (
-        <div key={n.person.id}>
-          <button
-            type="button"
-            onClick={() => onOpen(n.person)}
-            className="flex w-full items-center gap-3 rounded-[8px] px-3 py-2.5 text-left hover:bg-ha-accent-wash"
-            style={{ paddingLeft: 12 + depth * 22 }}
-          >
-            {depth > 0 ? (
-              <span aria-hidden className="mr-1 h-6 w-0.5 shrink-0 bg-[rgba(116,99,212,0.25)]" />
-            ) : null}
-            <Avatar initials={initials(n.person.full_name)} color={n.person.avatar_color} />
-            <span className="min-w-0">
-              <span className="block font-[family-name:var(--font-display)] text-[15.5px] font-bold">
-                {n.person.full_name} {n.person.id === me ? "(you)" : ""}
-              </span>
-              <span className="block text-[12.5px] font-semibold" style={{ color: n.person.avatar_color }}>
-                {n.person.designation} · {n.person.department}
-              </span>
-            </span>
-          </button>
+        <div key={n.person.id} className={treeStyles.node}>
+          <PersonCard person={n.person} mine={n.person.id === me} onOpen={onOpen} />
           {n.children.length > 0 ? (
-            <TreeRows nodes={n.children} depth={depth + 1} me={me} onOpen={onOpen} />
+            <div className={treeStyles.kids}>
+              {n.children.map((child) => (
+                <div key={child.person.id} className={treeStyles.child}>
+                  <TreeBranch nodes={[child]} me={me} onOpen={onOpen} />
+                </div>
+              ))}
+            </div>
           ) : null}
         </div>
       ))}
@@ -116,8 +138,8 @@ export function TeamClient({
           body='try a name, role, dept, or skill - like "figma" or "engineering"'
         />
       ) : (
-        <div className="rounded-ha-lg border border-ha-line bg-ha-surface p-2 shadow-[var(--ha-shadow-card)]">
-          <TreeRows nodes={tree} depth={0} me={me} onOpen={openProfile} />
+        <div className={treeStyles.forest}>
+          <TreeBranch nodes={tree} me={me} onOpen={openProfile} />
         </div>
       )}
       {open ? (
