@@ -8,28 +8,28 @@ import { Chip } from "@/components/ui/Chip";
 import { TextArea } from "@/components/ui/TextArea";
 import { TextField } from "@/components/ui/TextField";
 import { Toast } from "@/components/ui/Toast";
+import { DepartmentsCard } from "@/components/users/DepartmentsCard";
 import { initials } from "@/lib/names";
-import { AVATAR_SWATCHES, DEPARTMENTS, parseSkills } from "@/lib/profiles/details";
-import type { Profile, ProfileRole } from "@/lib/types";
+import { AVATAR_SWATCHES, parseSkills } from "@/lib/profiles/details";
+import type { Department, Profile, ProfileRole } from "@/lib/types";
 
 const ROLES: ProfileRole[] = ["employee", "lead", "admin"];
 
 type EditDraft = {
   fullName: string;
   designation: string;
-  department: (typeof DEPARTMENTS)[number];
+  department: string;
   skillsRaw: string;
   bio: string;
   color: (typeof AVATAR_SWATCHES)[number];
 };
 
-function draftFrom(u: Profile): EditDraft {
+function draftFrom(u: Profile, departments: Department[]): EditDraft {
+  const names = departments.map((d) => d.name);
   return {
     fullName: u.full_name,
     designation: u.designation,
-    department: DEPARTMENTS.includes(u.department as (typeof DEPARTMENTS)[number])
-      ? (u.department as (typeof DEPARTMENTS)[number])
-      : "Engineering",
+    department: names.includes(u.department) ? u.department : (departments[0]?.name ?? ""),
     skillsRaw: u.skills.join(", "),
     bio: u.bio,
     color: AVATAR_SWATCHES.includes(u.avatar_color as (typeof AVATAR_SWATCHES)[number])
@@ -41,11 +41,15 @@ function draftFrom(u: Profile): EditDraft {
 export function UsersClient({
   rows,
   me,
+  departments,
+  canManageDepartments,
 }: {
   rows: (Profile & { email?: string })[];
   me: string;
+  departments: Department[];
+  canManageDepartments: boolean;
 }) {
-  const [dept, setDept] = useState<(typeof DEPARTMENTS)[number]>("Engineering");
+  const [dept, setDept] = useState(departments[0]?.name ?? "");
   const [role, setRoleState] = useState<ProfileRole>("employee");
   const [toast, setToast] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -58,7 +62,7 @@ export function UsersClient({
       return;
     }
     setEditingId(u.id);
-    setDraft(draftFrom(u));
+    setDraft(draftFrom(u, departments));
   }
 
   return (
@@ -125,9 +129,13 @@ export function UsersClient({
                   department
                 </div>
                 <div className="mb-3.5 flex flex-wrap gap-1.5">
-                  {DEPARTMENTS.map((d) => (
-                    <Chip key={d} active={draft.department === d} onClick={() => setDraft({ ...draft, department: d })}>
-                      {d}
+                  {departments.map((d) => (
+                    <Chip
+                      key={d.id}
+                      active={draft.department === d.name}
+                      onClick={() => setDraft({ ...draft, department: d.name })}
+                    >
+                      {d.name}
                     </Chip>
                   ))}
                 </div>
@@ -188,52 +196,57 @@ export function UsersClient({
           </div>
         ))}
       </div>
-      <form
-        className="rounded-ha-lg border border-ha-line bg-ha-surface p-6 shadow-[var(--ha-shadow-card)]"
-        action={async (fd) => {
-          const r = await addHuman({
-            email: String(fd.get("email")),
-            fullName: String(fd.get("name")),
-            designation: String(fd.get("title")),
-            department: dept,
-            role,
-          });
-          setToast(r.ok ? "human added. they still need to scan a QR." : r.error ?? "nope");
-        }}
-      >
-        <div className="font-[family-name:var(--font-display)] text-[17px] font-bold">add a human</div>
-        <p className="mb-4 text-xs text-ha-muted">
-          they&apos;ll set up an authenticator on first login. no passwords, ever.
-        </p>
-        <TextField name="name" label="full name" placeholder="e.g. Zara Khan" />
-        <div className="h-3" />
-        <TextField name="email" label="email" type="email" required />
-        <div className="h-3" />
-        <TextField name="title" label="designation" placeholder="e.g. Chaos Coordinator" />
-        <div className="mb-2 mt-3 text-[11.5px] font-bold uppercase tracking-wider text-ha-muted">
-          department
-        </div>
-        <div className="mb-3.5 flex flex-wrap gap-1.5">
-          {DEPARTMENTS.map((d) => (
-            <Chip key={d} active={dept === d} onClick={() => setDept(d)}>
-              {d}
-            </Chip>
-          ))}
-        </div>
-        <div className="mb-2 text-[11.5px] font-bold uppercase tracking-wider text-ha-muted">
-          portal role
-        </div>
-        <div className="mb-4 flex gap-1.5">
-          {ROLES.map((r) => (
-            <Chip key={r} active={role === r} onClick={() => setRoleState(r)}>
-              {r}
-            </Chip>
-          ))}
-        </div>
-        <Button type="submit" className="w-full">
-          add human
-        </Button>
-      </form>
+      <div className="grid gap-5">
+        {canManageDepartments ? (
+          <DepartmentsCard departments={departments} onToast={setToast} />
+        ) : null}
+        <form
+          className="rounded-ha-lg border border-ha-line bg-ha-surface p-6 shadow-[var(--ha-shadow-card)]"
+          action={async (fd) => {
+            const r = await addHuman({
+              email: String(fd.get("email")),
+              fullName: String(fd.get("name")),
+              designation: String(fd.get("title")),
+              department: dept,
+              role,
+            });
+            setToast(r.ok ? "human added. they still need to scan a QR." : r.error ?? "nope");
+          }}
+        >
+          <div className="font-[family-name:var(--font-display)] text-[17px] font-bold">add a human</div>
+          <p className="mb-4 text-xs text-ha-muted">
+            they&apos;ll set up an authenticator on first login. no passwords, ever.
+          </p>
+          <TextField name="name" label="full name" placeholder="e.g. Zara Khan" />
+          <div className="h-3" />
+          <TextField name="email" label="email" type="email" required />
+          <div className="h-3" />
+          <TextField name="title" label="designation" placeholder="e.g. Chaos Coordinator" />
+          <div className="mb-2 mt-3 text-[11.5px] font-bold uppercase tracking-wider text-ha-muted">
+            department
+          </div>
+          <div className="mb-3.5 flex flex-wrap gap-1.5">
+            {departments.map((d) => (
+              <Chip key={d.id} active={dept === d.name} onClick={() => setDept(d.name)}>
+                {d.name}
+              </Chip>
+            ))}
+          </div>
+          <div className="mb-2 text-[11.5px] font-bold uppercase tracking-wider text-ha-muted">
+            portal role
+          </div>
+          <div className="mb-4 flex gap-1.5">
+            {ROLES.map((r) => (
+              <Chip key={r} active={role === r} onClick={() => setRoleState(r)}>
+                {r}
+              </Chip>
+            ))}
+          </div>
+          <Button type="submit" className="w-full">
+            add human
+          </Button>
+        </form>
+      </div>
       <Toast message={toast} />
     </div>
   );
