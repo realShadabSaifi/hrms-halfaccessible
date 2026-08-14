@@ -7,7 +7,7 @@ export default async function TeamPage() {
   const me = await requireProfile();
   const supabase = await createClient();
   const [{ data }, { data: depts }] = await Promise.all([
-    supabase.from("profiles").select("*").eq("active", true).order("full_name"),
+    supabase.from("profiles").select("*").eq("active", true).neq("role", "super_admin").order("full_name"),
     supabase.from("departments").select("id, name, sort").order("sort"),
   ]);
   return (

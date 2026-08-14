@@ -32,6 +32,7 @@ export default async function LeavesPage() {
       const { data: people } = await supabase
         .from("profiles")
         .select("id, full_name, avatar_color")
+        .neq("role", "super_admin")
         .in("id", ids);
       names = Object.fromEntries(
         (people ?? []).map((p) => [p.id, { full_name: p.full_name, avatar_color: p.avatar_color }]),

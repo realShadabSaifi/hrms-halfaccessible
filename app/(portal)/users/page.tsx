@@ -8,7 +8,7 @@ export default async function UsersPage() {
   const me = await requireRole(USER_MANAGER_ROLES);
   const supabase = await createClient();
   const [{ data }, { data: depts }] = await Promise.all([
-    supabase.from("profiles").select("*").order("full_name"),
+    supabase.from("profiles").select("*").neq("role", "super_admin").order("full_name"),
     supabase.from("departments").select("id, name, sort").order("sort"),
   ]);
   return (

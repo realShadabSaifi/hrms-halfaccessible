@@ -11,7 +11,7 @@ export default async function CulturePage() {
     .order("created_at", { ascending: false });
   const ids = [...new Set((partyRows ?? []).map((p) => p.requester_id))];
   const { data: people } = ids.length
-    ? await supabase.from("profiles").select("id, full_name").in("id", ids)
+    ? await supabase.from("profiles").select("id, full_name").neq("role", "super_admin").in("id", ids)
     : { data: [] };
   const nameOf = Object.fromEntries((people ?? []).map((p) => [p.id, p.full_name]));
 
