@@ -10,6 +10,7 @@ import { TextField } from "@/components/ui/TextField";
 import { Toast } from "@/components/ui/Toast";
 import { DepartmentsCard } from "@/components/users/DepartmentsCard";
 import { managerToast } from "@/lib/hierarchy/copy";
+import { buildTree, type TreeNode } from "@/lib/hierarchy/tree";
 import { validateManager } from "@/lib/hierarchy/validate";
 import { initials } from "@/lib/names";
 import { AVATAR_SWATCHES, parseSkills } from "@/lib/profiles/details";
@@ -26,6 +27,234 @@ type EditDraft = {
   bio: string;
   color: (typeof AVATAR_SWATCHES)[number];
 };
+
+type RosterTreeProps = {
+  nodes: TreeNode<Profile>[];
+  depth: number;
+  me: string;
+  dragId: string | null;
+  overId: string | null;
+  editingId: string | null;
+  draft: EditDraft | null;
+  departments: Department[];
+  onDragId: (id: string | null) => void;
+  onOverId: (id: string | null) => void;
+  onDrop: (id: string | null) => void;
+  onRowKeyDown: (e: KeyboardEvent, id: string | null) => void;
+  onOpenDetails: (u: Profile) => void;
+  onDraft: (draft: EditDraft) => void;
+  onToast: (msg: string | null) => void;
+  onCloseDetails: () => void;
+};
+
+function RosterTree({
+  nodes,
+  depth,
+  me,
+  dragId,
+  overId,
+  editingId,
+  draft,
+  departments,
+  onDragId,
+  onOverId,
+  onDrop,
+  onRowKeyDown,
+  onOpenDetails,
+  onDraft,
+  onToast,
+  onCloseDetails,
+}: RosterTreeProps) {
+  return (
+    <>
+      {nodes.map((n) => {
+        const u = n.person;
+        const over = overId === u.id && dragId && dragId !== u.id;
+        return (
+          <div key={u.id}>
+            <div
+              draggable
+              onDragStart={(e) => {
+                e.dataTransfer.effectAllowed = "move";
+                onDragId(u.id);
+              }}
+              onDragEnd={() => {
+                onDragId(null);
+                onOverId(null);
+              }}
+              onDragOver={(e) => {
+                e.preventDefault();
+                onOverId(u.id);
+              }}
+              onDrop={(e) => {
+                e.preventDefault();
+                onDrop(u.id);
+              }}
+              onKeyDown={(e) => onRowKeyDown(e, u.id)}
+              tabIndex={0}
+              aria-grabbed={dragId === u.id}
+              className="flex flex-wrap items-center gap-3 rounded-[8px] py-2.5 pr-2"
+              style={{
+                paddingLeft: 12 + depth * 22,
+                opacity: dragId === u.id ? 0.35 : u.active ? 1 : 0.5,
+                outline: over ? "2px solid #7463D4" : undefined,
+                background: over ? "rgba(116,99,212,0.05)" : undefined,
+                cursor: "grab",
+              }}
+            >
+              {depth > 0 ? (
+                <span aria-hidden className="mr-1 h-6 w-0.5 shrink-0 bg-[rgba(116,99,212,0.25)]" />
+              ) : null}
+              <span aria-hidden className="select-none text-[14px] tracking-widest text-ha-muted">
+                ⠿
+              </span>
+              <Avatar initials={initials(u.full_name)} color={u.avatar_color} />
+              <span className="min-w-[150px] flex-1">
+                <span className="block font-[family-name:var(--font-display)] text-[15.5px] font-bold">
+                  {u.full_name} {u.id === me ? "(you)" : ""}{" "}
+                  <span className="ml-1 rounded-full bg-ha-accent-wash px-2 py-0.5 text-[10.5px] font-bold">
+                    {u.active ? "active" : "away"}
+                  </span>
+                </span>
+                <span className="block text-[12.5px] font-semibold" style={{ color: u.avatar_color }}>
+                  {u.designation} · {u.department}
+                </span>
+              </span>
+              <span
+                className="flex gap-1 rounded-full border border-ha-line bg-ha-bg p-0.5"
+                onMouseDown={(e) => e.stopPropagation()}
+                onPointerDown={(e) => e.stopPropagation()}
+              >
+                {ROLES.map((r) => (
+                  <Chip key={r} active={u.role === r} onClick={() => setRole(u.id, r)}>
+                    {r}
+                  </Chip>
+                ))}
+              </span>
+              <span onMouseDown={(e) => e.stopPropagation()} onPointerDown={(e) => e.stopPropagation()} className="flex flex-wrap gap-1">
+                <Button variant="ghost" onClick={() => onOpenDetails(u)}>
+                  {editingId === u.id ? "close details" : "edit details"}
+                </Button>
+                <Button variant="ghost" onClick={() => resetAuthenticator(u.id)}>
+                  reset authenticator
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={async () => {
+                    const r = await setActive(u.id, !u.active);
+                    if (!r.ok) onToast(r.error ?? "nope");
+                  }}
+                >
+                  {u.active ? "deactivate" : "reactivate"}
+                </Button>
+              </span>
+            </div>
+            {editingId === u.id && draft ? (
+              <div className="mb-3 ml-8 rounded-ha-lg border border-ha-line bg-ha-bg p-4">
+                <TextField
+                  label="full name"
+                  value={draft.fullName}
+                  onChange={(e) => onDraft({ ...draft, fullName: e.target.value })}
+                />
+                <div className="h-3" />
+                <TextField
+                  label="designation"
+                  value={draft.designation}
+                  onChange={(e) => onDraft({ ...draft, designation: e.target.value })}
+                />
+                <div className="mb-2 mt-3 text-[11.5px] font-bold uppercase tracking-wider text-ha-muted">
+                  department
+                </div>
+                <div className="mb-3.5 flex flex-wrap gap-1.5">
+                  {departments.map((d) => (
+                    <Chip
+                      key={d.id}
+                      active={draft.department === d.name}
+                      onClick={() => onDraft({ ...draft, department: d.name })}
+                    >
+                      {d.name}
+                    </Chip>
+                  ))}
+                </div>
+                <TextField
+                  label="skills"
+                  hint="comma-separated"
+                  value={draft.skillsRaw}
+                  onChange={(e) => onDraft({ ...draft, skillsRaw: e.target.value })}
+                />
+                <div className="h-3" />
+                <TextArea
+                  label="bio"
+                  value={draft.bio}
+                  onChange={(e) => onDraft({ ...draft, bio: e.target.value })}
+                  rows={3}
+                />
+                <div className="mb-2 mt-3 text-[11.5px] font-bold uppercase tracking-wider text-ha-muted">
+                  avatar color
+                </div>
+                <div className="mb-4 flex gap-2">
+                  {AVATAR_SWATCHES.map((c) => (
+                    <button
+                      key={c}
+                      type="button"
+                      aria-label="pick avatar color"
+                      onClick={() => onDraft({ ...draft, color: c })}
+                      className="h-[34px] w-[34px] rounded-full"
+                      style={{
+                        background: c,
+                        border: draft.color === c ? "3px solid var(--ha-ink)" : "3px solid transparent",
+                      }}
+                    />
+                  ))}
+                </div>
+                <Button
+                  onClick={async () => {
+                    const r = await updateHumanDetails(u.id, {
+                      full_name: draft.fullName,
+                      designation: draft.designation,
+                      department: draft.department,
+                      skills: parseSkills(draft.skillsRaw),
+                      bio: draft.bio,
+                      avatar_color: draft.color,
+                    });
+                    if (!r.ok) {
+                      onToast(r.error ?? "nope");
+                      return;
+                    }
+                    onCloseDetails();
+                    onToast("saved.");
+                  }}
+                >
+                  save details
+                </Button>
+              </div>
+            ) : null}
+            {n.children.length > 0 ? (
+              <RosterTree
+                nodes={n.children}
+                depth={depth + 1}
+                me={me}
+                dragId={dragId}
+                overId={overId}
+                editingId={editingId}
+                draft={draft}
+                departments={departments}
+                onDragId={onDragId}
+                onOverId={onOverId}
+                onDrop={onDrop}
+                onRowKeyDown={onRowKeyDown}
+                onOpenDetails={onOpenDetails}
+                onDraft={onDraft}
+                onToast={onToast}
+                onCloseDetails={onCloseDetails}
+              />
+            ) : null}
+          </div>
+        );
+      })}
+    </>
+  );
+}
 
 function draftFrom(u: Profile, departments: Department[]): EditDraft {
   const names = departments.map((d) => d.name);
@@ -60,6 +289,7 @@ export function UsersClient({
   const [dragId, setDragId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
   const visible = useMemo(() => rows.filter((r) => isVisiblePerson(r.role)), [rows]);
+  const tree = useMemo(() => buildTree(visible), [visible]);
 
   useEffect(() => {
     const names = new Set(departments.map((d) => d.name));
@@ -157,156 +387,29 @@ export function UsersClient({
         >
           drop here to make them a root
         </div>
-        {visible.map((u) => (
-          <div
-            key={u.id}
-            draggable
-            onDragStart={(e) => {
-              e.dataTransfer.effectAllowed = "move";
-              setDragId(u.id);
+        <div className="rounded-[10px] border border-ha-line bg-ha-bg/40 p-2">
+          <RosterTree
+            nodes={tree}
+            depth={0}
+            me={me}
+            dragId={dragId}
+            overId={overId}
+            editingId={editingId}
+            draft={draft}
+            departments={departments}
+            onDragId={setDragId}
+            onOverId={setOverId}
+            onDrop={(id) => void dropOn(id)}
+            onRowKeyDown={onRowKeyDown}
+            onOpenDetails={openDetails}
+            onDraft={setDraft}
+            onToast={setToast}
+            onCloseDetails={() => {
+              setEditingId(null);
+              setDraft(null);
             }}
-            onDragEnd={() => {
-              setDragId(null);
-              setOverId(null);
-            }}
-            onDragOver={(e) => {
-              e.preventDefault();
-              setOverId(u.id);
-            }}
-            onDrop={(e) => {
-              e.preventDefault();
-              void dropOn(u.id);
-            }}
-            onKeyDown={(e) => onRowKeyDown(e, u.id)}
-            tabIndex={0}
-            aria-grabbed={dragId === u.id}
-            className="border-b border-ha-line"
-            style={{
-              opacity: dragId === u.id ? 0.35 : u.active ? 1 : 0.5,
-              outline: overId === u.id && dragId && dragId !== u.id ? "2px solid #7463D4" : undefined,
-              background: overId === u.id && dragId && dragId !== u.id ? "rgba(116,99,212,0.05)" : undefined,
-              cursor: "grab",
-            }}
-          >
-            <div className="flex flex-wrap items-center gap-3 py-3">
-              <Avatar initials={initials(u.full_name)} color={u.avatar_color} />
-              <span className="min-w-[150px] flex-1">
-                <span className="block text-[13.5px] font-semibold">
-                  {u.full_name} {u.id === me ? "(you)" : ""}{" "}
-                  <span className="ml-1 rounded-full bg-ha-accent-wash px-2 py-0.5 text-[10.5px] font-bold">
-                    {u.active ? "active" : "away"}
-                  </span>
-                </span>
-                <span className="block text-[11.5px] text-ha-muted">
-                  {u.designation} · {u.department} · joined {u.joined_at}
-                </span>
-              </span>
-              <span className="flex gap-1 rounded-full border border-ha-line bg-ha-bg p-0.5">
-                {ROLES.map((r) => (
-                  <Chip key={r} active={u.role === r} onClick={() => setRole(u.id, r)}>
-                    {r}
-                  </Chip>
-                ))}
-              </span>
-              <Button variant="ghost" onClick={() => openDetails(u)}>
-                {editingId === u.id ? "close details" : "edit details"}
-              </Button>
-              <Button variant="ghost" onClick={() => resetAuthenticator(u.id)}>
-                reset authenticator
-              </Button>
-              <Button
-                variant="ghost"
-                onClick={async () => {
-                  const r = await setActive(u.id, !u.active);
-                  if (!r.ok) setToast(r.error ?? "nope");
-                }}
-              >
-                {u.active ? "deactivate" : "reactivate"}
-              </Button>
-            </div>
-            {editingId === u.id && draft ? (
-              <div className="mb-3 rounded-ha-lg border border-ha-line bg-ha-bg p-4">
-                <TextField
-                  label="full name"
-                  value={draft.fullName}
-                  onChange={(e) => setDraft({ ...draft, fullName: e.target.value })}
-                />
-                <div className="h-3" />
-                <TextField
-                  label="designation"
-                  value={draft.designation}
-                  onChange={(e) => setDraft({ ...draft, designation: e.target.value })}
-                />
-                <div className="mb-2 mt-3 text-[11.5px] font-bold uppercase tracking-wider text-ha-muted">
-                  department
-                </div>
-                <div className="mb-3.5 flex flex-wrap gap-1.5">
-                  {departments.map((d) => (
-                    <Chip
-                      key={d.id}
-                      active={draft.department === d.name}
-                      onClick={() => setDraft({ ...draft, department: d.name })}
-                    >
-                      {d.name}
-                    </Chip>
-                  ))}
-                </div>
-                <TextField
-                  label="skills"
-                  hint="comma-separated"
-                  value={draft.skillsRaw}
-                  onChange={(e) => setDraft({ ...draft, skillsRaw: e.target.value })}
-                />
-                <div className="h-3" />
-                <TextArea
-                  label="bio"
-                  value={draft.bio}
-                  onChange={(e) => setDraft({ ...draft, bio: e.target.value })}
-                  rows={3}
-                />
-                <div className="mb-2 mt-3 text-[11.5px] font-bold uppercase tracking-wider text-ha-muted">
-                  avatar color
-                </div>
-                <div className="mb-4 flex gap-2">
-                  {AVATAR_SWATCHES.map((c) => (
-                    <button
-                      key={c}
-                      type="button"
-                      aria-label="pick avatar color"
-                      onClick={() => setDraft({ ...draft, color: c })}
-                      className="h-[34px] w-[34px] rounded-full"
-                      style={{
-                        background: c,
-                        border: draft.color === c ? "3px solid var(--ha-ink)" : "3px solid transparent",
-                      }}
-                    />
-                  ))}
-                </div>
-                <Button
-                  onClick={async () => {
-                    const r = await updateHumanDetails(u.id, {
-                      full_name: draft.fullName,
-                      designation: draft.designation,
-                      department: draft.department,
-                      skills: parseSkills(draft.skillsRaw),
-                      bio: draft.bio,
-                      avatar_color: draft.color,
-                    });
-                    if (!r.ok) {
-                      setToast(r.error ?? "nope");
-                      return;
-                    }
-                    setEditingId(null);
-                    setDraft(null);
-                    setToast("saved.");
-                  }}
-                >
-                  save details
-                </Button>
-              </div>
-            ) : null}
-          </div>
-        ))}
+          />
+        </div>
       </div>
       <div className="grid gap-5">
         {canManageDepartments ? (
