@@ -1,7 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { addHuman, resetAuthenticator, setActive, setRole, updateHumanDetails } from "@/app/(portal)/users/actions";
+import { useEffect, useMemo, useState, type KeyboardEvent } from "react";
+import { addHuman, resetAuthenticator, setActive, setManager, setRole, updateHumanDetails } from "@/app/(portal)/users/actions";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
@@ -9,8 +9,11 @@ import { TextArea } from "@/components/ui/TextArea";
 import { TextField } from "@/components/ui/TextField";
 import { Toast } from "@/components/ui/Toast";
 import { DepartmentsCard } from "@/components/users/DepartmentsCard";
+import { managerToast } from "@/lib/hierarchy/copy";
+import { validateManager } from "@/lib/hierarchy/validate";
 import { initials } from "@/lib/names";
 import { AVATAR_SWATCHES, parseSkills } from "@/lib/profiles/details";
+import { isVisiblePerson } from "@/lib/profiles/visible";
 import type { Department, Profile, ProfileRole } from "@/lib/types";
 
 const ROLES: ProfileRole[] = ["employee", "lead", "admin"];
@@ -54,6 +57,9 @@ export function UsersClient({
   const [toast, setToast] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState<EditDraft | null>(null);
+  const [dragId, setDragId] = useState<string | null>(null);
+  const [overId, setOverId] = useState<string | null>(null);
+  const visible = useMemo(() => rows.filter((r) => isVisiblePerson(r.role)), [rows]);
 
   useEffect(() => {
     const names = new Set(departments.map((d) => d.name));
@@ -78,15 +84,110 @@ export function UsersClient({
     setDraft(draftFrom(u, departments));
   }
 
+  function personById(id: string) {
+    return visible.find((r) => r.id === id);
+  }
+
+  async function dropOn(targetId: string | null) {
+    if (!dragId) return;
+    const err = validateManager(
+      dragId,
+      targetId,
+      visible.map((r) => ({ id: r.id, manager_id: r.manager_id })),
+    );
+    if (err) {
+      setToast(err);
+      setDragId(null);
+      setOverId(null);
+      return;
+    }
+    const r = await setManager(dragId, targetId);
+    const person = personById(dragId);
+    const manager = targetId ? personById(targetId) : null;
+    setDragId(null);
+    setOverId(null);
+    if (!r.ok) {
+      setToast(r.error ?? "nope");
+      return;
+    }
+    if (person) setToast(managerToast(person.full_name, manager?.full_name ?? null));
+  }
+
+  function onRowKeyDown(e: KeyboardEvent, id: string | null) {
+    if (e.key === "Escape") {
+      setDragId(null);
+      setOverId(null);
+      return;
+    }
+    if (e.key !== " " && e.key !== "Enter") return;
+    e.preventDefault();
+    if (!dragId) {
+      if (id) setDragId(id);
+      return;
+    }
+    void dropOn(id);
+  }
+
   return (
     <div className="pageEnter grid items-start gap-5 md:grid-cols-[1.3fr_0.7fr]">
       <div className="rounded-ha-lg border border-ha-line bg-ha-surface p-[22px] shadow-[var(--ha-shadow-card)]">
         <div className="font-[family-name:var(--font-display)] text-base font-bold">the roster</div>
         <p className="mb-3.5 text-xs text-ha-muted">
-          roles, access, authenticators. deactivating keeps their history - we don&apos;t erase people.
+          roles, access, authenticators. drag someone onto a person to nest them. deactivating keeps their history - we
+          don&apos;t erase people.
         </p>
-        {rows.map((u) => (
-          <div key={u.id} className="border-b border-ha-line" style={{ opacity: u.active ? 1 : 0.5 }}>
+        <div
+          role="button"
+          tabIndex={0}
+          aria-label="drop here to make them a root"
+          onDragOver={(e) => {
+            e.preventDefault();
+            setOverId("unassign");
+          }}
+          onDrop={(e) => {
+            e.preventDefault();
+            void dropOn(null);
+          }}
+          onKeyDown={(e) => onRowKeyDown(e, null)}
+          className="mb-3 rounded-[10px] border border-dashed px-3 py-2 text-[12px] font-semibold text-ha-muted"
+          style={{
+            borderColor: overId === "unassign" && dragId ? "#7463D4" : "rgba(57,50,90,0.12)",
+            background: overId === "unassign" && dragId ? "rgba(116,99,212,0.05)" : "transparent",
+          }}
+        >
+          drop here to make them a root
+        </div>
+        {visible.map((u) => (
+          <div
+            key={u.id}
+            draggable
+            onDragStart={(e) => {
+              e.dataTransfer.effectAllowed = "move";
+              setDragId(u.id);
+            }}
+            onDragEnd={() => {
+              setDragId(null);
+              setOverId(null);
+            }}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setOverId(u.id);
+            }}
+            onDrop={(e) => {
+              e.preventDefault();
+              void dropOn(u.id);
+            }}
+            onKeyDown={(e) => onRowKeyDown(e, u.id)}
+            tabIndex={0}
+            aria-grabbed={dragId === u.id}
+            className="border-b border-ha-line"
+            style={{
+              opacity: dragId === u.id ? 0.35 : u.active ? 1 : 0.5,
+              outline: overId === u.id && dragId && dragId !== u.id ? "2px solid #7463D4" : undefined,
+              background: overId === u.id && dragId && dragId !== u.id ? "rgba(116,99,212,0.05)" : undefined,
+              cursor: "grab",
+            }}
+          >
             <div className="flex flex-wrap items-center gap-3 py-3">
               <Avatar initials={initials(u.full_name)} color={u.avatar_color} />
               <span className="min-w-[150px] flex-1">
@@ -100,30 +201,28 @@ export function UsersClient({
                   {u.designation} · {u.department} · joined {u.joined_at}
                 </span>
               </span>
-              {u.role === "super_admin" ? (
-                <span className="rounded-full bg-ha-accent-wash px-2 py-0.5 text-[10.5px] font-bold">
-                  super_admin
-                </span>
-              ) : (
-                <>
-                  <span className="flex gap-1 rounded-full border border-ha-line bg-ha-bg p-0.5">
-                    {ROLES.map((r) => (
-                      <Chip key={r} active={u.role === r} onClick={() => setRole(u.id, r)}>
-                        {r}
-                      </Chip>
-                    ))}
-                  </span>
-                  <Button variant="ghost" onClick={() => openDetails(u)}>
-                    {editingId === u.id ? "close details" : "edit details"}
-                  </Button>
-                  <Button variant="ghost" onClick={() => resetAuthenticator(u.id)}>
-                    reset authenticator
-                  </Button>
-                  <Button variant="ghost" onClick={() => setActive(u.id, !u.active)}>
-                    {u.active ? "deactivate" : "reactivate"}
-                  </Button>
-                </>
-              )}
+              <span className="flex gap-1 rounded-full border border-ha-line bg-ha-bg p-0.5">
+                {ROLES.map((r) => (
+                  <Chip key={r} active={u.role === r} onClick={() => setRole(u.id, r)}>
+                    {r}
+                  </Chip>
+                ))}
+              </span>
+              <Button variant="ghost" onClick={() => openDetails(u)}>
+                {editingId === u.id ? "close details" : "edit details"}
+              </Button>
+              <Button variant="ghost" onClick={() => resetAuthenticator(u.id)}>
+                reset authenticator
+              </Button>
+              <Button
+                variant="ghost"
+                onClick={async () => {
+                  const r = await setActive(u.id, !u.active);
+                  if (!r.ok) setToast(r.error ?? "nope");
+                }}
+              >
+                {u.active ? "deactivate" : "reactivate"}
+              </Button>
             </div>
             {editingId === u.id && draft ? (
               <div className="mb-3 rounded-ha-lg border border-ha-line bg-ha-bg p-4">
