@@ -5,7 +5,9 @@ import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth";
 import { departmentNames } from "@/lib/departments/list";
 import { departmentTaken, validateDepartmentName } from "@/lib/departments/validate";
+import { validateManager } from "@/lib/hierarchy/validate";
 import { validateProfileDetails, type ProfileDetails } from "@/lib/profiles/details";
+import { isVisiblePerson } from "@/lib/profiles/visible";
 import { USER_MANAGER_ROLES } from "@/lib/rls/policies";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { ProfileRole } from "@/lib/types";
@@ -83,14 +85,32 @@ export async function setRole(userId: string, role: ProfileRole) {
   return { ok: true as const };
 }
 
+export async function setManager(personId: string, managerId: string | null) {
+  await requireRole(USER_MANAGER_ROLES);
+  const admin = createAdminClient();
+  const { data } = await admin.from("profiles").select("id, manager_id, role");
+  const people = (data ?? []).filter((p) => isVisiblePerson(p.role as ProfileRole));
+  const err = validateManager(personId, managerId, people);
+  if (err) return { ok: false as const, error: err };
+  const current = people.find((p) => p.id === personId);
+  if ((current?.manager_id ?? null) === managerId) return { ok: true as const };
+  const { error } = await admin.from("profiles").update({ manager_id: managerId }).eq("id", personId);
+  if (error) return { ok: false as const, error: error.message };
+  revalidatePath("/users");
+  revalidatePath("/team");
+  return { ok: true as const };
+}
+
 export async function setActive(userId: string, active: boolean) {
   await requireRole(USER_MANAGER_ROLES);
   const admin = createAdminClient();
-  await admin.from("profiles").update({ active }).eq("id", userId);
+  const { error } = await admin.rpc("set_profile_active", { p_id: userId, p_active: active });
+  if (error) return { ok: false as const, error: error.message };
   await admin.auth.admin.updateUserById(userId, {
     app_metadata: { deactivated: !active },
   });
   revalidatePath("/users");
+  revalidatePath("/team");
   return { ok: true as const };
 }
 
