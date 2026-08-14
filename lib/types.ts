@@ -2,6 +2,7 @@ export type ProfileRole = "employee" | "lead" | "admin" | "super_admin";
 
 export type Profile = {
   id: string;
+  manager_id: string | null;
   full_name: string;
   designation: string;
   department: string;
