@@ -37,14 +37,19 @@
   background: $purple-hover;
 }
 
+.auth {
+  border-radius: var(--ha-radius-auth-btn);
+  min-height: 48px;
+}
+
 .ghost {
   background: $accent-wash;
   color: $accent-text;
-  border: 1px solid rgba(91, 45, 142, 0.35);
+  border: 1px solid rgba(116, 99, 212, 0.35);
 }
 
 .ghost:hover:not(:disabled) {
-  background: rgba(91, 45, 142, 0.14);
+  background: rgba(116, 99, 212, 0.14);
 }
 
 .danger {

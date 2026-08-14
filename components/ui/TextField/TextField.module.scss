@@ -50,3 +50,11 @@
 .hint {
   color: $muted;
 }
+
+.otp {
+  min-height: 46px;
+  border-radius: var(--ha-radius-auth-input);
+  font-family: ui-monospace, monospace;
+  font-size: 16px;
+  letter-spacing: 0.35em;
+}
