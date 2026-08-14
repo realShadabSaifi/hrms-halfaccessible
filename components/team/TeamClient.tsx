@@ -32,7 +32,7 @@ export function TeamClient({
   const [department, setDepartment] = useState(departments[0]?.name ?? "");
   const [skillsRaw, setSkillsRaw] = useState("");
   const [bio, setBio] = useState("");
-  const [color, setColor] = useState(AVATAR_SWATCHES[0]);
+  const [color, setColor] = useState<(typeof AVATAR_SWATCHES)[number]>(AVATAR_SWATCHES[0]);
   const [toast, setToast] = useState<string | null>(null);
   const list = useMemo(() => members.filter((m) => matchesMember(m, q)), [members, q]);
 
