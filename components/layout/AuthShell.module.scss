@@ -7,6 +7,18 @@
   background: $bg;
 }
 
+.page a {
+  color: #7463d4;
+}
+
+.page a:hover {
+  color: #8577e0;
+}
+
+.page :focus-visible {
+  border-radius: 6px;
+}
+
 .visual {
   position: relative;
   min-height: 100dvh;
@@ -17,27 +29,17 @@
   object-fit: cover;
 }
 
-.scrim {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    180deg,
-    rgba(14, 14, 18, 0.15) 0%,
-    rgba(14, 14, 18, 0.55) 100%
-  );
-}
-
 .manifesto {
   position: absolute;
   left: 36px;
   bottom: 40px;
   margin: 0;
   max-width: 14ch;
-  color: #f6f6fa;
+  color: #f7f5fc;
   font-family: var(--font-display), system-ui, sans-serif;
   font-size: clamp(2.4rem, 4vw, 4.2rem);
   font-weight: 700;
-  letter-spacing: -0.04em;
+  letter-spacing: -0.02em;
   line-height: 1.05;
 }
 
@@ -64,9 +66,9 @@
 .brand {
   font-family: var(--font-display), system-ui, sans-serif;
   font-weight: 700;
-  color: $accent-text;
+  color: #7463d4;
   font-size: 20px;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 
 @media (max-width: 767px) {

@@ -22,6 +22,25 @@
   gap: 14px;
 }
 
+.form button {
+  width: 100%;
+}
+
+.authField input {
+  min-height: 46px;
+  border-radius: 10px;
+}
+
+.done {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 14px;
+  padding: 16px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #047857;
+}
+
 .error {
   color: $danger;
   font-size: 13px;

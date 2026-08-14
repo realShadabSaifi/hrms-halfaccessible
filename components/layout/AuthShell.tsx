@@ -19,7 +19,6 @@ export function AuthShell({ children }: { children: ReactNode }) {
           sizes="(max-width: 767px) 0px, 50vw"
           className={styles.image}
         />
-        <div className={styles.scrim} />
         <p className={styles.manifesto} aria-hidden="true">
           the portal.
           <span>no corporate BS.</span>

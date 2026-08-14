@@ -14,6 +14,7 @@ export function LoginFlow() {
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [step, setStep] = useState<"email" | "code">("email");
+  const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(
     params.get("reason") === "deactivated"
       ? "this account is deactivated. ping an admin."
@@ -56,6 +57,7 @@ export function LoginFlow() {
       );
       return;
     }
+    setDone(true);
     router.push("/");
     router.refresh();
   }
@@ -64,9 +66,12 @@ export function LoginFlow() {
     <AuthShell>
       <h1 className={styles.headline}>the portal. no corporate BS.</h1>
       <p className={styles.sub}>email, then the code from your authenticator.</p>
-      {step === "email" ? (
+      {done ? (
+        <div className={styles.done}>you&apos;re in 🎉 redirecting to the portal…</div>
+      ) : step === "email" ? (
         <form action={onEmail} className={styles.form}>
           <TextField
+            className={styles.authField}
             label="email"
             name="email"
             type="email"
@@ -75,13 +80,15 @@ export function LoginFlow() {
             placeholder="you@halfaccessible.com"
           />
           {error ? <p className={styles.error}>{error}</p> : null}
-          <Button type="submit" pending={pending}>
+          <Button type="submit" shape="auth" pending={pending}>
             continue
           </Button>
         </form>
       ) : (
         <form action={onCode} className={styles.form}>
           <TextField
+            className={styles.authField}
+            tone="otp"
             label="authenticator code"
             name="code"
             inputMode="numeric"
@@ -93,14 +100,16 @@ export function LoginFlow() {
             required
           />
           {error ? <p className={styles.error}>{error}</p> : null}
-          <Button type="submit" pending={pending}>
+          <Button type="submit" shape="auth" pending={pending}>
             let me in
           </Button>
         </form>
       )}
-      <p className={styles.switch}>
-        first time here? <a href="/signup">set up your authenticator</a>
-      </p>
+      {done ? null : (
+        <p className={styles.switch}>
+          first time here? <a href="/signup">set up your authenticator</a>
+        </p>
+      )}
     </AuthShell>
   );
 }

@@ -15,6 +15,7 @@ export function SignupFlow() {
   const [secret, setSecret] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [done, setDone] = useState(false);
 
   async function onEmail(formData: FormData) {
     setPending(true);
@@ -52,6 +53,7 @@ export function SignupFlow() {
       );
       return;
     }
+    setDone(true);
     router.push("/");
     router.refresh();
   }
@@ -59,13 +61,13 @@ export function SignupFlow() {
   return (
     <AuthShell>
       <h1 className={styles.headline}>set up your authenticator</h1>
-      <p className={styles.sub}>
-        scan this QR in Authy, Google Authenticator, or 1Password. then type the
-        6-digit code.
-      </p>
-      {!qr ? (
+      <p className={styles.sub}>no passwords. no magic links. one QR, thirty seconds.</p>
+      {done ? (
+        <div className={styles.done}>you&apos;re in 🎉 redirecting to the portal…</div>
+      ) : !qr ? (
         <form action={onEmail} className={styles.form}>
           <TextField
+            className={styles.authField}
             label="email"
             name="email"
             type="email"
@@ -74,15 +76,20 @@ export function SignupFlow() {
             placeholder="you@halfaccessible.com"
           />
           {error ? <p className={styles.error}>{error}</p> : null}
-          <Button type="submit" pending={pending}>
+          <Button type="submit" shape="auth" pending={pending}>
             show my QR
           </Button>
         </form>
       ) : (
         <>
-          {/* QR is a generated data URL, not a remote asset */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img className={styles.qr} src={qr} alt="authenticator QR code" />
+          <div className={styles.qrRow}>
+            {/* QR is a generated data URL, not a remote asset */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img className={styles.qr} src={qr} alt="authenticator QR code" />
+            <p className={styles.qrHelp}>
+              scan with Authy, Google Authenticator, or 1Password. then type the first 6-digit code below.
+            </p>
+          </div>
           {secret ? (
             <p className={styles.secret} aria-label="manual setup key">
               {secret}
@@ -90,7 +97,9 @@ export function SignupFlow() {
           ) : null}
           <form action={onCode} className={styles.form}>
             <TextField
-              label="first 6-digit code"
+              className={styles.authField}
+              tone="otp"
+              label="first code"
               name="code"
               inputMode="numeric"
               autoComplete="one-time-code"
@@ -99,15 +108,17 @@ export function SignupFlow() {
               required
             />
             {error ? <p className={styles.error}>{error}</p> : null}
-            <Button type="submit" pending={pending}>
-              confirm and enter
+            <Button type="submit" shape="auth" pending={pending}>
+              lock it in
             </Button>
           </form>
         </>
       )}
-      <p className={styles.switch}>
-        already set up? <a href="/login">log in</a>
-      </p>
+      {done ? null : (
+        <p className={styles.switch}>
+          already set up? <a href="/login">log in instead</a>
+        </p>
+      )}
     </AuthShell>
   );
 }

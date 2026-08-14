@@ -22,18 +22,55 @@
   gap: 14px;
 }
 
+.form button {
+  width: 100%;
+}
+
+.authField input {
+  min-height: 46px;
+  border-radius: 10px;
+}
+
+.done {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 14px;
+  padding: 16px 18px;
+  font-size: 14px;
+  font-weight: 700;
+  color: #047857;
+}
+
 .error {
   color: $danger;
   font-size: 13px;
   font-weight: 600;
 }
 
-.qr {
-  display: block;
-  width: 220px;
-  height: 220px;
-  margin: 0 auto 16px;
+.qrRow {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  background: #fff;
+  border: 1px solid rgba(57, 50, 90, 0.1);
   border-radius: 16px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+
+.qr {
+  width: 120px;
+  height: 120px;
+  flex: none;
+  border-radius: 10px;
+  border: 1px dashed rgba(116, 99, 212, 0.5);
+}
+
+.qrHelp {
+  margin: 0;
+  font-size: 13.5px;
+  line-height: 1.55;
+  color: rgba(57, 50, 90, 0.75);
 }
 
 .secret {
