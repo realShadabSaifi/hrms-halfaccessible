@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { AuthShell } from "@/components/layout/AuthShell";
 import { Button } from "@/components/ui/Button";
@@ -69,7 +70,12 @@ export function LoginFlow({ settings }: { settings: AppSettings }) {
       <h1 className={styles.headline}>the portal. no corporate BS.</h1>
       <p className={styles.sub}>email, then the code from your authenticator.</p>
       {done ? (
-        <div className={styles.done}>you&apos;re in 🎉 redirecting to the portal…</div>
+        <div className={styles.done}>
+          you&apos;re in 🎉 redirecting to the portal…
+          <Link href="/" className={styles.doneLink}>
+            go home
+          </Link>
+        </div>
       ) : step === "email" ? (
         <form action={onEmail} className={styles.form}>
           <TextField

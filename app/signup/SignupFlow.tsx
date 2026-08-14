@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { AuthShell } from "@/components/layout/AuthShell";
 import { Button } from "@/components/ui/Button";
@@ -65,7 +66,12 @@ export function SignupFlow({ settings }: { settings: AppSettings }) {
       <h1 className={styles.headline}>set up your authenticator</h1>
       <p className={styles.sub}>no passwords. no magic links. one QR, thirty seconds.</p>
       {done ? (
-        <div className={styles.done}>you&apos;re in 🎉 redirecting to the portal…</div>
+        <div className={styles.done}>
+          you&apos;re in 🎉 redirecting to the portal…
+          <Link href="/" className={styles.doneLink}>
+            go home
+          </Link>
+        </div>
       ) : !qr ? (
         <form action={onEmail} className={styles.form}>
           <TextField
