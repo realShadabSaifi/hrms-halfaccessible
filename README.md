@@ -50,4 +50,4 @@ Send `Authorization: Bearer $CRON_SECRET`.
 
 ## Design
 
-Visual source of truth: `Gen Z Portal Design/halfAccessible Portal v2.dc.html`.
+Written source of truth: [`docs/DESIGN.md`](docs/DESIGN.md). Visual reference: `Gen Z Portal Design/halfAccessible Portal v2.dc.html`.
