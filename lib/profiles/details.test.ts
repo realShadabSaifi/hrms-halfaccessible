@@ -19,5 +19,7 @@ describe("profile details", () => {
     expect(validateProfileDetails({ ...ok, bio: "x".repeat(281) }, depts)).toBe("bio too long");
     expect(validateProfileDetails({ ...ok, skills: ["x".repeat(41)] }, depts)).toBe("skill too long");
     expect(validateProfileDetails(ok, depts)).toBeNull();
+    expect(validateProfileDetails({ ...ok, department: "Sales" }, ["Sales"])).toBeNull();
+    expect(validateProfileDetails({ ...ok, department: "Design" }, ["Sales"])).toBe("invalid department");
   });
 });
