@@ -3,28 +3,30 @@
 /* z-index: skip 10, mobile-nav 30, toast 40, modal 50 */
 
 :root {
-  --ha-bg: #f6f6fa;
-  --ha-ink: #1c1c2e;
-  --ha-muted: rgba(28, 28, 46, 0.55);
+  --ha-bg: #f7f5fc;
+  --ha-ink: #39325a;
+  --ha-muted: rgba(57, 50, 90, 0.55);
   --ha-surface: #ffffff;
-  --ha-line: rgba(28, 28, 46, 0.08);
-  --ha-accent: #5b2d8e;
-  --ha-accent-hover: #6b3aa3;
-  --ha-accent-text: #5b2d8e;
-  --ha-accent-wash: rgba(91, 45, 142, 0.07);
-  --ha-accent-ring: rgba(91, 45, 142, 0.45);
+  --ha-line: rgba(57, 50, 90, 0.08);
+  --ha-accent: #7463d4;
+  --ha-accent-hover: #8577e0;
+  --ha-accent-text: #7463d4;
+  --ha-soft: #564aa5;
+  --ha-accent-wash: rgba(116, 99, 212, 0.07);
+  --ha-accent-ring: rgba(116, 99, 212, 0.45);
   --ha-teal: #00816f;
   --ha-teal-bar: #009b8d;
-  --ha-ticker-text: #3d1e60;
   --ha-card: var(--ha-surface);
-  --ha-radius-card: 20px;
-  --ha-radius-btn: 14px;
-  --ha-radius-input: 10px;
+  --ha-radius-card: 12px;
+  --ha-radius-btn: 8px;
+  --ha-radius-input: 6px;
+  --ha-radius-auth-btn: 14px;
+  --ha-radius-auth-input: 10px;
   --ha-radius-pill: 999px;
-  --ha-radius-shell: 20px;
+  --ha-radius-shell: 12px;
   --ha-focus: 3px solid var(--ha-accent-ring);
-  --ha-shadow-card: 0 1px 3px rgba(28, 28, 46, 0.05);
-  --ha-border-card: 1px solid rgba(28, 28, 46, 0.09);
+  --ha-shadow-card: 0 1px 3px rgba(57, 50, 90, 0.05);
+  --ha-border-card: 1px solid rgba(57, 50, 90, 0.09);
   --ha-danger: #b91c1c;
   --font-body: var(--font-inter), system-ui, sans-serif;
   --font-display: var(--font-space), system-ui, sans-serif;
@@ -41,10 +43,10 @@
   --color-ha-accent: var(--ha-accent);
   --color-ha-accent-hover: var(--ha-accent-hover);
   --color-ha-accent-text: var(--ha-accent-text);
+  --color-ha-soft: var(--ha-soft);
   --color-ha-accent-wash: var(--ha-accent-wash);
   --color-ha-teal: var(--ha-teal);
   --color-ha-teal-bar: var(--ha-teal-bar);
-  --color-ha-ticker-text: var(--ha-ticker-text);
   --color-ha-danger: var(--ha-danger);
   --radius-ha-lg: var(--ha-radius-card);
   --radius-ha-md: var(--ha-radius-btn);
@@ -93,7 +95,7 @@ a:hover {
 :focus-visible {
   outline: var(--ha-focus);
   outline-offset: 2px;
-  border-radius: 6px;
+  border-radius: 4px;
 }
 
 .skip-link {
