@@ -1,0 +1,13 @@
+---
+description: After finishing implementation, merge to main locally without asking
+alwaysApply: true
+---
+
+# Merge to main
+
+When implementation on a feature branch is complete and tests pass:
+
+- Merge into `main` locally. Do not present merge / PR / keep / discard options.
+- Do not ask whether to merge.
+- Do not push unless the user asks.
+- After a successful merge and passing tests, delete the feature branch.
