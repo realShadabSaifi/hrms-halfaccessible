@@ -24,3 +24,9 @@ export type AppSettings = {
   logo_path: string | null;
   logo_url: string | null;
 };
+
+export type Department = {
+  id: string;
+  name: string;
+  sort: number;
+};
