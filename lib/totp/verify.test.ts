@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { generateTotpSecret, totpCodeAt, verifyTotp } from "./verify";
+import { TOTP_ISSUER, generateTotpSecret, totpCodeAt, totpUri, verifyTotp } from "./verify";
 
 describe("TOTP verify", () => {
   it("accepts the current code", () => {
@@ -19,5 +19,12 @@ describe("TOTP verify", () => {
   it("rejects a wrong code", () => {
     const secret = generateTotpSecret();
     expect(verifyTotp(secret, "000000")).toBe(false);
+  });
+
+  it("labels new authenticator entries as HRMS Portal", () => {
+    const secret = generateTotpSecret();
+    const uri = totpUri("zara@halfaccessible.com", secret);
+    expect(TOTP_ISSUER).toBe("HRMS Portal");
+    expect(uri).toContain("issuer=HRMS%20Portal");
   });
 });

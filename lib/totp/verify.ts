@@ -1,6 +1,6 @@
 import { Secret, TOTP } from "otpauth";
 
-export const TOTP_ISSUER = "halfAccessible";
+export const TOTP_ISSUER = "HRMS Portal";
 
 export function generateTotpSecret(): string {
   return new Secret({ size: 20 }).base32;
