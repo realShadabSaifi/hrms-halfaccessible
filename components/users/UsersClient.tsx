@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useMemo, useState, type KeyboardEvent } from "react";
+import { useCallback, useEffect, useMemo, useState, type KeyboardEvent } from "react";
 import { addHuman, resetAuthenticator, setActive, setManager, setRole, updateHumanDetails } from "@/app/(portal)/users/actions";
+import { HeaderActions } from "@/components/layout/HeaderActions";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
@@ -9,6 +10,7 @@ import { TextArea } from "@/components/ui/TextArea";
 import { TextField } from "@/components/ui/TextField";
 import { Toast } from "@/components/ui/Toast";
 import { DepartmentsCard } from "@/components/users/DepartmentsCard";
+import { X } from "@phosphor-icons/react";
 import { managerToast } from "@/lib/hierarchy/copy";
 import { buildTree, type TreeNode } from "@/lib/hierarchy/tree";
 import { validateManager } from "@/lib/hierarchy/validate";
@@ -285,8 +287,27 @@ export function UsersClient({
   const [draft, setDraft] = useState<EditDraft | null>(null);
   const [dragId, setDragId] = useState<string | null>(null);
   const [overId, setOverId] = useState<string | null>(null);
+  const [adding, setAdding] = useState(false);
   const visible = useMemo(() => rows.filter((r) => isVisiblePerson(r.role)), [rows]);
   const tree = useMemo(() => buildTree(visible), [visible]);
+  const openAdd = useCallback(() => setAdding(true), []);
+  const addButton = useMemo(
+    () => (
+      <Button onClick={openAdd} aria-haspopup="dialog">
+        add human
+      </Button>
+    ),
+    [openAdd],
+  );
+
+  useEffect(() => {
+    if (!adding) return;
+    function onKey(e: globalThis.KeyboardEvent) {
+      if (e.key === "Escape") setAdding(false);
+    }
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [adding]);
 
   useEffect(() => {
     const names = new Set(departments.map((d) => d.name));
@@ -356,7 +377,8 @@ export function UsersClient({
   }
 
   return (
-    <div className="pageEnter grid items-start gap-5 md:grid-cols-[1.3fr_0.7fr]">
+    <div className={`pageEnter grid items-start gap-5 ${canManageDepartments ? "md:grid-cols-[1.3fr_0.7fr]" : ""}`}>
+      <HeaderActions>{addButton}</HeaderActions>
       <div className="rounded-ha-lg border border-ha-line bg-ha-surface p-[22px] shadow-[var(--ha-shadow-card)]">
         <div className="font-[family-name:var(--font-display)] text-base font-bold">the roster</div>
         <p className="mb-5 text-xs text-ha-muted">
@@ -404,57 +426,93 @@ export function UsersClient({
           </div>
         </div>
       </div>
-      <div className="grid gap-5">
-        {canManageDepartments ? (
+      {canManageDepartments ? (
+        <div className="grid gap-5">
           <DepartmentsCard departments={departments} onToast={setToast} />
-        ) : null}
-        <form
-          className="rounded-ha-lg border border-ha-line bg-ha-surface p-6 shadow-[var(--ha-shadow-card)]"
-          action={async (fd) => {
-            const r = await addHuman({
-              email: String(fd.get("email")),
-              fullName: String(fd.get("name")),
-              designation: String(fd.get("title")),
-              department: dept,
-              role,
-            });
-            setToast(r.ok ? "human added. they still need to scan a QR." : r.error ?? "nope");
-          }}
+        </div>
+      ) : null}
+      {adding ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-ha-ink/45"
+          onClick={() => setAdding(false)}
         >
-          <div className="font-[family-name:var(--font-display)] text-[17px] font-bold">add a human</div>
-          <p className="mb-4 text-xs text-ha-muted">
-            they&apos;ll set up an authenticator on first login. no passwords, ever.
-          </p>
-          <TextField name="name" label="full name" placeholder="e.g. Zara Khan" />
-          <div className="h-3" />
-          <TextField name="email" label="email" type="email" required />
-          <div className="h-3" />
-          <TextField name="title" label="designation" placeholder="e.g. Chaos Coordinator" />
-          <div className="mb-2 mt-3 text-[11.5px] font-bold uppercase tracking-wider text-ha-muted">
-            department
+          <div
+            className="max-h-[90vh] w-[440px] max-w-[90vw] overflow-y-auto rounded-[24px] bg-ha-surface p-8 shadow-[var(--ha-shadow-card)]"
+            onClick={(e) => e.stopPropagation()}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="add-human-title"
+          >
+            <div className="mb-4 flex items-start gap-4">
+              <div className="flex-1">
+                <div
+                  id="add-human-title"
+                  className="font-[family-name:var(--font-display)] text-[22px] font-bold"
+                >
+                  add a human
+                </div>
+                <p className="mt-1 text-xs text-ha-muted">
+                  they&apos;ll set up an authenticator on first login. no passwords, ever.
+                </p>
+              </div>
+              <button
+                type="button"
+                aria-label="close add human"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-ha-accent-wash text-ha-ink"
+                onClick={() => setAdding(false)}
+              >
+                <X size={14} />
+              </button>
+            </div>
+            <form
+              action={async (fd) => {
+                const r = await addHuman({
+                  email: String(fd.get("email")),
+                  fullName: String(fd.get("name")),
+                  designation: String(fd.get("title")),
+                  department: dept,
+                  role,
+                });
+                if (!r.ok) {
+                  setToast(r.error ?? "nope");
+                  return;
+                }
+                setAdding(false);
+                setToast("human added. they still need to scan a QR.");
+              }}
+            >
+              <TextField name="name" label="full name" placeholder="e.g. Zara Khan" />
+              <div className="h-3" />
+              <TextField name="email" label="email" type="email" required />
+              <div className="h-3" />
+              <TextField name="title" label="designation" placeholder="e.g. Chaos Coordinator" />
+              <div className="mb-2 mt-3 text-[11.5px] font-bold uppercase tracking-wider text-ha-muted">
+                department
+              </div>
+              <div className="mb-3.5 flex flex-wrap gap-1.5">
+                {departments.map((d) => (
+                  <Chip key={d.id} active={dept === d.name} onClick={() => setDept(d.name)}>
+                    {d.name}
+                  </Chip>
+                ))}
+              </div>
+              <div className="mb-2 text-[11.5px] font-bold uppercase tracking-wider text-ha-muted">
+                portal role
+              </div>
+              <div className="mb-4 flex gap-1.5">
+                {ROLES.map((r) => (
+                  <Chip key={r} active={role === r} onClick={() => setRoleState(r)}>
+                    {r}
+                  </Chip>
+                ))}
+              </div>
+              <Button type="submit" className="w-full">
+                add human
+              </Button>
+            </form>
           </div>
-          <div className="mb-3.5 flex flex-wrap gap-1.5">
-            {departments.map((d) => (
-              <Chip key={d.id} active={dept === d.name} onClick={() => setDept(d.name)}>
-                {d.name}
-              </Chip>
-            ))}
-          </div>
-          <div className="mb-2 text-[11.5px] font-bold uppercase tracking-wider text-ha-muted">
-            portal role
-          </div>
-          <div className="mb-4 flex gap-1.5">
-            {ROLES.map((r) => (
-              <Chip key={r} active={role === r} onClick={() => setRoleState(r)}>
-                {r}
-              </Chip>
-            ))}
-          </div>
-          <Button type="submit" className="w-full">
-            add human
-          </Button>
-        </form>
-      </div>
+        </div>
+      ) : null}
       <Toast message={toast} />
     </div>
   );

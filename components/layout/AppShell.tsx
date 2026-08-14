@@ -3,6 +3,7 @@
 import { usePathname } from "next/navigation";
 import { getNavItems } from "@/lib/layout/navItems";
 import type { AppSettings, Profile } from "@/lib/types";
+import { HeaderActionsProvider } from "./HeaderActions";
 import { PageHeader } from "./PageHeader";
 import { Sidebar } from "./Sidebar";
 import { MobileNav } from "./MobileNav";
@@ -23,13 +24,15 @@ export function AppShell({
   const items = getNavItems(profile.role, unread);
 
   return (
-    <div className={styles.shell}>
-      <Sidebar profile={profile} unread={unread} settings={settings} />
-      <div id="main" className={styles.main}>
-        <PageHeader pathname={pathname} role={profile.role} settings={settings} />
-        {children}
+    <HeaderActionsProvider>
+      <div className={styles.shell}>
+        <Sidebar profile={profile} unread={unread} settings={settings} />
+        <div id="main" className={styles.main}>
+          <PageHeader pathname={pathname} role={profile.role} settings={settings} />
+          {children}
+        </div>
+        <MobileNav items={items} />
       </div>
-      <MobileNav items={items} />
-    </div>
+    </HeaderActionsProvider>
   );
 }

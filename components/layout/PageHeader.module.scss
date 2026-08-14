@@ -2,11 +2,29 @@
 
 .header {
   display: flex;
-  align-items: baseline;
+  align-items: flex-start;
+  justify-content: space-between;
   flex-wrap: wrap;
   gap: 14px;
   margin-bottom: 22px;
   animation: fadeIn 0.4s ease;
+}
+
+.lead {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 14px;
+  min-width: 0;
+}
+
+.actions {
+  flex: none;
+  margin-left: auto;
+}
+
+.actions:empty {
+  display: none;
 }
 
 .mobileBrand {
@@ -31,6 +49,11 @@
   .header {
     flex-direction: column;
     gap: 4px;
+  }
+
+  .actions {
+    margin-left: 0;
+    align-self: flex-end;
   }
 
   .mobileBrand {
