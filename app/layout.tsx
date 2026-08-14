@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Baloo_2, Nunito } from "next/font/google";
+import { getAppSettings } from "@/lib/branding/settings";
 import "./globals.scss";
 
 const baloo = Baloo_2({
@@ -16,10 +17,13 @@ const nunito = Nunito({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "halfAccessible portal",
-  description: "the portal. no corporate BS.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getAppSettings();
+  return {
+    title: `${settings.app_name} portal`,
+    description: "the portal. no corporate BS.",
+  };
+}
 
 export default function RootLayout({
   children,

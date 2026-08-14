@@ -5,10 +5,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { AuthShell } from "@/components/layout/AuthShell";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
+import type { AppSettings } from "@/lib/types";
 import { startLoginAction, verifyLoginAction } from "./actions";
 import styles from "./LoginFlow.module.scss";
 
-export function LoginFlow() {
+export function LoginFlow({ settings }: { settings: AppSettings }) {
   const router = useRouter();
   const params = useSearchParams();
   const [email, setEmail] = useState("");
@@ -63,7 +64,7 @@ export function LoginFlow() {
   }
 
   return (
-    <AuthShell>
+    <AuthShell settings={settings}>
       <h1 className={styles.headline}>the portal. no corporate BS.</h1>
       <p className={styles.sub}>email, then the code from your authenticator.</p>
       {done ? (

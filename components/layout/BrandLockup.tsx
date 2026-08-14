@@ -15,6 +15,7 @@ export function BrandLockup({
     <div className={`${styles.brand} ${styles[size]}`}>
       {logoUrl ? (
         // decorative; the visible name is the accessible label
+        // eslint-disable-next-line @next/next/no-img-element
         <img src={logoUrl} alt="" className={styles.mark} />
       ) : null}
       <div>

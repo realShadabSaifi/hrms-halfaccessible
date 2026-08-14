@@ -3,9 +3,17 @@
 import type { ReactNode } from "react";
 import Image from "next/image";
 import { motion, useReducedMotion } from "motion/react";
+import type { AppSettings } from "@/lib/types";
+import { BrandLockup } from "./BrandLockup";
 import styles from "./AuthShell.module.scss";
 
-export function AuthShell({ children }: { children: ReactNode }) {
+export function AuthShell({
+  children,
+  settings,
+}: {
+  children: ReactNode;
+  settings: AppSettings;
+}) {
   const reduce = useReducedMotion();
 
   return (
@@ -31,7 +39,7 @@ export function AuthShell({ children }: { children: ReactNode }) {
         transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
       >
         <div className={styles.card}>
-          <div className={styles.brand}>halfAccessible</div>
+          <BrandLockup name={settings.app_name} logoUrl={settings.logo_url} size="auth" />
           {children}
         </div>
       </motion.div>

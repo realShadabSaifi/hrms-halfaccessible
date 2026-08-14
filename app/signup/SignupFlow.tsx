@@ -5,10 +5,11 @@ import { useRouter } from "next/navigation";
 import { AuthShell } from "@/components/layout/AuthShell";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
+import type { AppSettings } from "@/lib/types";
 import { confirmSignupAction, startSignupAction } from "./actions";
 import styles from "./SignupFlow.module.scss";
 
-export function SignupFlow() {
+export function SignupFlow({ settings }: { settings: AppSettings }) {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [qr, setQr] = useState<string | null>(null);
@@ -59,7 +60,7 @@ export function SignupFlow() {
   }
 
   return (
-    <AuthShell>
+    <AuthShell settings={settings}>
       <h1 className={styles.headline}>set up your authenticator</h1>
       <p className={styles.sub}>no passwords. no magic links. one QR, thirty seconds.</p>
       {done ? (

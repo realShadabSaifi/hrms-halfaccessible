@@ -19,7 +19,8 @@ import { signOut } from "@/app/login/signOut";
 import { Avatar } from "@/components/ui/Avatar";
 import { initials } from "@/lib/names";
 import { getNavItems } from "@/lib/layout/navItems";
-import type { Profile } from "@/lib/types";
+import type { AppSettings, Profile } from "@/lib/types";
+import { BrandLockup } from "./BrandLockup";
 import styles from "./Sidebar.module.scss";
 
 const icons: Record<string, React.ComponentType<{ size?: number }>> = {
@@ -38,9 +39,11 @@ const icons: Record<string, React.ComponentType<{ size?: number }>> = {
 export function Sidebar({
   profile,
   unread,
+  settings,
 }: {
   profile: Profile;
   unread: number;
+  settings: AppSettings;
 }) {
   const pathname = usePathname();
   const reduce = useReducedMotion();
@@ -49,8 +52,12 @@ export function Sidebar({
   return (
     <aside className={styles.sidebar}>
       <div className={styles.brand}>
-        <div className={styles.logo}>halfAccessible</div>
-        <div className={styles.tag}>the portal ✨ no corporate BS</div>
+        <BrandLockup
+          name={settings.app_name}
+          logoUrl={settings.logo_url}
+          tagline="the portal ✨ no corporate BS"
+          size="nav"
+        />
       </div>
       {items.map((item) => {
         const Icon = icons[item.id] ?? House;
