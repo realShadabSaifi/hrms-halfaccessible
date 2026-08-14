@@ -91,7 +91,7 @@ export function Sidebar({
           {collapsed ? <CaretRight size={16} weight="bold" /> : <CaretLeft size={16} weight="bold" />}
         </button>
       </div>
-      <nav id="portal-nav" aria-label="portal">
+      <nav id="portal-nav" className={styles.nav} aria-label="portal">
         {items.map((item) => {
           const Icon = icons[item.id] ?? House;
           const active = pathname === item.href;
