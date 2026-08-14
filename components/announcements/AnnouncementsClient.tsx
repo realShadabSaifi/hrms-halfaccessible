@@ -130,7 +130,7 @@ export function AnnouncementsClient({
             </div>
           </article>
         ))}
-        <div className="rounded-ha-lg border border-dashed border-[rgba(28,28,46,.18)] bg-[rgba(28,28,46,.03)] px-6 py-[22px]">
+        <div className="rounded-ha-lg border border-dashed border-[rgba(57,50,90,.18)] bg-[rgba(57,50,90,.03)] px-6 py-[22px]">
           <div className="mb-2.5 font-[family-name:var(--font-display)] text-[15px] font-bold">
             the legal stuff
           </div>

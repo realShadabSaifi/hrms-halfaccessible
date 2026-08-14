@@ -82,7 +82,7 @@ export function TeamClient({
           onClick={() => setOpen(null)}
         >
           <div
-            className="w-[440px] max-w-[90vw] rounded-ha-lg bg-ha-surface p-8 shadow-[var(--ha-shadow-card)]"
+            className="w-[440px] max-w-[90vw] rounded-[24px] bg-ha-surface p-8 shadow-[var(--ha-shadow-card)]"
             onClick={(e) => e.stopPropagation()}
             role="dialog"
             aria-modal="true"
