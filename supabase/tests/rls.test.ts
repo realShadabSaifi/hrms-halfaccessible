@@ -3,6 +3,7 @@ import {
   canDecideLeave,
   canDeleteAnonMessage,
   canInsertAnnouncement,
+  canManageDepartments,
   canManageSettings,
   canManageUsers,
   canSelectTotpCredentials,
@@ -49,5 +50,12 @@ describe("RLS policy contract", () => {
     expect(canManageSettings("lead")).toBe(false);
     expect(canManageSettings("admin")).toBe(false);
     expect(canManageSettings("super_admin")).toBe(true);
+  });
+
+  it("only super_admin manages departments", () => {
+    expect(canManageDepartments("employee")).toBe(false);
+    expect(canManageDepartments("lead")).toBe(false);
+    expect(canManageDepartments("admin")).toBe(false);
+    expect(canManageDepartments("super_admin")).toBe(true);
   });
 });

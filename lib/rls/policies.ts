@@ -39,3 +39,7 @@ export function canManageUsers(role: ProfileRole): boolean {
 export function canManageSettings(role: ProfileRole): boolean {
   return isSuperAdmin(role);
 }
+
+export function canManageDepartments(role: ProfileRole): boolean {
+  return isSuperAdmin(role);
+}
