@@ -8,11 +8,16 @@ describe("getNavItems", () => {
     expect(items.some((i) => i.id === "users")).toBe(false);
   });
 
-  it("gives admins 9 items including user management", () => {
+  it("gives admins 10 items including user management and portal config", () => {
     const items = getNavItems("admin", 2);
-    expect(items).toHaveLength(9);
+    expect(items).toHaveLength(10);
     expect(items.some((i) => i.id === "users")).toBe(true);
+    expect(items.some((i) => i.id === "settings")).toBe(true);
     expect(items.find((i) => i.id === "ann")?.badge).toBe(2);
+  });
+
+  it("hides portal config from employees", () => {
+    expect(getNavItems("employee").some((i) => i.id === "settings")).toBe(false);
   });
 
   it("uses v2 canvas titles", () => {

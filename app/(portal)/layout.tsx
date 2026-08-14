@@ -27,7 +27,7 @@ export default async function PortalLayout({
 
   const h = await headers();
   const path = h.get("x-pathname");
-  if (path === "/users" && profile.role !== "admin") redirect("/");
+  if ((path === "/users" || path === "/settings") && profile.role !== "admin") redirect("/");
 
   return (
     <AppShell profile={profile} unread={unread}>

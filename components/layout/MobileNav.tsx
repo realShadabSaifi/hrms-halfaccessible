@@ -7,6 +7,7 @@ import {
   Crown,
   Detective,
   DotsThree,
+  GearSix,
   Hamburger,
   House,
   Leaf,
@@ -30,6 +31,7 @@ const icons: Record<string, React.ComponentType<{ size?: number }>> = {
   culture: Sparkle,
   ann: Megaphone,
   users: ShieldCheck,
+  settings: GearSix,
   cxo: Crown,
 };
 

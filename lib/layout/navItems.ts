@@ -69,8 +69,16 @@ const USERS: NavItem = {
   sub: "admin only. handle with care 🧤",
 };
 
+const SETTINGS: NavItem = {
+  id: "settings",
+  href: "/settings",
+  label: "portal config",
+  title: "portal config",
+  sub: "name, logo. the face of the portal.",
+};
+
 export function getNavItems(role: ProfileRole, unreadAnnouncements = 0): (NavItem & { badge: number | null })[] {
-  const items = role === "admin" ? [...BASE, USERS] : BASE;
+  const items = role === "admin" ? [...BASE, USERS, SETTINGS] : BASE;
   return items.map((item) => ({
     ...item,
     badge: item.id === "ann" && unreadAnnouncements > 0 ? unreadAnnouncements : null,
