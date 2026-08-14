@@ -8,5 +8,6 @@ export function validateInvite(input: {
 }): string | null {
   if (!input.fullName.trim()) return "name required";
   if (!isValidEmail(input.email)) return "invalid_email";
+  if (input.role === "super_admin") return "invalid role";
   return null;
 }

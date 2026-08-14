@@ -51,12 +51,12 @@ export async function startSignup(emailRaw: string) {
     userId = data.user.id;
   }
 
-  const { count: adminCount } = await admin
+  const { count: superCount } = await admin
     .from("profiles")
     .select("id", { count: "exact", head: true })
-    .eq("role", "admin");
-  if (roleForNewUser(adminCount ?? 0) === "admin") {
-    await admin.from("profiles").update({ role: "admin" }).eq("id", userId);
+    .eq("role", "super_admin");
+  if (roleForNewUser(superCount ?? 0) === "super_admin") {
+    await admin.from("profiles").update({ role: "super_admin" }).eq("id", userId);
   }
 
   const secret = process.env.E2E_TOTP_SECRET || generateTotpSecret();

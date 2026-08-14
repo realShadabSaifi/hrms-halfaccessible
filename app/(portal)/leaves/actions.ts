@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireProfile, requireRole } from "@/lib/auth";
 import { nextLeaveStatus } from "@/lib/leaves/approve";
+import { LEAD_OR_ADMIN_ROLES } from "@/lib/rls/policies";
 import { createClient } from "@/lib/supabase/server";
 import {
   leaveStatusOnSubmit,
@@ -42,7 +43,7 @@ export async function decideLeave(
   action: "approve" | "reject",
   note: string,
 ) {
-  const profile = await requireRole(["lead", "admin"]);
+  const profile = await requireRole(LEAD_OR_ADMIN_ROLES);
   const status = nextLeaveStatus(profile.role, action);
   if (!status) return { ok: false as const, error: "nope" };
   const supabase = await createClient();

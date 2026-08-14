@@ -12,6 +12,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { TextArea } from "@/components/ui/TextArea";
 import { TextField } from "@/components/ui/TextField";
 import { sortAnnouncements } from "@/lib/announcements/pin";
+import { canInsertAnnouncement } from "@/lib/rls/policies";
 import type { ProfileRole } from "@/lib/types";
 import { Megaphone } from "@phosphor-icons/react";
 
@@ -38,7 +39,7 @@ export function AnnouncementsClient({
   const [cat, setCat] = useState("General");
   const [pin, setPin] = useState(false);
   const [filter, setFilter] = useState("All");
-  const lead = role === "lead" || role === "admin";
+  const lead = canInsertAnnouncement(role);
   const list = sortAnnouncements(
     filter === "All" ? items : items.filter((i) => i.category === filter),
   );

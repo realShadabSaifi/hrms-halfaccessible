@@ -15,7 +15,7 @@ function revalidateBrand() {
 }
 
 export async function updateAppName(formData: FormData) {
-  const me = await requireRole(["admin"]);
+  const me = await requireRole(["super_admin"]);
   const err = validateAppName(String(formData.get("app_name") ?? ""));
   if (err) return { ok: false as const, error: err };
   const admin = createAdminClient();
@@ -33,7 +33,7 @@ export async function updateAppName(formData: FormData) {
 }
 
 export async function uploadLogo(formData: FormData) {
-  const me = await requireRole(["admin"]);
+  const me = await requireRole(["super_admin"]);
   const file = formData.get("logo");
   if (!(file instanceof File)) return { ok: false as const, error: "file required" };
   const err = validateLogoFile({ type: file.type, size: file.size });
@@ -73,7 +73,7 @@ export async function uploadLogo(formData: FormData) {
 }
 
 export async function removeLogo() {
-  const me = await requireRole(["admin"]);
+  const me = await requireRole(["super_admin"]);
   const admin = createAdminClient();
   const { data: current } = await admin
     .from("app_settings")

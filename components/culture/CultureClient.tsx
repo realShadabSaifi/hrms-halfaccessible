@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/Button";
 import { Chip } from "@/components/ui/Chip";
 import { TextField } from "@/components/ui/TextField";
 import { PARTY_VIBES } from "@/lib/culture/party";
+import { canInsertAnnouncement, isAdminRole } from "@/lib/rls/policies";
 import type { ProfileRole } from "@/lib/types";
 
 export function CultureClient({
@@ -35,7 +36,7 @@ export function CultureClient({
   } | null;
 }) {
   const [vibe, setVibe] = useState(PARTY_VIBES[1]);
-  const lead = role === "lead" || role === "admin";
+  const lead = canInsertAnnouncement(role);
   const total = poll?.options.reduce((a, o) => a + o.votes, 0) || 1;
 
   return (
@@ -133,7 +134,7 @@ export function CultureClient({
             </span>
           </button>
         ))}
-        {role === "admin" && poll?.open ? (
+        {isAdminRole(role) && poll?.open ? (
           <Button variant="ghost" className="mt-3.5 w-full" onClick={() => closeTrip(poll.id)}>
             close poll & announce winner (admin)
           </Button>

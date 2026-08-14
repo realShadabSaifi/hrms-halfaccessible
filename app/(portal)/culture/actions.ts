@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireProfile, requireRole } from "@/lib/auth";
 import { validateParty } from "@/lib/culture/party";
+import { ADMIN_ROLES, LEAD_OR_ADMIN_ROLES } from "@/lib/rls/policies";
 import { createClient } from "@/lib/supabase/server";
 
 export async function submitParty(occasion: string, vibe: string, date: string) {
@@ -22,7 +23,7 @@ export async function submitParty(occasion: string, vibe: string, date: string) 
 }
 
 export async function approveParty(id: string) {
-  const profile = await requireRole(["lead", "admin"]);
+  const profile = await requireRole(LEAD_OR_ADMIN_ROLES);
   const supabase = await createClient();
   const { data: req } = await supabase.from("party_requests").select("*").eq("id", id).single();
   if (!req) return { ok: false as const, error: "missing" };
@@ -51,7 +52,7 @@ export async function voteTrip(optionId: string) {
 }
 
 export async function closeTrip(pollId: string) {
-  const profile = await requireRole(["admin"]);
+  const profile = await requireRole(ADMIN_ROLES);
   const supabase = await createClient();
   const { data: options } = await supabase.from("trip_options").select("id, name").eq("poll_id", pollId);
   const { data: votes } = await supabase.from("trip_votes").select("option_id");

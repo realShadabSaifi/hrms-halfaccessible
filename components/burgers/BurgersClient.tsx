@@ -9,6 +9,7 @@ import { TextArea } from "@/components/ui/TextArea";
 import { TextField } from "@/components/ui/TextField";
 import { Toast } from "@/components/ui/Toast";
 import { votePercent } from "@/lib/burgers/resolve";
+import { isAdminRole } from "@/lib/rls/policies";
 import type { ProfileRole } from "@/lib/types";
 import { Hamburger } from "@phosphor-icons/react";
 import { BurgerRain } from "./BurgerRain";
@@ -129,7 +130,7 @@ export function BurgersClient({
                     you voted {h.myVote === "yes" ? "yes" : "nah"}
                   </div>
                 ) : null}
-                {role === "admin" && h.status === "voting" ? (
+                {isAdminRole(role) && h.status === "voting" ? (
                   <div className="mt-3 flex gap-2 border-t border-dashed border-ha-line pt-2.5">
                     <Button variant="success" onClick={() => overrideHoliday(h.id, "approved")}>
                       force approve

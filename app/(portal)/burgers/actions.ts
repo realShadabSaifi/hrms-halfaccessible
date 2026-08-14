@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireProfile, requireRole } from "@/lib/auth";
+import { ADMIN_ROLES } from "@/lib/rls/policies";
 import { createClient } from "@/lib/supabase/server";
 
 export async function proposeHoliday(date: string, reason: string) {
@@ -41,7 +42,7 @@ export async function voteHoliday(id: string, choice: "yes" | "no") {
 }
 
 export async function overrideHoliday(id: string, status: "approved" | "rejected") {
-  await requireRole(["admin"]);
+  await requireRole(ADMIN_ROLES);
   const supabase = await createClient();
   const { error } = await supabase
     .from("burger_holidays")

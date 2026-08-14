@@ -3,7 +3,7 @@ import { requireRole } from "@/lib/auth";
 import { getAppSettings } from "@/lib/branding/settings";
 
 export default async function SettingsPage() {
-  await requireRole(["admin"]);
+  await requireRole(["super_admin"]);
   const settings = await getAppSettings();
   return <SettingsClient settings={settings} />;
 }

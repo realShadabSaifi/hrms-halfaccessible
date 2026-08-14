@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireProfile, requireRole } from "@/lib/auth";
+import { LEAD_OR_ADMIN_ROLES } from "@/lib/rls/policies";
 import { createClient } from "@/lib/supabase/server";
 
 export async function postAnnouncement(input: {
@@ -10,7 +11,7 @@ export async function postAnnouncement(input: {
   category: string;
   pinned: boolean;
 }) {
-  const profile = await requireRole(["lead", "admin"]);
+  const profile = await requireRole(LEAD_OR_ADMIN_ROLES);
   if (!input.title.trim() || !input.body.trim()) return { ok: false as const, error: "title and body please" };
   const supabase = await createClient();
   const { error } = await supabase.from("announcements").insert({
