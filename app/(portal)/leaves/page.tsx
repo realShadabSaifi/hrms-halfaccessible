@@ -10,11 +10,14 @@ import type { LeaveRow } from "./actions";
 export default async function LeavesPage() {
   const profile = await requireProfile();
   const supabase = await createClient();
-  const { data: mine } = await supabase
-    .from("leave_requests")
-    .select("*")
-    .eq("requester_id", profile.id)
-    .order("created_at", { ascending: false });
+  const [{ data: mine }, { data: holidayRows }] = await Promise.all([
+    supabase
+      .from("leave_requests")
+      .select("*")
+      .eq("requester_id", profile.id)
+      .order("created_at", { ascending: false }),
+    supabase.from("company_holidays").select("holiday_on, title").order("holiday_on"),
+  ]);
 
   let team: LeaveRow[] = [];
   let names: Record<string, { full_name: string; avatar_color: string }> = {};
@@ -40,7 +43,10 @@ export default async function LeavesPage() {
     <div className="pageEnter">
       <StepZeroBanner />
       <div className="grid items-start gap-5 md:grid-cols-[1.1fr_0.9fr]">
-        <LeaveForm />
+        <LeaveForm
+          holidayDates={(holidayRows ?? []).map((h) => h.holiday_on)}
+          holidayLabels={(holidayRows ?? []).map((h) => `${h.holiday_on} · ${h.title}`)}
+        />
         <div className="flex flex-col gap-5">
           <LeaveHistory rows={(mine ?? []) as LeaveRow[]} />
           {canViewTeamLeaves(profile.role) ? <TeamRequests rows={team} names={names} /> : null}

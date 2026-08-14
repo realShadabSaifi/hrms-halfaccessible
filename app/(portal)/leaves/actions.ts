@@ -14,9 +14,11 @@ import type { LeaveType } from "@/lib/types";
 
 export async function submitLeave(input: LeaveInput) {
   const profile = await requireProfile();
-  const error = validateLeave(input);
-  if (error) return { ok: false as const, error };
   const supabase = await createClient();
+  const { data: holidayRows } = await supabase.from("company_holidays").select("holiday_on");
+  const holidayDates = (holidayRows ?? []).map((r) => r.holiday_on);
+  const error = validateLeave(input, holidayDates);
+  if (error) return { ok: false as const, error };
   const status = leaveStatusOnSubmit(input);
   const { error: dbError } = await supabase.from("leave_requests").insert({
     requester_id: profile.id,

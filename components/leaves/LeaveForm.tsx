@@ -8,11 +8,17 @@ import { TextField } from "@/components/ui/TextField";
 import { Toggle } from "@/components/ui/Toggle";
 import { Toast } from "@/components/ui/Toast";
 import { submitLeave } from "@/app/(portal)/leaves/actions";
-import { LEAVE_TYPES } from "@/lib/validators/leave";
+import { LEAVE_TYPES, validateLeave } from "@/lib/validators/leave";
 import type { LeaveType } from "@/lib/types";
 import styles from "./LeaveForm.module.scss";
 
-export function LeaveForm() {
+export function LeaveForm({
+  holidayDates,
+  holidayLabels,
+}: {
+  holidayDates: string[];
+  holidayLabels: string[];
+}) {
   const [type, setType] = useState<LeaveType>("personal");
   const [emergency, setEmergency] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
@@ -20,14 +26,20 @@ export function LeaveForm() {
   const note = LEAVE_TYPES.find((t) => t.type === type)?.note ?? "";
 
   async function onSubmit(formData: FormData) {
-    const result = await submitLeave({
+    const input = {
       type,
       startsOn: String(formData.get("from") ?? ""),
       endsOn: String(formData.get("to") ?? ""),
       reason: String(formData.get("reason") ?? ""),
       handoff: String(formData.get("handoff") ?? ""),
       emergency,
-    });
+    };
+    const localError = validateLeave(input, holidayDates);
+    if (localError) {
+      setToast(localError);
+      return;
+    }
+    const result = await submitLeave(input);
     setToast(result.ok ? "leave sent. go live your life." : result.error);
   }
 
@@ -49,6 +61,11 @@ export function LeaveForm() {
         <TextField label="from" name="from" type="date" required />
         <TextField label="to" name="to" type="date" required />
       </div>
+      {holidayLabels.length ? (
+        <p className="mt-2 text-[11.5px] text-ha-muted">
+          holidays: {holidayLabels.join(" · ")}
+        </p>
+      ) : null}
       <TextField
         label={
           <>
