@@ -2,6 +2,7 @@ import type { ProfileRole } from "@/lib/types";
 
 export const ADMIN_ROLES: ProfileRole[] = ["admin"];
 export const LEAD_OR_ADMIN_ROLES: ProfileRole[] = ["lead", "admin"];
+export const USER_MANAGER_ROLES: ProfileRole[] = ["admin", "super_admin"];
 
 export function isAdminRole(role: ProfileRole): boolean {
   return role === "admin";
@@ -32,7 +33,7 @@ export function canInsertAnnouncement(role: ProfileRole): boolean {
 }
 
 export function canManageUsers(role: ProfileRole): boolean {
-  return isAdminRole(role);
+  return isAdminRole(role) || isSuperAdmin(role);
 }
 
 export function canManageSettings(role: ProfileRole): boolean {

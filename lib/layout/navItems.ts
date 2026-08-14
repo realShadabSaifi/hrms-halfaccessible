@@ -79,7 +79,7 @@ const SETTINGS: NavItem = {
 
 export function getNavItems(role: ProfileRole, unreadAnnouncements = 0): (NavItem & { badge: number | null })[] {
   const items =
-    role === "super_admin" ? [SETTINGS] : role === "admin" ? [...BASE, USERS] : BASE;
+    role === "super_admin" ? [SETTINGS, USERS] : role === "admin" ? [...BASE, USERS] : BASE;
   return items.map((item) => ({
     ...item,
     badge: item.id === "ann" && unreadAnnouncements > 0 ? unreadAnnouncements : null,

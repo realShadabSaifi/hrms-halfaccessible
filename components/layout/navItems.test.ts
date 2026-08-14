@@ -16,11 +16,9 @@ describe("getNavItems", () => {
     expect(items.find((i) => i.id === "ann")?.badge).toBe(2);
   });
 
-  it("gives super_admin only portal config", () => {
+  it("gives super_admin portal config and user management", () => {
     const items = getNavItems("super_admin", 2);
-    expect(items).toHaveLength(1);
-    expect(items[0]?.id).toBe("settings");
-    expect(items.some((i) => i.id === "users")).toBe(false);
+    expect(items.map((i) => i.id)).toEqual(["settings", "users"]);
   });
 
   it("hides portal config from employees", () => {

@@ -4,7 +4,7 @@ import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth";
 import { validateProfileDetails, type ProfileDetails } from "@/lib/profiles/details";
-import { ADMIN_ROLES } from "@/lib/rls/policies";
+import { USER_MANAGER_ROLES } from "@/lib/rls/policies";
 import { createAdminClient } from "@/lib/supabase/admin";
 import type { ProfileRole } from "@/lib/types";
 import { validateInvite } from "@/lib/users/invite";
@@ -16,7 +16,7 @@ export async function addHuman(input: {
   department: string;
   role: ProfileRole;
 }) {
-  await requireRole(ADMIN_ROLES);
+  await requireRole(USER_MANAGER_ROLES);
   const err = validateInvite(input);
   if (err) return { ok: false as const, error: err };
   const admin = createAdminClient();
@@ -45,7 +45,7 @@ export async function addHuman(input: {
 }
 
 export async function updateHumanDetails(userId: string, details: ProfileDetails) {
-  await requireRole(ADMIN_ROLES);
+  await requireRole(USER_MANAGER_ROLES);
   const err = validateProfileDetails(details);
   if (err) return { ok: false as const, error: err };
   const admin = createAdminClient();
@@ -69,7 +69,7 @@ export async function updateHumanDetails(userId: string, details: ProfileDetails
 }
 
 export async function setRole(userId: string, role: ProfileRole) {
-  await requireRole(ADMIN_ROLES);
+  await requireRole(USER_MANAGER_ROLES);
   if (role === "super_admin") return { ok: false as const, error: "invalid role" };
   const admin = createAdminClient();
   const { data: target } = await admin.from("profiles").select("role").eq("id", userId).maybeSingle();
@@ -80,7 +80,7 @@ export async function setRole(userId: string, role: ProfileRole) {
 }
 
 export async function setActive(userId: string, active: boolean) {
-  await requireRole(ADMIN_ROLES);
+  await requireRole(USER_MANAGER_ROLES);
   const admin = createAdminClient();
   await admin.from("profiles").update({ active }).eq("id", userId);
   await admin.auth.admin.updateUserById(userId, {
@@ -91,7 +91,7 @@ export async function setActive(userId: string, active: boolean) {
 }
 
 export async function resetAuthenticator(userId: string) {
-  await requireRole(ADMIN_ROLES);
+  await requireRole(USER_MANAGER_ROLES);
   const admin = createAdminClient();
   await admin.from("totp_credentials").delete().eq("user_id", userId);
   await admin.from("profiles").update({ totp_verified_at: null }).eq("id", userId);

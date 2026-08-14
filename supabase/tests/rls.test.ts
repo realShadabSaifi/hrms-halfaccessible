@@ -38,10 +38,10 @@ describe("RLS policy contract", () => {
     expect(canInsertAnnouncement("lead")).toBe(true);
   });
 
-  it("only admins manage users", () => {
+  it("admins and super_admins manage users", () => {
     expect(canManageUsers("lead")).toBe(false);
     expect(canManageUsers("admin")).toBe(true);
-    expect(canManageUsers("super_admin")).toBe(false);
+    expect(canManageUsers("super_admin")).toBe(true);
   });
 
   it("only super_admin changes portal settings", () => {

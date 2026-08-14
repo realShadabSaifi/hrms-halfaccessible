@@ -2,11 +2,11 @@ import { describe, expect, it } from "vitest";
 import { afterAuthPath, canVisitPath } from "./access";
 
 describe("portal access", () => {
-  it("sends super_admin to settings and nowhere else", () => {
+  it("sends super_admin to settings and allows user management", () => {
     expect(afterAuthPath("super_admin")).toBe("/settings");
     expect(canVisitPath("super_admin", "/settings")).toBe(true);
+    expect(canVisitPath("super_admin", "/users")).toBe(true);
     expect(canVisitPath("super_admin", "/")).toBe(false);
-    expect(canVisitPath("super_admin", "/users")).toBe(false);
     expect(canVisitPath("super_admin", "/anon")).toBe(false);
   });
 
