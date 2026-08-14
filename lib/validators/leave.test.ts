@@ -24,4 +24,12 @@ describe("leave validation", () => {
     expect(leaveStatusOnSubmit({ ...base, emergency: true })).toBe("approved");
     expect(leaveStatusOnSubmit(base)).toBe("pending");
   });
+
+  it("rejects a range that includes a company holiday", () => {
+    expect(validateLeave(base, ["2026-08-20"])).toBe("that's already a holiday");
+    expect(validateLeave({ ...base, emergency: true }, ["2026-08-21"])).toBe(
+      "that's already a holiday",
+    );
+    expect(validateLeave(base, ["2026-08-22"])).toBeNull();
+  });
 });

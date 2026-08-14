@@ -1,3 +1,4 @@
+import { overlappingHolidays } from "@/lib/holidays/dates";
 import type { LeaveType } from "@/lib/types";
 
 export type LeaveInput = {
@@ -13,10 +14,13 @@ export function isEmergencyLeave(input: Pick<LeaveInput, "type" | "emergency">):
   return input.emergency || input.type === "emergency";
 }
 
-export function validateLeave(input: LeaveInput): string | null {
+export function validateLeave(input: LeaveInput, holidayDates: string[] = []): string | null {
   if (!input.startsOn || !input.endsOn) return "date range required";
   if (input.endsOn < input.startsOn) return "end before start";
   if (!isEmergencyLeave(input) && !input.handoff?.trim()) return "handoff required";
+  if (overlappingHolidays(input.startsOn, input.endsOn, holidayDates).length) {
+    return "that's already a holiday";
+  }
   return null;
 }
 
