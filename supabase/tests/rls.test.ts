@@ -14,6 +14,7 @@ describe("RLS policy contract", () => {
     expect(canDecideLeave("employee")).toBe(false);
     expect(canDecideLeave("lead")).toBe(true);
     expect(canDecideLeave("admin")).toBe(true);
+    expect(canDecideLeave("super_admin")).toBe(false);
   });
 
   it("only leads and admins see team leave queues", () => {
@@ -40,11 +41,13 @@ describe("RLS policy contract", () => {
   it("only admins manage users", () => {
     expect(canManageUsers("lead")).toBe(false);
     expect(canManageUsers("admin")).toBe(true);
+    expect(canManageUsers("super_admin")).toBe(false);
   });
 
-  it("only admins change portal settings", () => {
+  it("only super_admin changes portal settings", () => {
     expect(canManageSettings("employee")).toBe(false);
     expect(canManageSettings("lead")).toBe(false);
-    expect(canManageSettings("admin")).toBe(true);
+    expect(canManageSettings("admin")).toBe(false);
+    expect(canManageSettings("super_admin")).toBe(true);
   });
 });
