@@ -35,6 +35,7 @@ const icons: Record<string, React.ComponentType<{ size?: number }>> = {
   users: ShieldCheck,
   settings: GearSix,
   cxo: Crown,
+  "cxo-windows": Crown,
 };
 
 type Item = ReturnType<typeof getNavItems>[number];
