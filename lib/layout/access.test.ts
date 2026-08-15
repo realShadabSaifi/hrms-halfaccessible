@@ -23,4 +23,13 @@ describe("portal access", () => {
     expect(canVisitPath("lead", "/holidays")).toBe(true);
     expect(canVisitPath("admin", "/holidays")).toBe(true);
   });
+
+  it("lets only admin visit CXO manage", () => {
+    expect(canVisitPath("admin", "/cxo/manage")).toBe(true);
+    expect(canVisitPath("admin", "/cxo")).toBe(true);
+    expect(canVisitPath("employee", "/cxo/manage")).toBe(false);
+    expect(canVisitPath("lead", "/cxo/manage")).toBe(false);
+    expect(canVisitPath("super_admin", "/cxo/manage")).toBe(false);
+    expect(canVisitPath("employee", "/cxo")).toBe(true);
+  });
 });

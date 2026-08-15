@@ -10,5 +10,6 @@ export function canVisitPath(role: ProfileRole, path: string): boolean {
   }
   if (path === "/settings") return false;
   if (path === "/users") return role === "admin";
+  if (path === "/cxo/manage") return role === "admin";
   return true;
 }
