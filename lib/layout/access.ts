@@ -9,7 +9,7 @@ export function canVisitPath(role: ProfileRole, path: string): boolean {
     return path === "/settings" || path === "/users" || path === "/holidays";
   }
   if (path === "/settings") return false;
-  if (path === "/users") return role === "admin";
-  if (path === "/cxo/manage") return role === "admin";
+  if (path === "/users") return role === "admin" || role === "cxo";
+  if (path === "/cxo/manage") return role === "admin" || role === "cxo";
   return true;
 }

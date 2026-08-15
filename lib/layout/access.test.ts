@@ -32,4 +32,13 @@ describe("portal access", () => {
     expect(canVisitPath("super_admin", "/cxo/manage")).toBe(false);
     expect(canVisitPath("employee", "/cxo")).toBe(true);
   });
+
+  it("lets cxo visit the same paths as admin", () => {
+    expect(afterAuthPath("cxo")).toBe("/");
+    expect(canVisitPath("cxo", "/users")).toBe(true);
+    expect(canVisitPath("cxo", "/cxo/manage")).toBe(true);
+    expect(canVisitPath("cxo", "/cxo")).toBe(true);
+    expect(canVisitPath("cxo", "/settings")).toBe(false);
+    expect(canVisitPath("cxo", "/")).toBe(true);
+  });
 });
