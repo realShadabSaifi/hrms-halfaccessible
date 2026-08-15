@@ -33,6 +33,14 @@ describe("getNavItems", () => {
     expect(getNavItems("employee").some((i) => i.id === "settings")).toBe(false);
   });
 
+  it("gives cxo the same nav as admin", () => {
+    const admin = getNavItems("admin", 2).map((i) => i.id);
+    const cxo = getNavItems("cxo", 2).map((i) => i.id);
+    expect(cxo).toHaveLength(11);
+    expect(cxo).toEqual(admin);
+    expect(cxo.indexOf("cxo-windows")).toBe(cxo.indexOf("users") + 1);
+  });
+
   it("uses v2 canvas titles", () => {
     const items = getNavItems("admin");
     expect(items.find((i) => i.id === "burgers")?.title).toBe("burger holidays 🍔");
