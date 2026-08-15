@@ -7,5 +7,6 @@ describe("isVisiblePerson", () => {
     expect(isVisiblePerson("admin")).toBe(true);
     expect(isVisiblePerson("lead")).toBe(true);
     expect(isVisiblePerson("employee")).toBe(true);
+    expect(isVisiblePerson("cxo")).toBe(true);
   });
 });

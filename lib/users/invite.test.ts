@@ -20,6 +20,13 @@ describe("admin invite", () => {
       validateInvite({
         fullName: "Zara Khan",
         email: "zara@halfaccessible.com",
+        role: "cxo",
+      }),
+    ).toBeNull();
+    expect(
+      validateInvite({
+        fullName: "Zara Khan",
+        email: "zara@halfaccessible.com",
         role: "super_admin",
       }),
     ).toBe("invalid role");
