@@ -1,11 +1,11 @@
 import type { ProfileRole } from "@/lib/types";
 
-export const ADMIN_ROLES: ProfileRole[] = ["admin"];
-export const LEAD_OR_ADMIN_ROLES: ProfileRole[] = ["lead", "admin"];
-export const USER_MANAGER_ROLES: ProfileRole[] = ["admin", "super_admin"];
+export const ADMIN_ROLES: ProfileRole[] = ["admin", "cxo"];
+export const LEAD_OR_ADMIN_ROLES: ProfileRole[] = ["lead", "admin", "cxo"];
+export const USER_MANAGER_ROLES: ProfileRole[] = ["admin", "super_admin", "cxo"];
 
 export function isAdminRole(role: ProfileRole): boolean {
-  return role === "admin";
+  return role === "admin" || role === "cxo";
 }
 
 export function isSuperAdmin(role: ProfileRole): boolean {
