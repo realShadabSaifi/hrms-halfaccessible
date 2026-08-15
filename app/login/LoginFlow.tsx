@@ -15,7 +15,6 @@ export function LoginFlow({ settings }: { settings: AppSettings }) {
   const router = useRouter();
   const params = useSearchParams();
   const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
   const [step, setStep] = useState<"email" | "code">("email");
   const [done, setDone] = useState(false);
   const [error, setError] = useState<string | null>(
@@ -77,7 +76,7 @@ export function LoginFlow({ settings }: { settings: AppSettings }) {
           </Link>
         </div>
       ) : step === "email" ? (
-        <form action={onEmail} className={styles.form}>
+        <form key="email" action={onEmail} className={styles.form}>
           <TextField
             className={styles.authField}
             label="email"
@@ -93,7 +92,7 @@ export function LoginFlow({ settings }: { settings: AppSettings }) {
           </Button>
         </form>
       ) : (
-        <form action={onCode} className={styles.form}>
+        <form key="code" action={onCode} className={styles.form}>
           <TextField
             className={styles.authField}
             tone="otp"
@@ -103,8 +102,6 @@ export function LoginFlow({ settings }: { settings: AppSettings }) {
             autoComplete="one-time-code"
             pattern="\d{6}"
             maxLength={6}
-            value={code}
-            onChange={(e) => setCode(e.target.value)}
             required
           />
           {error ? <p className={styles.error}>{error}</p> : null}
