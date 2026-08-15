@@ -3,6 +3,7 @@ import {
   canDecideLeave,
   canDeleteAnonMessage,
   canInsertAnnouncement,
+  canManageCxoWindows,
   canManageDepartments,
   canManageHolidays,
   canManageSettings,
@@ -65,5 +66,12 @@ describe("RLS policy contract", () => {
     expect(canManageHolidays("lead")).toBe(false);
     expect(canManageHolidays("admin")).toBe(true);
     expect(canManageHolidays("super_admin")).toBe(true);
+  });
+
+  it("only admin manages CXO windows", () => {
+    expect(canManageCxoWindows("employee")).toBe(false);
+    expect(canManageCxoWindows("lead")).toBe(false);
+    expect(canManageCxoWindows("admin")).toBe(true);
+    expect(canManageCxoWindows("super_admin")).toBe(false);
   });
 });

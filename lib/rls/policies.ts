@@ -47,3 +47,7 @@ export function canManageDepartments(role: ProfileRole): boolean {
 export function canManageHolidays(role: ProfileRole): boolean {
   return isAdminRole(role) || isSuperAdmin(role);
 }
+
+export function canManageCxoWindows(role: ProfileRole): boolean {
+  return isAdminRole(role);
+}
