@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth";
+import { ADMIN_ROLES } from "@/lib/rls/policies";
 import {
   cxoSlotCount,
   formatCxoWindowLabel,
@@ -17,7 +18,7 @@ function revalidateCxo() {
 }
 
 export async function createCxoWindow(formData: FormData) {
-  await requireRole(["admin"]);
+  await requireRole(ADMIN_ROLES);
   const name = String(formData.get("name") ?? "");
   const title = String(formData.get("title") ?? "");
   const tagline = String(formData.get("tagline") ?? "");
@@ -42,7 +43,7 @@ export async function createCxoWindow(formData: FormData) {
 }
 
 export async function addCxoSlots(id: string, count: unknown) {
-  await requireRole(["admin"]);
+  await requireRole(ADMIN_ROLES);
   if (!id) return { ok: false as const, error: "missing window" };
   if (validateCxoSlotCount(count)) return { ok: false as const, error: "slots must be 1-20" };
   const admin = createAdminClient();

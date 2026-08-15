@@ -20,7 +20,7 @@ import { isVisiblePerson } from "@/lib/profiles/visible";
 import type { Department, Profile, ProfileRole } from "@/lib/types";
 import rosterStyles from "./UsersRoster.module.scss";
 
-const ROLES: ProfileRole[] = ["employee", "lead", "admin"];
+const ROLES: ProfileRole[] = ["employee", "lead", "admin", "cxo"];
 
 type EditDraft = {
   fullName: string;
