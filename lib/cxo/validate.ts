@@ -1,7 +1,7 @@
 import { validateHolidayDate } from "@/lib/holidays/validate";
 import { AVATAR_SWATCHES } from "@/lib/profiles/details";
 
-export const CXO_NAME_MAX = 40;
+export const CXO_NAME_MAX = 80;
 export const CXO_TITLE_MAX = 20;
 export const CXO_TAGLINE_MAX = 80;
 export const CXO_NOTE_MAX = 40;

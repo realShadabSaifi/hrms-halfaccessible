@@ -6,10 +6,18 @@ import { createClient } from "@/lib/supabase/server";
 export default async function CxoManagePage() {
   await requireRole(ADMIN_ROLES);
   const supabase = await createClient();
-  const { data } = await supabase
-    .from("cxo_windows")
-    .select("id, name, title, tagline, avatar_color, window_label, slots_remaining")
-    .order("name")
-    .order("window_label");
-  return <CxoManageClient windows={data ?? []} />;
+  const [{ data }, { data: people }] = await Promise.all([
+    supabase
+      .from("cxo_windows")
+      .select("id, name, title, tagline, avatar_color, window_label, slots_remaining")
+      .order("name")
+      .order("window_label"),
+    supabase
+      .from("profiles")
+      .select("id, full_name, role")
+      .eq("role", "cxo")
+      .eq("active", true)
+      .order("full_name"),
+  ]);
+  return <CxoManageClient windows={data ?? []} people={people ?? []} />;
 }

@@ -7,15 +7,12 @@ import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { TextField } from "@/components/ui/TextField";
 import { Toast } from "@/components/ui/Toast";
-import {
-  CXO_NAME_MAX,
-  CXO_NOTE_MAX,
-  CXO_TAGLINE_MAX,
-  CXO_TITLE_MAX,
-} from "@/lib/cxo/validate";
+import type { CxoRosterPerson } from "@/lib/cxo/person";
+import { CXO_NOTE_MAX, CXO_TAGLINE_MAX, CXO_TITLE_MAX } from "@/lib/cxo/validate";
 import { initials } from "@/lib/names";
 import { AVATAR_SWATCHES } from "@/lib/profiles/details";
 import { CalendarBlank } from "@phosphor-icons/react";
+import fieldStyles from "@/components/ui/TextField/TextField.module.scss";
 
 export type CxoWindowRow = {
   id: string;
@@ -27,7 +24,13 @@ export type CxoWindowRow = {
   slots_remaining: number;
 };
 
-export function CxoManageClient({ windows }: { windows: CxoWindowRow[] }) {
+export function CxoManageClient({
+  windows,
+  people,
+}: {
+  windows: CxoWindowRow[];
+  people: CxoRosterPerson[];
+}) {
   const [toast, setToast] = useState<string | null>(null);
   const [color, setColor] = useState<(typeof AVATAR_SWATCHES)[number]>(AVATAR_SWATCHES[0]);
   const [formKey, setFormKey] = useState(0);
@@ -49,7 +52,22 @@ export function CxoManageClient({ windows }: { windows: CxoWindowRow[] }) {
         <div className="mb-3 font-[family-name:var(--font-display)] text-base font-bold">
           drop a window
         </div>
-        <TextField name="name" label="name" maxLength={CXO_NAME_MAX} required />
+        <label className={fieldStyles.wrap} htmlFor="cxo_id">
+          <span className={fieldStyles.label}>cxo</span>
+          <select id="cxo_id" name="cxo_id" className={fieldStyles.input} required defaultValue="">
+            <option value="" disabled>
+              {people.length ? "pick a cxo" : "no cxos yet"}
+            </option>
+            {people.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.full_name}
+              </option>
+            ))}
+          </select>
+          {people.length === 0 ? (
+            <span className={fieldStyles.hint}>assign the cxo role on users first</span>
+          ) : null}
+        </label>
         <div className="h-2.5" />
         <TextField name="title" label="title" maxLength={CXO_TITLE_MAX} required />
         <div className="h-2.5" />
@@ -77,7 +95,9 @@ export function CxoManageClient({ windows }: { windows: CxoWindowRow[] }) {
           ))}
         </div>
         <div className="mt-3.5">
-          <Button type="submit">drop it</Button>
+          <Button type="submit" disabled={people.length === 0}>
+            drop it
+          </Button>
         </div>
       </form>
       <div className="rounded-ha-lg border border-ha-line bg-ha-surface p-[22px] shadow-[var(--ha-shadow-card)]">

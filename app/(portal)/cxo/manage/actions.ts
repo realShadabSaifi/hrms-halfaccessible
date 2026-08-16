@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth";
 import { ADMIN_ROLES } from "@/lib/rls/policies";
+import { cxoNameFromRoster } from "@/lib/cxo/person";
 import {
   cxoSlotCount,
   formatCxoWindowLabel,
@@ -19,18 +20,25 @@ function revalidateCxo() {
 
 export async function createCxoWindow(formData: FormData) {
   await requireRole(ADMIN_ROLES);
-  const name = String(formData.get("name") ?? "");
+  const cxoId = String(formData.get("cxo_id") ?? "");
   const title = String(formData.get("title") ?? "");
   const tagline = String(formData.get("tagline") ?? "");
   const date = String(formData.get("date") ?? "");
   const note = String(formData.get("note") ?? "");
   const slots = formData.get("slots");
   const color = String(formData.get("color") ?? "");
+  const admin = createAdminClient();
+  const { data: person } = await admin
+    .from("profiles")
+    .select("id, full_name, role")
+    .eq("id", cxoId)
+    .maybeSingle();
+  const name = cxoNameFromRoster(cxoId, person ? [person] : []);
+  if (!name) return { ok: false as const, error: "cxo required" };
   const error = validateCxoWindow({ name, title, tagline, date, note, slots, color });
   if (error) return { ok: false as const, error };
-  const admin = createAdminClient();
   const { error: insertError } = await admin.from("cxo_windows").insert({
-    name: name.trim(),
+    name,
     title: title.trim(),
     tagline: tagline.trim(),
     avatar_color: color,
