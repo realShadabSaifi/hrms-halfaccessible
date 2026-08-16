@@ -2,15 +2,16 @@
 
 import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth";
-import { ADMIN_ROLES } from "@/lib/rls/policies";
 import { cxoNameFromRoster } from "@/lib/cxo/person";
 import {
+  CXO_SLOT_TAGLINE,
+  cxoColorFromProfile,
   cxoSlotCount,
-  formatCxoWindowLabel,
-  nextSlotsRemaining,
-  validateCxoSlotCount,
+  cxoSlotStarts,
+  cxoTitleFromDesignation,
   validateCxoWindow,
 } from "@/lib/cxo/validate";
+import { ADMIN_ROLES } from "@/lib/rls/policies";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 function revalidateCxo() {
@@ -21,47 +22,29 @@ function revalidateCxo() {
 export async function createCxoWindow(formData: FormData) {
   await requireRole(ADMIN_ROLES);
   const cxoId = String(formData.get("cxo_id") ?? "");
-  const title = String(formData.get("title") ?? "");
-  const tagline = String(formData.get("tagline") ?? "");
-  const date = String(formData.get("date") ?? "");
-  const note = String(formData.get("note") ?? "");
+  const start = String(formData.get("start") ?? "");
   const slots = formData.get("slots");
-  const color = String(formData.get("color") ?? "");
   const admin = createAdminClient();
   const { data: person } = await admin
     .from("profiles")
-    .select("id, full_name, role")
+    .select("id, full_name, role, designation, avatar_color, active")
     .eq("id", cxoId)
     .maybeSingle();
-  const name = cxoNameFromRoster(cxoId, person ? [person] : []);
+  if (!person?.active) return { ok: false as const, error: "cxo required" };
+  const name = cxoNameFromRoster(cxoId, [person]);
   if (!name) return { ok: false as const, error: "cxo required" };
-  const error = validateCxoWindow({ name, title, tagline, date, note, slots, color });
+  const error = validateCxoWindow({ name, start, slots });
   if (error) return { ok: false as const, error };
-  const { error: insertError } = await admin.from("cxo_windows").insert({
+  const rows = cxoSlotStarts(start, cxoSlotCount(slots)).map((window_label) => ({
     name,
-    title: title.trim(),
-    tagline: tagline.trim(),
-    avatar_color: color,
-    window_label: formatCxoWindowLabel(date, note),
-    slots_remaining: cxoSlotCount(slots),
-  });
+    title: cxoTitleFromDesignation(person.designation),
+    tagline: CXO_SLOT_TAGLINE,
+    avatar_color: cxoColorFromProfile(person.avatar_color),
+    window_label,
+    slots_remaining: 1,
+  }));
+  const { error: insertError } = await admin.from("cxo_windows").insert(rows);
   if (insertError) return { ok: false as const, error: insertError.message };
-  revalidateCxo();
-  return { ok: true as const };
-}
-
-export async function addCxoSlots(id: string, count: unknown) {
-  await requireRole(ADMIN_ROLES);
-  if (!id) return { ok: false as const, error: "missing window" };
-  if (validateCxoSlotCount(count)) return { ok: false as const, error: "slots must be 1-20" };
-  const admin = createAdminClient();
-  const { data } = await admin.from("cxo_windows").select("slots_remaining").eq("id", id).maybeSingle();
-  if (!data) return { ok: false as const, error: "missing window" };
-  const { error } = await admin
-    .from("cxo_windows")
-    .update({ slots_remaining: nextSlotsRemaining(data.slots_remaining, cxoSlotCount(count)) })
-    .eq("id", id);
-  if (error) return { ok: false as const, error: error.message };
   revalidateCxo();
   return { ok: true as const };
 }
