@@ -122,8 +122,8 @@ describe("cxo slot starts", () => {
       "Aug 21 · 4:30pm",
       "Aug 21 · 4:45pm",
     ]);
-    expect(cxoSlotStarts("2026-08-21T23:30", 2)).toEqual([
-      "Aug 21 · 11:30pm",
+    expect(cxoSlotStarts("2026-08-21T23:45", 2)).toEqual([
+      "Aug 21 · 11:45pm",
       "Aug 22 · 12:00am",
     ]);
   });

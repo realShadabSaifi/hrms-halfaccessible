@@ -53,7 +53,7 @@ Start string is wall-clock `YYYY-MM-DDTHH:mm` from `datetime-local`. Optional `:
 - `validateCxoStart(raw)` — empty → `start required`; not a real date-time → `invalid start`; minutes not in `{0,15,30,45}` → `start must be on a 15-min mark`.
 - `validateCxoSlotCount(n)` — unchanged. `0`, `21`, `1.5` → `slots must be 1-20`. `1` and `20` pass.
 - `formatCxoSlotLabel(raw)` — month short + day with no leading zero, then ` · ` and 12-hour time with lowercase `am`/`pm` and no leading hour zero. `2026-08-21T16:00` → `Aug 21 · 4:00pm`. `2026-08-21T00:00` → `Aug 21 · 12:00am`. `2026-08-21T12:15` → `Aug 21 · 12:15pm`.
-- `cxoSlotStarts(raw, count)` — `count` labels, each 15 minutes after the last on the same wall clock. `cxoSlotStarts("2026-08-21T16:00", 4)` → `Aug 21 · 4:00pm`, `Aug 21 · 4:15pm`, `Aug 21 · 4:30pm`, `Aug 21 · 4:45pm`. A slot that passes midnight uses the next calendar day (`2026-08-21T23:30` with `2` → `Aug 21 · 11:30pm`, `Aug 22 · 12:00am`).
+- `cxoSlotStarts(raw, count)` — `count` labels, each 15 minutes after the last on the same wall clock. `cxoSlotStarts("2026-08-21T16:00", 4)` → `Aug 21 · 4:00pm`, `Aug 21 · 4:15pm`, `Aug 21 · 4:30pm`, `Aug 21 · 4:45pm`. A slot that passes midnight uses the next calendar day (`2026-08-21T23:45` with `2` → `Aug 21 · 11:45pm`, `Aug 22 · 12:00am`).
 - `cxoTitleFromDesignation(designation)` — trim; empty → `cxo`; else slice to `CXO_TITLE_MAX` (20).
 - `cxoColorFromProfile(color)` — `color` if it is in `AVATAR_SWATCHES`, else `AVATAR_SWATCHES[0]`.
 
@@ -95,7 +95,7 @@ Toast the first error, or `window dropped` on success. Reset the create form aft
 - `formatCxoSlotLabel("2026-08-21T00:00")` → `Aug 21 · 12:00am`.
 - `formatCxoSlotLabel("2026-08-21T12:15")` → `Aug 21 · 12:15pm`.
 - `cxoSlotStarts("2026-08-21T16:00", 4)` → the four labels `4:00pm` through `4:45pm` on `Aug 21`.
-- `cxoSlotStarts("2026-08-21T23:30", 2)` → `Aug 21 · 11:30pm`, `Aug 22 · 12:00am`.
+- `cxoSlotStarts("2026-08-21T23:45", 2)` → `Aug 21 · 11:45pm`, `Aug 22 · 12:00am`.
 - `validateCxoSlotCount`: `0`, `21`, `1.5` fail; `1` and `20` pass.
 - `cxoTitleFromDesignation("")` → `cxo`; `"Chief Executive Officer"` → first 20 chars; `"CEO"` → `CEO`.
 - `cxoColorFromProfile("#7048B6")` → `#7048B6`; `"#1C1C2E"` → `AVATAR_SWATCHES[0]`.
