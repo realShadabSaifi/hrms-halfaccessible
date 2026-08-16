@@ -83,7 +83,7 @@ const CXO_WINDOWS: NavItem = {
   href: "/cxo/manage",
   label: "CXO windows",
   title: "CXO windows",
-  sub: "drop a window. add slots.",
+  sub: "drop a window.",
 };
 
 const SETTINGS: NavItem = {

@@ -47,7 +47,7 @@ describe("getNavItems", () => {
     expect(items.find((i) => i.id === "users")?.sub).toBe("admin only. handle with care 🧤");
     expect(items.find((i) => i.id === "holidays")?.title).toBe("holiday calendar");
     expect(items.find((i) => i.id === "cxo-windows")?.title).toBe("CXO windows");
-    expect(items.find((i) => i.id === "cxo-windows")?.sub).toBe("drop a window. add slots.");
+    expect(items.find((i) => i.id === "cxo-windows")?.sub).toBe("drop a window.");
     expect(items.find((i) => i.id === "cxo-windows")?.href).toBe("/cxo/manage");
   });
 });
