@@ -34,8 +34,10 @@ export default async function PortalLayout({
     redirect(afterAuthPath(profile.role));
   }
 
+  const { data: unreadChat } = await supabase.rpc("unread_chat_count");
+
   return (
-    <AppShell profile={profile} unread={unread} settings={settings}>
+    <AppShell profile={profile} unread={unread} unreadChat={unreadChat ?? 0} settings={settings}>
       {children}
     </AppShell>
   );

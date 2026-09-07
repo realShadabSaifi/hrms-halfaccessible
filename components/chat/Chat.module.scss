@@ -1,0 +1,347 @@
+@use "tokens" as *;
+
+.shell {
+  display: flex;
+  min-height: calc(100dvh - 140px);
+  background: $card;
+  border: $border-card;
+  box-shadow: $shadow-card;
+  border-radius: $radius-card;
+  overflow: hidden;
+}
+
+.inbox {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+}
+
+.thread {
+  display: none;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  background: $card;
+}
+
+.inboxOnly .thread {
+  display: none;
+}
+
+.hasThread .inbox {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .inbox {
+    width: 320px;
+    border-right: 1px solid $line;
+  }
+
+  .thread,
+  .inboxOnly .thread,
+  .hasThread .inbox,
+  .hasThread .thread {
+    display: flex;
+  }
+}
+
+.inboxHead,
+.threadHead {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid $line;
+}
+
+.inboxHead h2,
+.threadHead h2 {
+  flex: 1;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.list {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.row {
+  display: flex;
+  width: 100%;
+  gap: 10px;
+  padding: 12px 16px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  text-decoration: none;
+  font: inherit;
+  cursor: pointer;
+}
+
+.row:hover {
+  background: $accent-wash;
+}
+
+.rowActive {
+  background: $accent-wash;
+}
+
+.rowCopy {
+  min-width: 0;
+  flex: 1;
+}
+
+.rowTitle {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+}
+
+.name {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.time {
+  font-size: 11px;
+  color: $muted;
+}
+
+.preview {
+  display: block;
+  margin-top: 2px;
+  overflow: hidden;
+  color: $muted;
+  font-size: 12.5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.unread {
+  display: inline-flex;
+  min-width: 18px;
+  height: 18px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+  border-radius: $radius-pill;
+  background: $purple;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.emptyPane {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  color: $muted;
+  font-size: 14px;
+}
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px;
+}
+
+.bubble {
+  display: flex;
+  gap: 8px;
+  max-width: min(80%, 440px);
+  align-items: flex-end;
+}
+
+.mine {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.bubbleBody {
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: var(--ha-bg);
+  font-size: 13.5px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.mine .bubbleBody {
+  background: $accent-wash;
+}
+
+.meta {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: $muted;
+}
+
+.composer {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+  padding: 12px 16px;
+  border-top: 1px solid $line;
+}
+
+.composer :global(label) {
+  flex: 1;
+  margin: 0;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgb(57 50 90 / 45%);
+}
+
+.dialog {
+  width: 440px;
+  max-width: 90vw;
+  max-height: 90vh;
+  overflow-y: auto;
+  padding: 24px;
+  border-radius: 24px;
+  background: $card;
+  box-shadow: $shadow-card;
+}
+
+.dialogHead {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.dialogHead h2 {
+  flex: 1;
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.close {
+  display: flex;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 999px;
+  background: $accent-wash;
+  color: $ink;
+  cursor: pointer;
+}
+
+.people {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: 240px;
+  overflow-y: auto;
+  margin: 12px 0;
+}
+
+.person {
+  display: flex;
+  width: 100%;
+  gap: 10px;
+  align-items: center;
+  padding: 8px;
+  border: 1px solid $line;
+  border-radius: 8px;
+  background: $card;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.personActive {
+  border-color: $purple;
+  background: $accent-wash;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.memberRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+}
+
+.memberRow span {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.iconBtn {
+  display: flex;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: $ink;
+  cursor: pointer;
+}
+
+.iconBtn:hover {
+  background: $accent-wash;
+}
+
+.back {
+  display: flex;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: $ink;
+  text-decoration: none;
+}
+
+@media (min-width: 768px) {
+  .back {
+    display: none;
+  }
+}
+
+.prompt {
+  margin: 12px 16px 0;
+  padding: 12px;
+  border: 1px solid $line;
+  border-radius: 12px;
+  background: $accent-wash;
+  font-size: 13px;
+}
