@@ -33,6 +33,13 @@ describe("portal access", () => {
     expect(canVisitPath("employee", "/cxo")).toBe(true);
   });
 
+  it("keeps super_admin off chat and lets employees in", () => {
+    expect(canVisitPath("super_admin", "/chat")).toBe(false);
+    expect(canVisitPath("super_admin", "/chat/abc")).toBe(false);
+    expect(canVisitPath("employee", "/chat")).toBe(true);
+    expect(canVisitPath("employee", "/chat/abc")).toBe(true);
+  });
+
   it("lets cxo visit the same paths as admin", () => {
     expect(afterAuthPath("cxo")).toBe("/");
     expect(canVisitPath("cxo", "/users")).toBe(true);

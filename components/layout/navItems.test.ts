@@ -1,18 +1,21 @@
 import { describe, expect, it } from "vitest";
-import { getNavItems } from "@/lib/layout/navItems";
+import { getNavItems, pageMeta } from "@/lib/layout/navItems";
 
 describe("getNavItems", () => {
-  it("gives employees 9 items including holidays and no user management", () => {
+  it("gives employees 10 items including chat and holidays and no user management", () => {
     const items = getNavItems("employee", 0);
-    expect(items).toHaveLength(9);
+    expect(items).toHaveLength(10);
+    expect(items.some((i) => i.id === "chat")).toBe(true);
     expect(items.some((i) => i.id === "holidays")).toBe(true);
     expect(items.some((i) => i.id === "users")).toBe(false);
     expect(items.some((i) => i.id === "cxo-windows")).toBe(false);
+    const ids = items.map((i) => i.id);
+    expect(ids.indexOf("chat")).toBe(ids.indexOf("dash") + 1);
   });
 
-  it("gives admins 11 items including holidays, user management, and CXO windows", () => {
+  it("gives admins 12 items including holidays, user management, and CXO windows", () => {
     const items = getNavItems("admin", 2);
-    expect(items).toHaveLength(11);
+    expect(items).toHaveLength(12);
     expect(items.some((i) => i.id === "holidays")).toBe(true);
     expect(items.some((i) => i.id === "users")).toBe(true);
     expect(items.some((i) => i.id === "settings")).toBe(false);
@@ -36,9 +39,13 @@ describe("getNavItems", () => {
   it("gives cxo the same nav as admin", () => {
     const admin = getNavItems("admin", 2).map((i) => i.id);
     const cxo = getNavItems("cxo", 2).map((i) => i.id);
-    expect(cxo).toHaveLength(11);
+    expect(cxo).toHaveLength(12);
     expect(cxo).toEqual(admin);
     expect(cxo.indexOf("cxo-windows")).toBe(cxo.indexOf("users") + 1);
+  });
+
+  it("badges unread chat conversations", () => {
+    expect(getNavItems("employee", 0, 3).find((i) => i.id === "chat")?.badge).toBe(3);
   });
 
   it("uses v2 canvas titles", () => {
@@ -49,5 +56,9 @@ describe("getNavItems", () => {
     expect(items.find((i) => i.id === "cxo-windows")?.title).toBe("CXO windows");
     expect(items.find((i) => i.id === "cxo-windows")?.sub).toBe("drop a window.");
     expect(items.find((i) => i.id === "cxo-windows")?.href).toBe("/cxo/manage");
+  });
+
+  it("maps a thread path to the chat page meta", () => {
+    expect(pageMeta("/chat/xyz", "employee").id).toBe("chat");
   });
 });

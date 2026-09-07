@@ -19,6 +19,13 @@ const HOLIDAYS: NavItem = {
 const BASE: NavItem[] = [
   { id: "dash", href: "/", label: "home", title: "home", sub: "the daily download" },
   {
+    id: "chat",
+    href: "/chat",
+    label: "chat",
+    title: "chat",
+    sub: "dms and groups. no slack tax.",
+  },
+  {
     id: "leaves",
     href: "/leaves",
     label: "leaves",
@@ -94,7 +101,11 @@ const SETTINGS: NavItem = {
   sub: "name, logo. the face of the portal.",
 };
 
-export function getNavItems(role: ProfileRole, unreadAnnouncements = 0): (NavItem & { badge: number | null })[] {
+export function getNavItems(
+  role: ProfileRole,
+  unreadAnnouncements = 0,
+  unreadChat = 0,
+): (NavItem & { badge: number | null })[] {
   const items =
     role === "super_admin"
       ? [SETTINGS, USERS, HOLIDAYS]
@@ -103,11 +114,20 @@ export function getNavItems(role: ProfileRole, unreadAnnouncements = 0): (NavIte
         : BASE;
   return items.map((item) => ({
     ...item,
-    badge: item.id === "ann" && unreadAnnouncements > 0 ? unreadAnnouncements : null,
+    badge:
+      item.id === "ann" && unreadAnnouncements > 0
+        ? unreadAnnouncements
+        : item.id === "chat" && unreadChat > 0
+          ? unreadChat
+          : null,
   }));
 }
 
 export function pageMeta(pathname: string, role: ProfileRole) {
   const items = getNavItems(role);
-  return items.find((i) => i.href === pathname) ?? items[0];
+  return (
+    items.find((i) => i.href === pathname) ??
+    items.find((i) => i.href !== "/" && pathname.startsWith(`${i.href}/`)) ??
+    items[0]
+  );
 }

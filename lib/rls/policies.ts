@@ -51,3 +51,7 @@ export function canManageHolidays(role: ProfileRole): boolean {
 export function canManageCxoWindows(role: ProfileRole): boolean {
   return isAdminRole(role);
 }
+
+export function canUseChat(role: ProfileRole): boolean {
+  return role !== "super_admin";
+}
