@@ -5,15 +5,16 @@ import { urlBase64ToUint8Array } from "./vapid";
 
 export async function enablePush(): Promise<{ ok: true } | { ok: false; error: string }> {
   if (!("serviceWorker" in navigator) || !("PushManager" in window) || !("Notification" in window)) {
-    return { ok: false, error: "blocked in the browser. allow notifications for this site." };
+    return { ok: false, error: "this browser can't do pings." };
   }
   const key = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
-  if (!key) return { ok: false, error: "blocked in the browser. allow notifications for this site." };
+  if (!key || key === "replace-me") return { ok: false, error: "pings need vapid keys on the server." };
   const permission = await Notification.requestPermission();
   if (permission !== "granted") {
     return { ok: false, error: "blocked in the browser. allow notifications for this site." };
   }
-  const reg = await navigator.serviceWorker.register("/sw.js");
+  await navigator.serviceWorker.register("/sw.js", { scope: "/" });
+  const reg = await navigator.serviceWorker.ready;
   const sub = await reg.pushManager.subscribe({
     userVisibleOnly: true,
     applicationServerKey: urlBase64ToUint8Array(key) as BufferSource,
