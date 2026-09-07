@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { requireProfile, requireRole } from "@/lib/auth";
+import { notifyAnnouncement } from "@/lib/push/notify";
 import { LEAD_OR_ADMIN_ROLES } from "@/lib/rls/policies";
 import { createClient } from "@/lib/supabase/server";
 
@@ -14,14 +15,25 @@ export async function postAnnouncement(input: {
   const profile = await requireRole(LEAD_OR_ADMIN_ROLES);
   if (!input.title.trim() || !input.body.trim()) return { ok: false as const, error: "title and body please" };
   const supabase = await createClient();
-  const { error } = await supabase.from("announcements").insert({
-    author_id: profile.id,
-    title: input.title.trim(),
-    body: input.body.trim(),
-    category: input.category,
-    pinned: input.pinned,
-  });
+  const { data, error } = await supabase
+    .from("announcements")
+    .insert({
+      author_id: profile.id,
+      title: input.title.trim(),
+      body: input.body.trim(),
+      category: input.category,
+      pinned: input.pinned,
+    })
+    .select("id")
+    .single();
   if (error) return { ok: false as const, error: error.message };
+  if (data) {
+    void notifyAnnouncement({
+      announcementId: data.id,
+      authorId: profile.id,
+      title: input.title.trim(),
+    }).catch(() => {});
+  }
   revalidatePath("/announcements");
   revalidatePath("/");
   return { ok: true as const };

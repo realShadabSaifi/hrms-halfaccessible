@@ -13,6 +13,7 @@ import {
   validateGroupTitle,
 } from "@/lib/chat/validate";
 import { notifyChatMessage } from "@/lib/push/notify";
+import { validatePushSubscription } from "@/lib/push/validate";
 import { rateLimit } from "@/lib/rateLimit";
 import { canUseChat } from "@/lib/rls/policies";
 import { createClient } from "@/lib/supabase/server";
@@ -217,6 +218,36 @@ export async function leaveGroup(conversationId: string) {
     .delete()
     .eq("conversation_id", conversationId)
     .eq("user_id", profile.id);
+  if (error) return { ok: false as const, error: error.message };
+  return { ok: true as const };
+}
+
+export async function registerPush(input: { endpoint: unknown; keys?: { p256dh?: unknown; auth?: unknown } }) {
+  const gate = await actor();
+  if (!gate.ok) return gate;
+  const parsed = validatePushSubscription(input);
+  if ("error" in parsed) return { ok: false as const, error: parsed.error };
+  const { error } = await gate.supabase.from("push_subscriptions").upsert(
+    {
+      user_id: gate.profile.id,
+      endpoint: parsed.endpoint,
+      p256dh: parsed.p256dh,
+      auth: parsed.auth,
+    },
+    { onConflict: "endpoint" },
+  );
+  if (error) return { ok: false as const, error: error.message };
+  return { ok: true as const };
+}
+
+export async function unregisterPush(endpoint: string) {
+  const gate = await actor();
+  if (!gate.ok) return gate;
+  const { error } = await gate.supabase
+    .from("push_subscriptions")
+    .delete()
+    .eq("endpoint", endpoint)
+    .eq("user_id", gate.profile.id);
   if (error) return { ok: false as const, error: error.message };
   return { ok: true as const };
 }
