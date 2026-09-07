@@ -1,6 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { openDm } from "@/app/(portal)/chat/actions";
 import { saveProfile } from "@/app/(portal)/team/actions";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
@@ -99,6 +101,7 @@ export function TeamClient({
   const [bio, setBio] = useState("");
   const [color, setColor] = useState<(typeof AVATAR_SWATCHES)[number]>(AVATAR_SWATCHES[0]);
   const [toast, setToast] = useState<string | null>(null);
+  const router = useRouter();
   const tree = useMemo(() => filterTree(buildTree(members), q), [members, q]);
 
   function openProfile(m: Profile) {
@@ -251,7 +254,21 @@ export function TeamClient({
                     <Button variant="ghost" onClick={() => setEditing(true)}>
                       edit my profile
                     </Button>
-                  ) : null}
+                  ) : (
+                    <Button
+                      onClick={async () => {
+                        const r = await openDm(open.id);
+                        if (!r.ok) {
+                          setToast(r.error);
+                          return;
+                        }
+                        setOpen(null);
+                        router.push(`/chat/${r.id}`);
+                      }}
+                    >
+                      message
+                    </Button>
+                  )}
                 </div>
               </>
             )}

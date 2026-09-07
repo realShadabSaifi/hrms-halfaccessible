@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { requireProfile, requireRole } from "@/lib/auth";
 import { nextLeaveStatus } from "@/lib/leaves/approve";
+import { notifyLeaveDecision } from "@/lib/push/notify";
 import { LEAD_OR_ADMIN_ROLES } from "@/lib/rls/policies";
 import { createClient } from "@/lib/supabase/server";
 import {
@@ -49,6 +50,7 @@ export async function decideLeave(
   const status = nextLeaveStatus(profile.role, action);
   if (!status) return { ok: false as const, error: "nope" };
   const supabase = await createClient();
+  const { data: row } = await supabase.from("leave_requests").select("requester_id, type").eq("id", id).maybeSingle();
   const { error } = await supabase
     .from("leave_requests")
     .update({
@@ -59,6 +61,14 @@ export async function decideLeave(
     })
     .eq("id", id);
   if (error) return { ok: false as const, error: error.message };
+  if (row && row.requester_id !== profile.id) {
+    void notifyLeaveDecision({
+      requestId: id,
+      requesterId: row.requester_id,
+      type: row.type,
+      status,
+    }).catch(() => {});
+  }
   revalidatePath("/leaves");
   return { ok: true as const };
 }

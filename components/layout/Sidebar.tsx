@@ -14,6 +14,7 @@ import {
   Hamburger,
   House,
   Leaf,
+  ChatTeardrop,
   Megaphone,
   ShieldCheck,
   Sparkle,
@@ -30,6 +31,7 @@ import styles from "./Sidebar.module.scss";
 
 const icons: Record<string, React.ComponentType<{ size?: number }>> = {
   dash: House,
+  chat: ChatTeardrop,
   leaves: Leaf,
   holidays: CalendarBlank,
   burgers: Hamburger,
@@ -46,15 +48,17 @@ const icons: Record<string, React.ComponentType<{ size?: number }>> = {
 export function Sidebar({
   profile,
   unread,
+  unreadChat = 0,
   settings,
 }: {
   profile: Profile;
   unread: number;
+  unreadChat?: number;
   settings: AppSettings;
 }) {
   const pathname = usePathname();
   const reduce = useReducedMotion();
-  const items = getNavItems(profile.role, unread);
+  const items = getNavItems(profile.role, unread, unreadChat);
   const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
@@ -95,7 +99,7 @@ export function Sidebar({
       <nav id="portal-nav" className={styles.nav} aria-label="portal">
         {items.map((item) => {
           const Icon = icons[item.id] ?? House;
-          const active = pathname === item.href;
+          const active = pathname === item.href || (item.id === "chat" && pathname.startsWith("/chat/"));
           return (
             <Link
               key={item.id}

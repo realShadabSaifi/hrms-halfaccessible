@@ -39,3 +39,42 @@ export type CompanyHoliday = {
   created_by: string | null;
   created_at: string;
 };
+
+export type ConversationKind = "dm" | "group";
+
+export type Conversation = {
+  id: string;
+  kind: ConversationKind;
+  title: string;
+  dm_key: string | null;
+  created_by: string;
+  created_at: string;
+  last_message_at: string;
+};
+
+export type ConversationMember = {
+  conversation_id: string;
+  user_id: string;
+  joined_at: string;
+  last_read_at: string | null;
+};
+
+export type ChatMessage = {
+  id: string;
+  conversation_id: string;
+  sender_id: string;
+  body: string;
+  created_at: string;
+};
+
+export type InboxRow = {
+  id: string;
+  kind: ConversationKind;
+  title: string;
+  avatarName: string;
+  avatarColor: string;
+  lastPreview: string;
+  lastAt: string;
+  unread: number;
+  otherUserId: string | null;
+};

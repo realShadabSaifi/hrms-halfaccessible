@@ -12,21 +12,23 @@ import styles from "./AppShell.module.scss";
 export function AppShell({
   profile,
   unread,
+  unreadChat = 0,
   settings,
   children,
 }: {
   profile: Profile;
   unread: number;
+  unreadChat?: number;
   settings: AppSettings;
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
-  const items = getNavItems(profile.role, unread);
+  const items = getNavItems(profile.role, unread, unreadChat);
 
   return (
     <HeaderActionsProvider>
       <div className={styles.shell}>
-        <Sidebar profile={profile} unread={unread} settings={settings} />
+        <Sidebar profile={profile} unread={unread} unreadChat={unreadChat} settings={settings} />
         <div id="main" className={styles.main}>
           <PageHeader pathname={pathname} role={profile.role} settings={settings} />
           {children}

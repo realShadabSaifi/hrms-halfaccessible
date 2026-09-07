@@ -9,6 +9,7 @@ import {
   canManageSettings,
   canManageUsers,
   canSelectTotpCredentials,
+  canUseChat,
   canViewTeamLeaves,
   isAdminRole,
 } from "@/lib/rls/policies";
@@ -81,6 +82,14 @@ describe("RLS policy contract", () => {
     expect(canManageCxoWindows("admin")).toBe(true);
     expect(canManageCxoWindows("super_admin")).toBe(false);
     expect(canManageCxoWindows("cxo")).toBe(true);
+  });
+
+  it("lets everyone except super_admin use chat", () => {
+    expect(canUseChat("employee")).toBe(true);
+    expect(canUseChat("lead")).toBe(true);
+    expect(canUseChat("admin")).toBe(true);
+    expect(canUseChat("cxo")).toBe(true);
+    expect(canUseChat("super_admin")).toBe(false);
   });
 
   it("treats cxo as an admin role", () => {

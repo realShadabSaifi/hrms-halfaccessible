@@ -38,8 +38,9 @@ export default async function AnonPage() {
   if (profile?.totp_verified_at && profile.active) {
     const supabase = await createClient();
     const { count } = await supabase.from("announcements").select("id", { count: "exact", head: true });
+    const { data: unreadChat } = await supabase.rpc("unread_chat_count");
     return (
-      <AppShell profile={profile} unread={count ?? 0} settings={settings}>
+      <AppShell profile={profile} unread={count ?? 0} unreadChat={unreadChat ?? 0} settings={settings}>
         {board}
       </AppShell>
     );

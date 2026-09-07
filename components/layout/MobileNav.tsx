@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   CalendarBlank,
+  ChatTeardrop,
   Crown,
   Detective,
   DotsThree,
@@ -21,10 +22,11 @@ import {
 import type { getNavItems } from "@/lib/layout/navItems";
 import styles from "./MobileNav.module.scss";
 
-const PRIMARY = new Set(["dash", "leaves", "burgers", "anon"]);
+const PRIMARY = new Set(["dash", "chat", "leaves", "burgers"]);
 
 const icons: Record<string, React.ComponentType<{ size?: number }>> = {
   dash: House,
+  chat: ChatTeardrop,
   leaves: Leaf,
   holidays: CalendarBlank,
   burgers: Hamburger,
@@ -82,7 +84,7 @@ export function MobileNav({ items }: { items: Item[] }) {
           </div>
           {more.map((item) => {
             const Icon = icons[item.id] ?? House;
-            const active = pathname === item.href;
+            const active = pathname === item.href || (item.id === "chat" && pathname.startsWith("/chat/"));
             return (
               <Link
                 key={item.id}
@@ -101,7 +103,7 @@ export function MobileNav({ items }: { items: Item[] }) {
       <div className={styles.bar}>
         {primary.map((item) => {
           const Icon = icons[item.id] ?? House;
-          const active = pathname === item.href;
+          const active = pathname === item.href || (item.id === "chat" && pathname.startsWith("/chat/"));
           return (
             <Link
               key={item.id}
