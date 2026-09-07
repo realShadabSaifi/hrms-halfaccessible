@@ -42,22 +42,25 @@ export async function openDm(otherUserId: string) {
   const key = dmKey(profile.id, otherUserId);
   const { data: existing } = await supabase.from("conversations").select("id").eq("dm_key", key).maybeSingle();
   if (existing) return { ok: true as const, id: existing.id };
-  const { data: created, error } = await supabase
-    .from("conversations")
-    .insert({ kind: "dm", title: "", dm_key: key, created_by: profile.id })
-    .select("id")
-    .single();
+  const id = crypto.randomUUID();
+  const { error } = await supabase.from("conversations").insert({
+    id,
+    kind: "dm",
+    title: "",
+    dm_key: key,
+    created_by: profile.id,
+  });
   if (error) {
     const { data: raced } = await supabase.from("conversations").select("id").eq("dm_key", key).maybeSingle();
     if (raced) return { ok: true as const, id: raced.id };
     return { ok: false as const, error: error.message };
   }
   const { error: memberError } = await supabase.from("conversation_members").insert([
-    { conversation_id: created.id, user_id: profile.id },
-    { conversation_id: created.id, user_id: otherUserId },
+    { conversation_id: id, user_id: profile.id },
+    { conversation_id: id, user_id: otherUserId },
   ]);
   if (memberError) return { ok: false as const, error: memberError.message };
-  return { ok: true as const, id: created.id };
+  return { ok: true as const, id };
 }
 
 export async function createGroup(title: string, memberIds: string[]) {
@@ -67,17 +70,20 @@ export async function createGroup(title: string, memberIds: string[]) {
   const invalid = validateGroupTitle(title);
   if (invalid) return { ok: false as const, error: invalid };
   const ids = uniqueMemberIds(profile.id, memberIds);
-  const { data: created, error } = await supabase
-    .from("conversations")
-    .insert({ kind: "group", title: title.trim(), dm_key: null, created_by: profile.id })
-    .select("id")
-    .single();
-  if (error || !created) return { ok: false as const, error: error?.message ?? "not in that chat" };
+  const id = crypto.randomUUID();
+  const { error } = await supabase.from("conversations").insert({
+    id,
+    kind: "group",
+    title: title.trim(),
+    dm_key: null,
+    created_by: profile.id,
+  });
+  if (error) return { ok: false as const, error: error.message };
   const { error: memberError } = await supabase
     .from("conversation_members")
-    .insert(ids.map((user_id) => ({ conversation_id: created.id, user_id })));
+    .insert(ids.map((user_id) => ({ conversation_id: id, user_id })));
   if (memberError) return { ok: false as const, error: memberError.message };
-  return { ok: true as const, id: created.id };
+  return { ok: true as const, id };
 }
 
 export async function sendMessage(conversationId: string, body: string) {
