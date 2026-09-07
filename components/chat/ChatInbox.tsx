@@ -7,6 +7,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { initials } from "@/lib/names";
 import type { InboxRow } from "@/lib/types";
 import { ChatTeardrop } from "@phosphor-icons/react";
+import { PushToggle } from "./PushToggle";
 import styles from "./Chat.module.scss";
 
 function shortTime(iso: string) {
@@ -29,6 +30,9 @@ export function ChatInbox({
       <div className={styles.inboxHead}>
         <h2>chat</h2>
         <Button onClick={onNew}>new</Button>
+      </div>
+      <div className={styles.promptWrap}>
+        <PushToggle />
       </div>
       {rows.length === 0 ? (
         <EmptyState icon={<ChatTeardrop size={28} />} title="no chats yet" body="start a dm or a group." />
