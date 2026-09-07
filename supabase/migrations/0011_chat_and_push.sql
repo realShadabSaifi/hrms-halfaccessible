@@ -146,6 +146,11 @@ create policy push_insert on public.push_subscriptions
   for insert to authenticated
   with check (user_id = auth.uid());
 
+create policy push_update on public.push_subscriptions
+  for update to authenticated
+  using (user_id = auth.uid())
+  with check (user_id = auth.uid());
+
 create policy push_delete on public.push_subscriptions
   for delete to authenticated
   using (user_id = auth.uid());
