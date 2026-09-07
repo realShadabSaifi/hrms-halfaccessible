@@ -69,13 +69,6 @@ export function ChatThread({
   }, [conversation.id, messages.length]);
 
   useEffect(() => {
-    navigator.serviceWorker?.controller?.postMessage({ type: "SET_ACTIVE_CHAT", tag: `chat:${conversation.id}` });
-    return () => {
-      navigator.serviceWorker?.controller?.postMessage({ type: "SET_ACTIVE_CHAT", tag: null });
-    };
-  }, [conversation.id]);
-
-  useEffect(() => {
     const supabase = createClient();
     const channel = supabase
       .channel(`chat:${conversation.id}`)

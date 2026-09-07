@@ -7,6 +7,7 @@ import { HeaderActionsProvider } from "./HeaderActions";
 import { PageHeader } from "./PageHeader";
 import { Sidebar } from "./Sidebar";
 import { MobileNav } from "./MobileNav";
+import { PushSync } from "./PushSync";
 import styles from "./AppShell.module.scss";
 
 export function AppShell({
@@ -27,6 +28,7 @@ export function AppShell({
 
   return (
     <HeaderActionsProvider>
+      <PushSync role={profile.role} />
       <div className={styles.shell}>
         <Sidebar profile={profile} unread={unread} unreadChat={unreadChat} settings={settings} />
         <div id="main" className={styles.main}>

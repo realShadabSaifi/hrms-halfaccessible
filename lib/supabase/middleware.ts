@@ -1,5 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
+import { isSessionlessPath } from "@/lib/layout/sessionless";
 
 function nextWithPath(request: NextRequest) {
   const headers = new Headers(request.headers);
@@ -12,6 +13,7 @@ export async function updateSession(request: NextRequest) {
   const path = request.nextUrl.pathname;
   const publicPaths = ["/login", "/signup", "/anon"];
   const isPublic =
+    isSessionlessPath(path) ||
     publicPaths.some((p) => path === p || path.startsWith(`${p}/`)) ||
     path.startsWith("/api/cron");
 
