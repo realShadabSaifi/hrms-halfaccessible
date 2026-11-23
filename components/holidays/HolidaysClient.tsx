@@ -54,18 +54,18 @@ export function HolidaysClient({
         </p>
         <div className="mb-3 flex items-center justify-between">
           <Button variant="ghost" type="button" onClick={() => shift(-1)}>
-            prev
+            ← previous
           </Button>
           <div className="text-sm font-bold">{monthLabel(year, month)}</div>
           <Button variant="ghost" type="button" onClick={() => shift(1)}>
-            next
+            next →
           </Button>
         </div>
         <div className="grid grid-cols-7 gap-1">
           {WEEKDAYS.map((d) => (
             <div
               key={d}
-              className="text-center text-[11.5px] font-bold uppercase tracking-wider text-ha-muted"
+              className="text-center text-xs font-bold uppercase tracking-wider text-ha-muted"
             >
               {d}
             </div>
@@ -77,7 +77,7 @@ export function HolidaysClient({
               <>
                 <span className="text-[13px] font-bold">{Number(cell.iso.slice(8))}</span>
                 {hit ? (
-                  <span className="block truncate text-[10px] text-ha-soft">{hit.title}</span>
+                  <span className="block truncate text-xs text-ha-soft">{hit.title}</span>
                 ) : null}
               </>
             );

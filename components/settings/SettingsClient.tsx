@@ -2,20 +2,28 @@
 
 import { useState } from "react";
 import { removeLogo, updateAppName, uploadLogo } from "@/app/(portal)/settings/actions";
+import { OfficeLocationCard } from "@/components/settings/OfficeLocationCard";
 import { BrandLockup } from "@/components/layout/BrandLockup";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
 import { Toast } from "@/components/ui/Toast";
 import { APP_NAME_MAX } from "@/lib/branding/validate";
+import type { OfficeLocation } from "@/lib/attendance/office";
 import type { AppSettings } from "@/lib/types";
 
-export function SettingsClient({ settings }: { settings: AppSettings }) {
+export function SettingsClient({
+  settings,
+  office,
+}: {
+  settings: AppSettings;
+  office: OfficeLocation | null;
+}) {
   const [toast, setToast] = useState<string | null>(null);
 
   return (
     <div className="pageEnter max-w-[560px]">
       <div className="rounded-ha-lg border border-ha-line bg-ha-surface p-[22px] shadow-[var(--ha-shadow-card)]">
-        <div className="font-[family-name:var(--font-display)] text-base font-bold">portal config</div>
+        <div className="font-[family-name:var(--font-display)] text-base font-bold">name and logo</div>
         <p className="mb-3.5 text-xs text-ha-muted">
           name and header logo. this is what people see on the way in.
         </p>
@@ -47,7 +55,7 @@ export function SettingsClient({ settings }: { settings: AppSettings }) {
           }}
         >
           <label className="block">
-            <span className="mb-1.5 block text-[11.5px] font-bold uppercase tracking-wider text-ha-muted">
+            <span className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-ha-muted">
               header logo
             </span>
             <input
@@ -57,7 +65,7 @@ export function SettingsClient({ settings }: { settings: AppSettings }) {
               required
               className="block w-full text-[13px]"
             />
-            <span className="mt-1.5 block text-[11.5px] text-ha-muted">
+            <span className="mt-1.5 block text-xs text-ha-muted">
               png, jpg, webp, or svg. 1 MB max.
             </span>
           </label>
@@ -77,6 +85,7 @@ export function SettingsClient({ settings }: { settings: AppSettings }) {
           </div>
         </form>
       </div>
+      <OfficeLocationCard office={office} onToast={setToast} />
       <Toast message={toast} />
     </div>
   );

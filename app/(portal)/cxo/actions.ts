@@ -12,6 +12,15 @@ export async function bookCxo(cxoId: string, topic: string, note: string) {
   if (!cxo || !canBookCxo(cxo.slots_remaining)) {
     return { ok: false as const, error: "no slots left" };
   }
+  const { data: existing } = await supabase
+    .from("cxo_bookings")
+    .select("id")
+    .eq("cxo_id", cxoId)
+    .eq("booker_id", profile.id)
+    .limit(1);
+  if (existing?.length) {
+    return { ok: false as const, error: "you already have a slot in this window" };
+  }
   const { error } = await supabase.from("cxo_bookings").insert({
     cxo_id: cxoId,
     booker_id: profile.id,

@@ -11,7 +11,7 @@ vi.mock("@/lib/push/register", () => ({
 describe("PushToggle", () => {
   it("offers desktop and phone pings", () => {
     render(<PushToggle />);
-    expect(screen.getByRole("switch", { name: /pings/i })).toBeInTheDocument();
-    expect(screen.getByText(/this computer and your phone/i)).toBeInTheDocument();
+    expect(screen.getByRole("switch", { name: /notifications/i })).toBeInTheDocument();
+    expect(screen.getByText(/this computer or your phone/i)).toBeInTheDocument();
   });
 });

@@ -21,13 +21,14 @@ import { matchesMember } from "@/lib/team/search";
 import type { ChatMessage, Conversation, ConversationMember, Profile } from "@/lib/types";
 import { ArrowLeft, ChatTeardrop, DotsThree, X } from "@phosphor-icons/react";
 import styles from "./Chat.module.scss";
+import { APP_TIME_ZONE } from "@/lib/time";
 
 type Person = { id: string; full_name: string; avatar_color: string };
 
 function stamp(iso: string) {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "";
-  return d.toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" });
+  return d.toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit", timeZone: APP_TIME_ZONE });
 }
 
 export function ChatThread({

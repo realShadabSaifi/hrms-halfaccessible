@@ -29,8 +29,15 @@ const BASE: NavItem[] = [
     id: "leaves",
     href: "/leaves",
     label: "leaves",
-    title: "leave management",
+    title: "leaves",
     sub: "inform → handoff → go. that's it.",
+  },
+  {
+    id: "attendance",
+    href: "/attendance",
+    label: "attendance",
+    title: "attendance",
+    sub: "every punch in and out.",
   },
   HOLIDAYS,
   {
@@ -43,15 +50,15 @@ const BASE: NavItem[] = [
   {
     id: "anon",
     href: "/anon",
-    label: "anon board",
-    title: "the anon board",
+    label: "anonymous board",
+    title: "anonymous board",
     sub: "read at your own risk",
   },
   {
     id: "team",
     href: "/team",
-    label: "the humans",
-    title: "the humans",
+    label: "people",
+    title: "people",
     sub: "people, zero corporate energy",
   },
   {
@@ -88,17 +95,17 @@ const USERS: NavItem = {
 const CXO_WINDOWS: NavItem = {
   id: "cxo-windows",
   href: "/cxo/manage",
-  label: "CXO windows",
-  title: "CXO windows",
-  sub: "drop a window.",
+  label: "CXO slots",
+  title: "CXO slots",
+  sub: "add time slots for people to book.",
 };
 
 const SETTINGS: NavItem = {
   id: "settings",
   href: "/settings",
-  label: "portal config",
-  title: "portal config",
-  sub: "name, logo. the face of the portal.",
+  label: "settings",
+  title: "settings",
+  sub: "name, logo, office location.",
 };
 
 export function getNavItems(

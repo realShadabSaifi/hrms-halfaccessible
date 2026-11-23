@@ -15,6 +15,7 @@ import { sortAnnouncements } from "@/lib/announcements/pin";
 import { canInsertAnnouncement } from "@/lib/rls/policies";
 import type { ProfileRole } from "@/lib/types";
 import { Megaphone } from "@phosphor-icons/react";
+import { APP_TIME_ZONE } from "@/lib/time";
 
 const CATS = ["General", "Culture", "Policy", "Shoutout", "Event", "Update"];
 const EMOJIS = ["👍", "🔥", "❤️", "🎉", "💯"];
@@ -78,7 +79,7 @@ export function AnnouncementsClient({
             <Chip active={pin} onClick={() => setPin((v) => !v)}>
               pin it
             </Chip>
-            <Button type="submit">post it</Button>
+            <Button type="submit">post announcement</Button>
           </div>
         </form>
       ) : null}
@@ -101,16 +102,16 @@ export function AnnouncementsClient({
           >
             <div className="mb-2 flex items-center gap-2.5">
               {an.pinned ? (
-                <span className="rounded-full bg-ha-accent px-2.5 py-0.5 text-[11px] font-bold text-white">
+                <span className="rounded-full bg-ha-accent px-2.5 py-0.5 text-xs font-bold text-white">
                   📌 PINNED
                 </span>
               ) : null}
-              <span className="rounded-full bg-[rgba(0,155,141,.1)] px-2.5 py-0.5 text-[11px] font-bold text-[#00816F]">
+              <span className="rounded-full bg-[rgba(0,155,141,.1)] px-2.5 py-0.5 text-xs font-bold text-[#00816F]">
                 {an.category}
               </span>
               <span className="flex-1" />
-              <span className="text-[11.5px] text-ha-muted">
-                {new Date(an.created_at).toLocaleDateString("en-IN", { month: "short", day: "numeric" })}
+              <span className="text-xs text-ha-muted">
+                {new Date(an.created_at).toLocaleDateString("en-IN", { month: "short", day: "numeric", timeZone: APP_TIME_ZONE })}
               </span>
             </div>
             <h2 className="mb-1.5 font-[family-name:var(--font-display)] text-[17px] font-bold">{an.title}</h2>
@@ -125,7 +126,7 @@ export function AnnouncementsClient({
                   className="inline-flex min-h-[34px] items-center gap-1 rounded-full border border-ha-line px-3 text-[13px]"
                   onClick={() => reactAnnouncement(an.id, e)}
                 >
-                  {e} <span className="text-[11.5px] tabular-nums">{an.reacts[e] ?? 0}</span>
+                  {e} <span className="text-xs tabular-nums">{an.reacts[e] ?? 0}</span>
                 </button>
               ))}
             </div>

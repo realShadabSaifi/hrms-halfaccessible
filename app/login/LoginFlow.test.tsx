@@ -19,10 +19,6 @@ vi.mock("./actions", () => ({
   verifyLoginAction: vi.fn(),
 }));
 
-vi.mock("./afterAuth", () => ({
-  pathAfterAuth: vi.fn(),
-}));
-
 const settings = { app_name: "halfAccessible", logo_path: null, logo_url: null };
 
 describe("LoginFlow", () => {

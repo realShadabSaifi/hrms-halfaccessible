@@ -2,17 +2,14 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { AuthShell } from "@/components/layout/AuthShell";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
 import type { AppSettings } from "@/lib/types";
-import { pathAfterAuth } from "@/app/login/afterAuth";
 import { confirmSignupAction, startSignupAction } from "./actions";
 import styles from "./SignupFlow.module.scss";
 
 export function SignupFlow({ settings }: { settings: AppSettings }) {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [qr, setQr] = useState<string | null>(null);
   const [secret, setSecret] = useState<string | null>(null);
@@ -57,8 +54,10 @@ export function SignupFlow({ settings }: { settings: AppSettings }) {
       return;
     }
     setDone(true);
-    router.push(await pathAfterAuth());
-    router.refresh();
+    // Full navigation to "/"; the portal layout sends each role to its own home.
+    // (Another server action here would POST to this auth page, which the middleware now
+    // redirects for a signed-in user, so it never resolved and people sat on "redirecting…".)
+    window.location.assign("/");
   }
 
   return (
@@ -107,7 +106,7 @@ export function SignupFlow({ settings }: { settings: AppSettings }) {
             <TextField
               className={styles.authField}
               tone="otp"
-              label="first code"
+              label="6-digit code"
               name="code"
               inputMode="numeric"
               autoComplete="one-time-code"
@@ -117,7 +116,7 @@ export function SignupFlow({ settings }: { settings: AppSettings }) {
             />
             {error ? <p className={styles.error}>{error}</p> : null}
             <Button type="submit" shape="auth" pending={pending}>
-              lock it in
+              verify and finish
             </Button>
           </form>
         </>

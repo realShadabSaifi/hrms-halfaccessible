@@ -23,7 +23,7 @@ export function PushToggle() {
     <>
       {card ? (
         <div className={styles.prompt}>
-          turn on pings here too — desktop or phone. on iphone, add the portal to your home screen first.
+          turn on notifications here too — desktop or phone. on iphone, add the portal to your home screen first.
           <button type="button" className={styles.close} aria-label="dismiss" onClick={() => setCard(false)}>
             ×
           </button>
@@ -31,8 +31,8 @@ export function PushToggle() {
       ) : null}
       <Toggle
         checked={on}
-        label="pings"
-        hint={hint ?? "this computer and your phone. chrome, edge, and firefox work in the tab. iphone needs add to home screen."}
+        label="notifications"
+        hint={hint ?? "get a ping on this computer or your phone when someone messages you. on iphone, add the portal to your home screen first."}
         onChange={(next) => {
           void (async () => {
             if (next) {

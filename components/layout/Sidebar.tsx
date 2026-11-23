@@ -10,6 +10,7 @@ import {
   CaretRight,
   Crown,
   Detective,
+  Fingerprint,
   GearSix,
   Hamburger,
   House,
@@ -22,7 +23,7 @@ import {
 } from "@phosphor-icons/react";
 import { signOut } from "@/app/login/signOut";
 import { Avatar } from "@/components/ui/Avatar";
-import { initials } from "@/lib/names";
+import { initials, roleLabel } from "@/lib/names";
 import { getNavItems } from "@/lib/layout/navItems";
 import { readSidebarCollapsed, writeSidebarCollapsed } from "@/lib/layout/sidebarCollapsed";
 import type { AppSettings, Profile } from "@/lib/types";
@@ -33,6 +34,7 @@ const icons: Record<string, React.ComponentType<{ size?: number }>> = {
   dash: House,
   chat: ChatTeardrop,
   leaves: Leaf,
+  attendance: Fingerprint,
   holidays: CalendarBlank,
   burgers: Hamburger,
   anon: Detective,
@@ -123,13 +125,13 @@ export function Sidebar({
       </nav>
       <div className={styles.spacer} />
       {process.env.NEXT_PUBLIC_DEV_ROLE_SWITCH === "1" ? (
-        <div className={styles.dev}>viewing as {profile.role} (dev)</div>
+        <div className={styles.dev}>viewing as {roleLabel(profile.role)} (dev)</div>
       ) : null}
       <div className={styles.me}>
         <Avatar initials={initials(profile.full_name)} color={profile.avatar_color} />
         <div className={styles.meCopy}>
           <div className={styles.name}>{profile.full_name || "new human"}</div>
-          <div className={styles.role}>{profile.role}</div>
+          <div className={styles.role}>{roleLabel(profile.role)}</div>
           <form action={signOut}>
             <button type="submit" className={styles.logout}>
               log out

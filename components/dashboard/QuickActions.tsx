@@ -5,7 +5,7 @@ import styles from "./QuickActions.module.scss";
 const actions = [
   { href: "/leaves", label: "request leave", sub: "inform → handoff → go", Icon: CalendarBlank },
   { href: "/burgers", label: "vote on holidays", sub: "democracy but delicious", Icon: Hamburger },
-  { href: "/anon", label: "drop an anon note", sub: "no names, just vibes", Icon: ChatTeardrop },
+  { href: "/anon", label: "post anonymously", sub: "no names, just vibes", Icon: ChatTeardrop },
 ];
 
 export function QuickActions() {

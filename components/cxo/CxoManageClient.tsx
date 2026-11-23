@@ -8,7 +8,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { TextField } from "@/components/ui/TextField";
 import { Toast } from "@/components/ui/Toast";
 import type { CxoRosterPerson } from "@/lib/cxo/person";
-import { initials } from "@/lib/names";
+import { initials, plural } from "@/lib/names";
 import { CalendarBlank } from "@phosphor-icons/react";
 import fieldStyles from "@/components/ui/TextField/TextField.module.scss";
 
@@ -44,7 +44,7 @@ export function CxoManageClient({
         }}
       >
         <div className="mb-3 font-[family-name:var(--font-display)] text-base font-bold">
-          drop a window
+          add CXO time slots
         </div>
         <label className={fieldStyles.wrap} htmlFor="cxo_id">
           <span className={fieldStyles.label}>cxo</span>
@@ -63,12 +63,12 @@ export function CxoManageClient({
           ) : null}
         </label>
         <div className="h-2.5" />
-        <TextField name="start" label="start" type="datetime-local" step={900} required />
+        <TextField name="start" label="first slot starts" type="datetime-local" step={900} required />
         <div className="h-2.5" />
-        <TextField name="slots" label="slots" type="number" min={1} max={20} defaultValue={1} required />
+        <TextField name="slots" label="number of 15-minute slots" type="number" min={1} max={20} defaultValue={1} required />
         <div className="mt-3.5">
           <Button type="submit" disabled={people.length === 0}>
-            drop it
+            add slots
           </Button>
         </div>
       </form>
@@ -88,7 +88,7 @@ export function CxoManageClient({
               <span className="min-w-0 flex-1">
                 <span className="block text-[13.5px] font-semibold">{cx.name}</span>
                 <span className="block text-xs text-ha-muted">
-                  {cx.title} · {cx.window_label} · {cx.slots_remaining} slots
+                  {cx.title} · {cx.window_label} · {plural(cx.slots_remaining, "slot")}
                 </span>
               </span>
             </div>
