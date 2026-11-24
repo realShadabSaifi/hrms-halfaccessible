@@ -1,18 +1,28 @@
 import type { Metadata } from "next";
-import { Baloo_2, Nunito } from "next/font/google";
+import localFont from "next/font/local";
 import { getAppSettings } from "@/lib/branding/settings";
 import "./globals.scss";
 
-const baloo = Baloo_2({
-  subsets: ["latin"],
-  weight: ["500", "600", "700"],
+// Self-hosted (from @fontsource) instead of next/font/google, so builds don't depend on
+// downloading from Google Fonts. Same families, weights and latin subset as before.
+// next/font needs literal options, hence the spelled-out paths.
+const baloo = localFont({
+  src: [
+    { path: "../node_modules/@fontsource/baloo-2/files/baloo-2-latin-500-normal.woff2", weight: "500", style: "normal" },
+    { path: "../node_modules/@fontsource/baloo-2/files/baloo-2-latin-600-normal.woff2", weight: "600", style: "normal" },
+    { path: "../node_modules/@fontsource/baloo-2/files/baloo-2-latin-700-normal.woff2", weight: "700", style: "normal" },
+  ],
   variable: "--font-baloo",
   display: "swap",
 });
 
-const nunito = Nunito({
-  subsets: ["latin"],
-  weight: ["400", "600", "700", "800"],
+const nunito = localFont({
+  src: [
+    { path: "../node_modules/@fontsource/nunito/files/nunito-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "../node_modules/@fontsource/nunito/files/nunito-latin-600-normal.woff2", weight: "600", style: "normal" },
+    { path: "../node_modules/@fontsource/nunito/files/nunito-latin-700-normal.woff2", weight: "700", style: "normal" },
+    { path: "../node_modules/@fontsource/nunito/files/nunito-latin-800-normal.woff2", weight: "800", style: "normal" },
+  ],
   variable: "--font-nunito",
   display: "swap",
 });
