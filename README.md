@@ -48,6 +48,30 @@ Vercel cron (see `vercel.json`):
 
 Send `Authorization: Bearer $CRON_SECRET`.
 
+## Database migrations
+
+New files in `supabase/migrations` are applied to production by the
+[`Supabase migrations`](.github/workflows/supabase-migrations.yml) GitHub Action whenever they land on
+`main`. It can also be run by hand from the Actions tab. Vercel deploys the app from the same merge, so
+keep migrations backward-compatible: add new tables and columns first, remove old ones in a later release.
+
+One-time setup, in GitHub → Settings → Secrets and variables → Actions:
+
+- `SUPABASE_ACCESS_TOKEN` - a personal access token (supabase.com/dashboard/account/tokens) from an
+  account that has access to the project
+- `SUPABASE_PROJECT_ID` - the project ref, the `xxxx` in `https://xxxx.supabase.co`
+- `SUPABASE_DB_PASSWORD` - the project's database password
+
+If migrations were ever run by hand in the SQL editor, Supabase doesn't know they were applied and the
+action will try to run them again. Mark them as applied once (version = the number at the start of the
+file name):
+
+```bash
+npx supabase link --project-ref <project-ref>
+npx supabase migration list --linked          # "Remote" column empty = not recorded
+npx supabase migration repair --status applied 0001 0002 0003   # ...and so on
+```
+
 ## Design
 
 Written source of truth: [`docs/DESIGN.md`](docs/DESIGN.md). Visual reference: `Gen Z Portal Design/halfAccessible Portal v2.dc.html`.
