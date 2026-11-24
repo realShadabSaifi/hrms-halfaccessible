@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import type { AppSettings } from "@/lib/types";
 
@@ -18,7 +19,8 @@ export function normalizeSettings(
   return { app_name, logo_path, logo_url: logoPublicUrl(logo_path) };
 }
 
-export async function getAppSettings(): Promise<AppSettings> {
+/** Cached per request: the root layout, its metadata and the portal layout all need it. */
+export const getAppSettings = cache(async (): Promise<AppSettings> => {
   try {
     const supabase = await createClient();
     const { data } = await supabase
@@ -30,4 +32,4 @@ export async function getAppSettings(): Promise<AppSettings> {
   } catch {
     return normalizeSettings(null);
   }
-}
+});

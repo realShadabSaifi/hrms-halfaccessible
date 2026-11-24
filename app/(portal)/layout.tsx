@@ -11,33 +11,24 @@ export default async function PortalLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const profile = await requireProfile();
-  const settings = await getAppSettings();
-  const supabase = await createClient();
-  let unread = 0;
-  if (profile.ann_seen_at) {
-    const { count } = await supabase
-      .from("announcements")
-      .select("id", { count: "exact", head: true })
-      .gt("created_at", profile.ann_seen_at);
-    unread = count ?? 0;
-  } else {
-    const { count } = await supabase
-      .from("announcements")
-      .select("id", { count: "exact", head: true });
-    unread = count ?? 0;
-  }
-
-  const h = await headers();
+  const [profile, h] = await Promise.all([requireProfile(), headers()]);
   const path = h.get("x-pathname") ?? "/";
   if (!canVisitPath(profile.role, path)) {
     redirect(afterAuthPath(profile.role));
   }
 
-  const { data: unreadChat } = await supabase.rpc("unread_chat_count");
+  const supabase = await createClient();
+  let announcements = supabase.from("announcements").select("id", { count: "exact", head: true });
+  if (profile.ann_seen_at) announcements = announcements.gt("created_at", profile.ann_seen_at);
+  // independent lookups, so fetch them together rather than one after another
+  const [settings, { count: unread }, { data: unreadChat }] = await Promise.all([
+    getAppSettings(),
+    announcements,
+    supabase.rpc("unread_chat_count"),
+  ]);
 
   return (
-    <AppShell profile={profile} unread={unread} unreadChat={unreadChat ?? 0} settings={settings}>
+    <AppShell profile={profile} unread={unread ?? 0} unreadChat={unreadChat ?? 0} settings={settings}>
       {children}
     </AppShell>
   );

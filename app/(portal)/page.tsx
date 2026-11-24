@@ -39,6 +39,7 @@ export default async function DashboardPage() {
     { data: tripPoll },
     { data: office },
     { data: punches },
+    { data: voting },
   ] = await Promise.all([
       supabase
         .from("leave_requests")
@@ -64,6 +65,13 @@ export default async function DashboardPage() {
         .eq("user_id", profile.id)
         .or(`punch_out_at.is.null,punch_out_at.gte.${dayStart}`)
         .order("punch_in_at", { ascending: false }),
+      supabase
+        .from("burger_holidays")
+        .select("voting_closes_at, title")
+        .eq("status", "voting")
+        .order("voting_closes_at")
+        .limit(1)
+        .maybeSingle(),
     ]);
 
   const sessions = punches ?? [];
@@ -77,13 +85,7 @@ export default async function DashboardPage() {
     ? new Date(Math.max(new Date(open.punch_in_at).getTime(), new Date(dayStart).getTime())).toISOString()
     : null;
 
-  const { data: voting } = await supabase
-    .from("burger_holidays")
-    .select("voting_closes_at, title")
-    .eq("status", "voting")
-    .order("voting_closes_at")
-    .limit(1)
-    .maybeSingle();
+
 
   const today = new Date().toLocaleDateString("en-IN", {
     weekday: "long",
