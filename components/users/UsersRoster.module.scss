@@ -105,12 +105,10 @@
 .title {
   display: block;
   margin-top: 2px;
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 600;
   line-height: 1.3;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .pill {
@@ -119,7 +117,7 @@
   border-radius: 99px;
   background: $accent-wash;
   padding: 2px 8px;
-  font-size: 10.5px;
+  font-size: 12px;
   font-weight: 700;
   vertical-align: middle;
 }
@@ -184,5 +182,12 @@
 @media (prefers-reduced-motion: reduce) {
   .card:hover {
     transform: none;
+  }
+}
+
+/* on phones, put "manage" under the card instead of pushing the row off-screen */
+@media (max-width: 767px) {
+  .row {
+    flex-wrap: wrap;
   }
 }

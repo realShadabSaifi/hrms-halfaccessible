@@ -31,10 +31,10 @@ export function AppShell({
       <PushSync role={profile.role} />
       <div className={styles.shell}>
         <Sidebar profile={profile} unread={unread} unreadChat={unreadChat} settings={settings} />
-        <div id="main" className={styles.main}>
+        <main id="main" className={styles.main}>
           <PageHeader pathname={pathname} role={profile.role} settings={settings} />
           {children}
-        </div>
+        </main>
         <MobileNav items={items} />
       </div>
     </HeaderActionsProvider>

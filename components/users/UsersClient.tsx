@@ -14,10 +14,11 @@ import { X } from "@phosphor-icons/react";
 import { managerToast } from "@/lib/hierarchy/copy";
 import { buildTree, type TreeNode } from "@/lib/hierarchy/tree";
 import { validateManager } from "@/lib/hierarchy/validate";
-import { initials } from "@/lib/names";
+import { initials, jobLine, roleLabel } from "@/lib/names";
 import { AVATAR_SWATCHES, parseSkills } from "@/lib/profiles/details";
 import { isVisiblePerson } from "@/lib/profiles/visible";
 import type { Department, Profile, ProfileRole } from "@/lib/types";
+import fieldStyles from "@/components/ui/TextField/TextField.module.scss";
 import rosterStyles from "./UsersRoster.module.scss";
 
 const ROLES: ProfileRole[] = ["employee", "lead", "admin", "cxo"];
@@ -47,6 +48,8 @@ type RosterTreeProps = {
   onDraft: (draft: EditDraft) => void;
   onToast: (msg: string | null) => void;
   onCloseDetails: () => void;
+  people: { id: string; full_name: string }[];
+  onAssignManager: (personId: string, managerId: string | null) => void;
 };
 
 function RosterTree({
@@ -65,6 +68,8 @@ function RosterTree({
   onDraft,
   onToast,
   onCloseDetails,
+  people,
+  onAssignManager,
 }: RosterTreeProps) {
   return (
     <>
@@ -111,7 +116,7 @@ function RosterTree({
                     {u.active ? null : <span className={rosterStyles.pill}>away</span>}
                   </span>
                   <span className={rosterStyles.title} style={{ color: u.avatar_color }}>
-                    {u.designation} · {u.department}
+                    {jobLine(u.designation, u.department)}
                   </span>
                 </span>
               </div>
@@ -121,16 +126,34 @@ function RosterTree({
             </div>
             {open && draft ? (
               <div className={rosterStyles.panel}>
-                <div className="mb-2 text-[11.5px] font-bold uppercase tracking-wider text-ha-muted">
+                <div className="mb-2 text-xs font-bold uppercase tracking-wider text-ha-muted">
                   portal role
                 </div>
                 <div className="mb-4 flex flex-wrap gap-1.5">
                   {ROLES.map((r) => (
                     <Chip key={r} active={u.role === r} onClick={() => setRole(u.id, r)}>
-                      {r}
+                      {roleLabel(r)}
                     </Chip>
                   ))}
                 </div>
+                <label className={`${fieldStyles.wrap} mb-4`} htmlFor={`manager-${u.id}`}>
+                  <span className={fieldStyles.label}>reports to</span>
+                  <select
+                    id={`manager-${u.id}`}
+                    className={fieldStyles.input}
+                    value={u.manager_id ?? ""}
+                    onChange={(e) => onAssignManager(u.id, e.target.value || null)}
+                  >
+                    <option value="">no one (top of the tree)</option>
+                    {people
+                      .filter((p) => p.id !== u.id)
+                      .map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.full_name}
+                        </option>
+                      ))}
+                  </select>
+                </label>
                 <div className={rosterStyles.actions}>
                   <Button variant="ghost" onClick={() => resetAuthenticator(u.id)}>
                     reset authenticator
@@ -156,7 +179,7 @@ function RosterTree({
                   value={draft.designation}
                   onChange={(e) => onDraft({ ...draft, designation: e.target.value })}
                 />
-                <div className="mb-2 mt-3 text-[11.5px] font-bold uppercase tracking-wider text-ha-muted">
+                <div className="mb-2 mt-3 text-xs font-bold uppercase tracking-wider text-ha-muted">
                   department
                 </div>
                 <div className="mb-3.5 flex flex-wrap gap-1.5">
@@ -183,7 +206,7 @@ function RosterTree({
                   onChange={(e) => onDraft({ ...draft, bio: e.target.value })}
                   rows={3}
                 />
-                <div className="mb-2 mt-3 text-[11.5px] font-bold uppercase tracking-wider text-ha-muted">
+                <div className="mb-2 mt-3 text-xs font-bold uppercase tracking-wider text-ha-muted">
                   avatar color
                 </div>
                 <div className="mb-4 flex gap-2">
@@ -243,6 +266,8 @@ function RosterTree({
                       onDraft={onDraft}
                       onToast={onToast}
                       onCloseDetails={onCloseDetails}
+                      people={people}
+                      onAssignManager={onAssignManager}
                     />
                   </div>
                 ))}
@@ -294,7 +319,7 @@ export function UsersClient({
   const addButton = useMemo(
     () => (
       <Button onClick={openAdd} aria-haspopup="dialog">
-        add human
+        add person
       </Button>
     ),
     [openAdd],
@@ -336,29 +361,32 @@ export function UsersClient({
     return visible.find((r) => r.id === id);
   }
 
-  async function dropOn(targetId: string | null) {
-    if (!dragId) return;
+  async function assignManager(personId: string, targetId: string | null) {
     const err = validateManager(
-      dragId,
+      personId,
       targetId,
       visible.map((r) => ({ id: r.id, manager_id: r.manager_id })),
     );
     if (err) {
       setToast(err);
-      setDragId(null);
-      setOverId(null);
       return;
     }
-    const r = await setManager(dragId, targetId);
-    const person = personById(dragId);
-    const manager = targetId ? personById(targetId) : null;
-    setDragId(null);
-    setOverId(null);
+    const r = await setManager(personId, targetId);
     if (!r.ok) {
       setToast(r.error ?? "nope");
       return;
     }
+    const person = personById(personId);
+    const manager = targetId ? personById(targetId) : null;
     if (person) setToast(managerToast(person.full_name, manager?.full_name ?? null));
+  }
+
+  async function dropOn(targetId: string | null) {
+    if (!dragId) return;
+    const personId = dragId;
+    setDragId(null);
+    setOverId(null);
+    await assignManager(personId, targetId);
   }
 
   function onRowKeyDown(e: KeyboardEvent, id: string | null) {
@@ -382,13 +410,14 @@ export function UsersClient({
       <div className="rounded-ha-lg border border-ha-line bg-ha-surface p-[22px] shadow-[var(--ha-shadow-card)]">
         <div className="font-[family-name:var(--font-display)] text-base font-bold">the roster</div>
         <p className="mb-5 text-xs text-ha-muted">
-          drag onto a person to nest them. manage opens roles and access. deactivating keeps their history.
+          open <strong>manage</strong> to change someone&apos;s role, who they report to, or their details. you can also
+          drag a person onto their new manager. deactivating keeps their history.
         </p>
         <div className={rosterStyles.roster}>
           <div
             role="button"
             tabIndex={0}
-            aria-label="drop here to make them a root"
+            aria-label="drop here so they report to no one"
             onDragOver={(e) => {
               e.preventDefault();
               setOverId("unassign");
@@ -400,7 +429,7 @@ export function UsersClient({
             onKeyDown={(e) => onRowKeyDown(e, null)}
             className={`${rosterStyles.drop} ${overId === "unassign" && dragId ? rosterStyles.dropHot : ""}`}
           >
-            drop here to make them a root
+            drop here so they report to no one
           </div>
           <div className={rosterStyles.forest}>
             <RosterTree
@@ -422,6 +451,8 @@ export function UsersClient({
                 setEditingId(null);
                 setDraft(null);
               }}
+              people={visible.filter((r) => r.active)}
+              onAssignManager={(personId, managerId) => void assignManager(personId, managerId)}
             />
           </div>
         </div>
@@ -457,7 +488,7 @@ export function UsersClient({
               </div>
               <button
                 type="button"
-                aria-label="close add human"
+                aria-label="close add person"
                 className="flex h-9 w-9 items-center justify-center rounded-full bg-ha-accent-wash text-ha-ink"
                 onClick={() => setAdding(false)}
               >
@@ -486,7 +517,7 @@ export function UsersClient({
               <TextField name="email" label="email" type="email" required />
               <div className="h-3" />
               <TextField name="title" label="designation" placeholder="e.g. Chaos Coordinator" />
-              <div className="mb-2 mt-3 text-[11.5px] font-bold uppercase tracking-wider text-ha-muted">
+              <div className="mb-2 mt-3 text-xs font-bold uppercase tracking-wider text-ha-muted">
                 department
               </div>
               <div className="mb-3.5 flex flex-wrap gap-1.5">
@@ -496,18 +527,18 @@ export function UsersClient({
                   </Chip>
                 ))}
               </div>
-              <div className="mb-2 text-[11.5px] font-bold uppercase tracking-wider text-ha-muted">
+              <div className="mb-2 text-xs font-bold uppercase tracking-wider text-ha-muted">
                 portal role
               </div>
               <div className="mb-4 flex gap-1.5">
                 {ROLES.map((r) => (
                   <Chip key={r} active={role === r} onClick={() => setRoleState(r)}>
-                    {r}
+                    {roleLabel(r)}
                   </Chip>
                 ))}
               </div>
               <Button type="submit" className="w-full">
-                add human
+                add person
               </Button>
             </form>
           </div>

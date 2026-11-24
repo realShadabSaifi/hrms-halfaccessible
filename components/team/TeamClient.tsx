@@ -12,7 +12,7 @@ import { TextArea } from "@/components/ui/TextArea";
 import { TextField } from "@/components/ui/TextField";
 import { Toast } from "@/components/ui/Toast";
 import { buildTree, filterTree, type TreeNode } from "@/lib/hierarchy/tree";
-import { initials } from "@/lib/names";
+import { initials, jobLine } from "@/lib/names";
 import { AVATAR_SWATCHES, parseSkills } from "@/lib/profiles/details";
 import type { Department, Profile } from "@/lib/types";
 import { ArrowLeft, MagnifyingGlass, X } from "@phosphor-icons/react";
@@ -39,7 +39,7 @@ function PersonCard({
         <span className={treeStyles.copy}>
           <span className={treeStyles.name}>{person.full_name}</span>
           <span className={treeStyles.title} style={{ color: person.avatar_color }}>
-            {person.designation} · {person.department}
+            {jobLine(person.designation, person.department)}
           </span>
         </span>
       </button>
@@ -124,6 +124,8 @@ export function TeamClient({
     <div className="pageEnter">
       <input
         className="mb-5 min-h-11 w-full max-w-[420px] rounded-ha-md border border-ha-line bg-ha-surface px-4 text-ha-ink"
+        aria-label="search people"
+        type="search"
         placeholder="search by name, role, dept, or skill…"
         value={q}
         onChange={(e) => setQ(e.target.value)}
@@ -164,7 +166,7 @@ export function TeamClient({
                   {editing ? fullName || open.full_name : open.full_name}
                 </div>
                 <div className="mt-1 text-[13.5px] font-semibold" style={{ color: editing ? color : open.avatar_color }}>
-                  {editing ? `${designation} · ${department}` : `${open.designation} · ${open.department}`}
+                  {editing ? jobLine(designation, department) : jobLine(open.designation, open.department)}
                 </div>
               </div>
               <button
@@ -181,7 +183,7 @@ export function TeamClient({
                 <TextField label="full name" value={fullName} onChange={(e) => setFullName(e.target.value)} />
                 <div className="h-3" />
                 <TextField label="designation" value={designation} onChange={(e) => setDesignation(e.target.value)} />
-                <div className="mb-2 mt-3 text-[11.5px] font-bold uppercase tracking-wider text-ha-muted">
+                <div className="mb-2 mt-3 text-xs font-bold uppercase tracking-wider text-ha-muted">
                   department
                 </div>
                 <div className="mb-3.5 flex flex-wrap gap-1.5">
@@ -199,7 +201,7 @@ export function TeamClient({
                 />
                 <div className="h-3" />
                 <TextArea label="bio" value={bio} onChange={(e) => setBio(e.target.value)} rows={3} />
-                <div className="mb-2 mt-3 text-[11.5px] font-bold uppercase tracking-wider text-ha-muted">
+                <div className="mb-2 mt-3 text-xs font-bold uppercase tracking-wider text-ha-muted">
                   avatar color
                 </div>
                 <div className="mb-4 flex gap-2">
@@ -243,7 +245,7 @@ export function TeamClient({
                 <p className="mb-4 text-sm leading-relaxed text-ha-ink/80">{open.bio || "no bio yet."}</p>
                 <div className="mb-4 flex flex-wrap gap-1.5">
                   {open.skills.map((s) => (
-                    <span key={s} className="rounded-full bg-ha-accent-wash px-2.5 py-1 text-[11px] font-semibold">
+                    <span key={s} className="rounded-full bg-ha-accent-wash px-2.5 py-1 text-xs font-semibold">
                       {s}
                     </span>
                   ))}

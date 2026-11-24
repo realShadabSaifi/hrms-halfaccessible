@@ -46,7 +46,7 @@ export function LeaveForm({
   return (
     <form action={onSubmit} className={styles.card}>
       <div className={styles.title}>request a leave 📝</div>
-      <div className="mb-2 text-[11.5px] font-bold uppercase tracking-wider text-ha-muted">
+      <div className="mb-2 text-xs font-bold uppercase tracking-wider text-ha-muted">
         type
       </div>
       <div className={styles.chips}>
@@ -62,7 +62,7 @@ export function LeaveForm({
         <TextField label="to" name="to" type="date" required />
       </div>
       {holidayLabels.length ? (
-        <p className="mt-2 text-[11.5px] text-ha-muted">
+        <p className="mt-2 text-xs text-ha-muted">
           holidays: {holidayLabels.join(" · ")}
         </p>
       ) : null}
@@ -92,7 +92,7 @@ export function LeaveForm({
         />
       ) : null}
       <Button type="submit" className="mt-4 w-full">
-        send it
+        submit request
       </Button>
       <Toast message={toast} />
     </form>

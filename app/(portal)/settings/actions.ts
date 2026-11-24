@@ -3,6 +3,7 @@
 import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { requireRole } from "@/lib/auth";
+import { validateCoords, validateRadius } from "@/lib/attendance/geofence";
 import { logoExtension, validateAppName, validateLogoFile } from "@/lib/branding/validate";
 import { createAdminClient } from "@/lib/supabase/admin";
 
@@ -93,5 +94,29 @@ export async function removeLogo() {
     .eq("id", 1);
   if (error) return { ok: false as const, error: error.message };
   revalidateBrand();
+  return { ok: true as const };
+}
+
+export async function updateOfficeLocation(formData: FormData) {
+  const me = await requireRole(["super_admin"]);
+  const lat = Number(formData.get("lat"));
+  const lng = Number(formData.get("lng"));
+  const radius = Number(formData.get("radius_m"));
+  const label = String(formData.get("label") ?? "").trim().slice(0, 60) || "office";
+  const err = validateCoords(lat, lng) ?? validateRadius(radius);
+  if (err) return { ok: false as const, error: err };
+  const admin = createAdminClient();
+  const { error } = await admin.from("office_location").upsert({
+    id: 1,
+    label,
+    lat,
+    lng,
+    radius_m: radius,
+    updated_at: new Date().toISOString(),
+    updated_by: me.id,
+  });
+  if (error) return { ok: false as const, error: error.message };
+  revalidatePath("/settings");
+  revalidatePath("/");
   return { ok: true as const };
 }

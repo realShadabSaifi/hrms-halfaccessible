@@ -72,7 +72,7 @@ export function BurgersClient({
             <EmptyState
               icon={<Hamburger size={28} />}
               title="no burgers on the grill"
-              body="propose a date on the right. majority yes makes it a holiday."
+              body="pick a date in &quot;propose one&quot;. if most people vote yes, it becomes a holiday."
             />
           ) : null}
           {holidays.map((h) => {
@@ -121,22 +121,22 @@ export function BurgersClient({
                       🍔 yes, holiday
                     </Button>
                     <Button variant="ghost" className="flex-1" onClick={() => voteHoliday(h.id, "no")}>
-                      👎 nah
+                      👎 no
                     </Button>
                   </div>
                 ) : null}
                 {h.myVote ? (
                   <div className="mt-2.5 text-[12.5px] font-semibold text-ha-accent-text">
-                    you voted {h.myVote === "yes" ? "yes" : "nah"}
+                    you voted {h.myVote === "yes" ? "yes" : "no"}
                   </div>
                 ) : null}
                 {isAdminRole(role) && h.status === "voting" ? (
                   <div className="mt-3 flex gap-2 border-t border-dashed border-ha-line pt-2.5">
                     <Button variant="success" onClick={() => overrideHoliday(h.id, "approved")}>
-                      force approve
+                      approve now
                     </Button>
                     <Button variant="danger" onClick={() => overrideHoliday(h.id, "rejected")}>
-                      force reject
+                      reject now
                     </Button>
                   </div>
                 ) : null}
@@ -155,9 +155,9 @@ export function BurgersClient({
           <p className="mb-4 text-xs text-ha-muted">anyone can. that&apos;s the point. voting stays open 48h.</p>
           <TextField label="date" name="date" type="date" required />
           <div className="h-3" />
-          <TextArea label="the pitch" name="reason" rows={3} placeholder="why does the team deserve this?" />
+          <TextArea label="reason" name="reason" rows={3} placeholder="why does the team deserve this?" />
           <Button type="submit" className="mt-4 w-full">
-            open the vote
+            start the vote
           </Button>
         </form>
       </div>

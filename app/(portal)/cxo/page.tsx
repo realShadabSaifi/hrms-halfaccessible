@@ -15,6 +15,7 @@ export default async function CxoPage() {
   return (
     <CxoClient
       cxos={cxos ?? []}
+      bookedIds={[...new Set((bookings ?? []).map((b) => b.cxo_id))]}
       mine={(bookings ?? []).map((b) => ({
         id: b.id,
         who: nameOf[b.cxo_id] ?? "CXO",

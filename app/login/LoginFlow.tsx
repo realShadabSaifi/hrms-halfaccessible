@@ -7,7 +7,6 @@ import { AuthShell } from "@/components/layout/AuthShell";
 import { Button } from "@/components/ui/Button";
 import { TextField } from "@/components/ui/TextField";
 import type { AppSettings } from "@/lib/types";
-import { pathAfterAuth } from "./afterAuth";
 import { startLoginAction, verifyLoginAction } from "./actions";
 import styles from "./LoginFlow.module.scss";
 
@@ -60,8 +59,10 @@ export function LoginFlow({ settings }: { settings: AppSettings }) {
       return;
     }
     setDone(true);
-    router.push(await pathAfterAuth());
-    router.refresh();
+    // Full navigation to "/"; the portal layout sends each role to its own home.
+    // (Another server action here would POST to this auth page, which the middleware now
+    // redirects for a signed-in user, so it never resolved and people sat on "redirecting…".)
+    window.location.assign("/");
   }
 
   return (
@@ -106,7 +107,7 @@ export function LoginFlow({ settings }: { settings: AppSettings }) {
           />
           {error ? <p className={styles.error}>{error}</p> : null}
           <Button type="submit" shape="auth" pending={pending}>
-            let me in
+            log in
           </Button>
         </form>
       )}

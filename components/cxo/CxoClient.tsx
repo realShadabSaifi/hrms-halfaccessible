@@ -9,7 +9,7 @@ import { Chip } from "@/components/ui/Chip";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { TextArea } from "@/components/ui/TextArea";
 import { Toast } from "@/components/ui/Toast";
-import { initials } from "@/lib/names";
+import { initials, plural } from "@/lib/names";
 import { CalendarBlank } from "@phosphor-icons/react";
 
 const TOPICS = ["wild idea", "career stuff", "venting", "product rant", "just vibes"];
@@ -17,6 +17,7 @@ const TOPICS = ["wild idea", "career stuff", "venting", "product rant", "just vi
 export function CxoClient({
   cxos,
   mine,
+  bookedIds,
 }: {
   cxos: {
     id: string;
@@ -28,8 +29,11 @@ export function CxoClient({
     slots_remaining: number;
   }[];
   mine: { id: string; who: string; topic: string; when: string; status: string }[];
+  /** windows this person already has a slot in */
+  bookedIds: string[];
 }) {
-  const [who, setWho] = useState(cxos[0]?.id ?? "");
+  const canPick = (c: { id: string; slots_remaining: number }) => c.slots_remaining > 0 && !bookedIds.includes(c.id);
+  const [who, setWho] = useState(cxos.find(canPick)?.id ?? "");
   const [topic, setTopic] = useState(TOPICS[0]);
   const [toast, setToast] = useState<string | null>(null);
 
@@ -66,21 +70,32 @@ export function CxoClient({
             </div>
             <p className="mb-3 text-[12.5px] text-ha-muted">{cx.tagline}</p>
             <div className="mb-3.5 flex flex-wrap gap-2">
-              <span className="rounded-full bg-ha-accent-wash px-2.5 py-1 text-[11px] font-bold text-ha-accent-text">
+              <span className="rounded-full bg-ha-accent-wash px-2.5 py-1 text-xs font-bold text-ha-accent-text">
                 {cx.window_label}
               </span>
               <span
-                className="rounded-full px-2.5 py-1 text-[11px] font-bold"
+                className="rounded-full px-2.5 py-1 text-xs font-bold"
                 style={{
                   background: cx.slots_remaining <= 1 ? "rgba(239,68,68,.1)" : "rgba(16,185,129,.13)",
                   color: cx.slots_remaining <= 1 ? "#B91C1C" : "#047857",
                 }}
               >
-                {cx.slots_remaining} slots
+                {plural(cx.slots_remaining, "slot")} left
               </span>
             </div>
-            <Button className="w-full" variant={who === cx.id ? "primary" : "ghost"} onClick={() => setWho(cx.id)}>
-              {cx.slots_remaining > 0 ? "pick this window" : "full"}
+            <Button
+              className="w-full"
+              variant={who === cx.id ? "primary" : "ghost"}
+              onClick={() => setWho(cx.id)}
+              disabled={!canPick(cx)}
+            >
+              {bookedIds.includes(cx.id)
+                ? "you're booked"
+                : cx.slots_remaining <= 0
+                  ? "full"
+                  : who === cx.id
+                    ? "chosen ✓"
+                    : "choose this time"}
             </Button>
           </div>
         ))}
@@ -105,8 +120,8 @@ export function CxoClient({
             ))}
           </div>
           <TextArea name="note" rows={2} placeholder="optional context - or keep the mystery" />
-          <Button type="submit" className="mt-3.5 w-full">
-            grab the slot
+          <Button type="submit" className="mt-3.5 w-full" disabled={!who}>
+            {who ? "book this slot" : "no open slots right now"}
           </Button>
         </form>
         <div className="rounded-ha-lg border border-ha-line bg-ha-surface p-[22px] shadow-[var(--ha-shadow-card)]">

@@ -53,7 +53,7 @@ export function CultureClient({
             company budget. lead approves. that&apos;s the whole process.
           </p>
           <TextField name="occasion" label="occasion" placeholder="e.g. we survived the migration" />
-          <div className="mb-2 mt-3 text-[11.5px] font-bold uppercase tracking-wider text-ha-muted">
+          <div className="mb-2 mt-3 text-xs font-bold uppercase tracking-wider text-ha-muted">
             vibe
           </div>
           <div className="mb-3.5 flex flex-wrap gap-2">
@@ -65,11 +65,14 @@ export function CultureClient({
           </div>
           <TextField name="date" label="preferred date" type="date" />
           <Button type="submit" className="mt-4 w-full">
-            send to lead
+            send for approval
           </Button>
         </form>
         <div className="rounded-ha-lg border border-ha-line bg-ha-surface p-[22px] shadow-[var(--ha-shadow-card)]">
           <div className="mb-3.5 font-[family-name:var(--font-display)] text-base font-bold">party queue</div>
+          {parties.length === 0 ? (
+            <p className="text-[13px] text-ha-muted">no party requests yet. use &ldquo;request a party&rdquo; to ask - your lead approves it.</p>
+          ) : null}
           {parties.map((pr) => (
             <div key={pr.id} className="border-b border-ha-line py-2.5">
               <div className="flex items-center gap-2.5">
@@ -91,7 +94,7 @@ export function CultureClient({
               </div>
               {lead && pr.status === "pending" ? (
                 <Button variant="success" className="mt-2" onClick={() => approveParty(pr.id)}>
-                  approve - it&apos;s on the card
+                  approve
                 </Button>
               ) : null}
             </div>
@@ -121,7 +124,7 @@ export function CultureClient({
               <span className="flex-1 text-sm font-bold">{to.name}</span>
               <span className="text-xs font-bold tabular-nums text-ha-accent-text">{to.votes} votes</span>
               {to.mine ? (
-                <span className="rounded-full bg-ha-accent px-2 py-0.5 text-[10.5px] font-bold text-white">
+                <span className="rounded-full bg-ha-accent px-2 py-0.5 text-xs font-bold text-white">
                   your pick
                 </span>
               ) : null}

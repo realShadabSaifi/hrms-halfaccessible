@@ -1,0 +1,139 @@
+@use "tokens" as *;
+
+.card {
+  margin-bottom: 28px;
+  padding: 22px;
+  background: $card;
+  border: $border-card;
+  box-shadow: $shadow-card;
+  border-radius: $radius-card;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.main {
+  min-width: 0;
+}
+
+.label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: $muted;
+}
+
+.status {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 8px 0 4px;
+  font-family: var(--font-display), system-ui, sans-serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: $ink;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: $line;
+  flex: none;
+}
+
+.dot.on {
+  background: $teal;
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--ha-teal) 22%, transparent);
+}
+
+.sub {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  font-size: 12.5px;
+  color: $muted;
+}
+
+.error {
+  margin-top: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: $danger;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  flex: none;
+  min-width: 150px;
+  justify-content: center;
+}
+
+.wait {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  flex: none;
+  min-width: 150px;
+  min-height: 44px;
+  padding: 12px 18px;
+  border-radius: $radius-btn;
+  border: 1px dashed $line;
+  font-size: 13.5px;
+  color: $muted;
+  font-variant-numeric: tabular-nums;
+
+  strong {
+    color: $ink;
+  }
+}
+
+.today {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid $line;
+}
+
+.todayHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 4px;
+}
+
+.all {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+  padding: 0 4px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: $accent-text;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.allSolo {
+  display: inline-block;
+  margin-top: 14px;
+}
+
+@media (max-width: 767px) {
+  .top {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

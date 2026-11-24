@@ -9,6 +9,7 @@ import { TextArea } from "@/components/ui/TextArea";
 import { Toast } from "@/components/ui/Toast";
 import { ChatTeardrop } from "@phosphor-icons/react";
 import styles from "./AnonBoard.module.scss";
+import { APP_TIME_ZONE } from "@/lib/time";
 
 const CATS = [
   "💬 General",
@@ -38,8 +39,9 @@ export function Composer({
         onPosted(r.ok ? "yeeted into the void" : r.error ?? "could not post");
       }}
     >
-      <TextArea name="body" rows={3} placeholder="say the thing. nobody will ever know it was you." />
-      <div className={styles.chips}>
+      <TextArea name="body" label="your message" rows={3} placeholder="say the thing. nobody will ever know it was you." />
+      <div className={styles.groupLabel} id="anon-topic">topic</div>
+      <div className={styles.chips} role="group" aria-labelledby="anon-topic">
         {CATS.map((c) => (
           <Chip key={c} active={cat === c} onClick={() => onCat(c)}>
             {c}
@@ -47,7 +49,7 @@ export function Composer({
         ))}
       </div>
       <Button type="submit" className="w-full">
-        yeet it into the void
+        post anonymously
       </Button>
     </form>
   );
@@ -75,16 +77,20 @@ export function PostList({
 
   return (
     <>
-      <div className={styles.toolbar}>
+      <div className={styles.toolbar} role="group" aria-labelledby="anon-sort">
+        <span className={styles.groupLabel} id="anon-sort">sort</span>
         <Chip active={sort === "latest"} onClick={() => onSort("latest")}>
           latest
         </Chip>
         <Chip active={sort === "top"} onClick={() => onSort("top")}>
           most upvoted
         </Chip>
+      </div>
+      <div className={styles.toolbar} role="group" aria-labelledby="anon-show">
+        <span className={styles.groupLabel} id="anon-show">show</span>
         {["All", ...CATS].map((c) => (
           <Chip key={c} active={filter === c} onClick={() => onFilter(c)}>
-            {c === "All" ? "All" : c.split(" ")[0]}
+            {c === "All" ? "all topics" : c}
           </Chip>
         ))}
       </div>
@@ -97,7 +103,7 @@ export function PostList({
             <span className={styles.cat}>{p.category}</span>
             <span className="flex-1" />
             <span className={styles.date}>
-              {new Date(p.created_at).toLocaleDateString("en-IN", { month: "short", day: "numeric" })}
+              {new Date(p.created_at).toLocaleDateString("en-IN", { month: "short", day: "numeric", timeZone: APP_TIME_ZONE })}
             </span>
           </div>
           <p className={styles.body}>{p.body}</p>

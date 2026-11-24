@@ -9,11 +9,12 @@ import type { InboxRow } from "@/lib/types";
 import { ChatTeardrop } from "@phosphor-icons/react";
 import { PushToggle } from "./PushToggle";
 import styles from "./Chat.module.scss";
+import { APP_TIME_ZONE } from "@/lib/time";
 
 function shortTime(iso: string) {
   const d = new Date(iso);
   if (Number.isNaN(d.getTime())) return "";
-  return d.toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" });
+  return d.toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit", timeZone: APP_TIME_ZONE });
 }
 
 export function ChatInbox({
@@ -29,7 +30,7 @@ export function ChatInbox({
     <section className={styles.inbox} aria-label="inbox">
       <div className={styles.inboxHead}>
         <h2>chat</h2>
-        <Button onClick={onNew}>new</Button>
+        <Button onClick={onNew}>new chat</Button>
       </div>
       <div className={styles.promptWrap}>
         <PushToggle />

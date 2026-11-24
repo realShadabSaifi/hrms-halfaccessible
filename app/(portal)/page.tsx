@@ -1,9 +1,11 @@
 import { ActivityFeed } from "@/components/dashboard/ActivityFeed";
 import { Greeting } from "@/components/dashboard/Greeting";
+import { PunchCard } from "@/components/dashboard/PunchCard";
 import { QuickActions } from "@/components/dashboard/QuickActions";
 import { StatCards } from "@/components/dashboard/StatCards";
 import { Ticker } from "@/components/dashboard/Ticker";
 import { requireProfile } from "@/lib/auth";
+import { lastPunchAt, startOfDayIso, workedMs } from "@/lib/attendance/day";
 import { computeDashboardStats, pickNextHoliday } from "@/lib/dashboard/stats";
 import { buildTickerChips } from "@/lib/dashboard/ticker";
 import { createClient } from "@/lib/supabase/server";
@@ -26,6 +28,7 @@ function shortHoliday(iso: string): string {
 export default async function DashboardPage() {
   const profile = await requireProfile();
   const supabase = await createClient();
+  const dayStart = startOfDayIso(new Date());
 
   const [
     { count: pendingLeaves },
@@ -34,6 +37,8 @@ export default async function DashboardPage() {
     { count: unread },
     { data: activity },
     { data: tripPoll },
+    { data: office },
+    { data: punches },
   ] = await Promise.all([
       supabase
         .from("leave_requests")
@@ -52,7 +57,25 @@ export default async function DashboardPage() {
         .order("created_at", { ascending: false })
         .limit(5),
       supabase.from("trip_polls").select("id, open").eq("open", true).limit(1).maybeSingle(),
+      supabase.from("office_location").select("label").eq("id", 1).maybeSingle(),
+      supabase
+        .from("attendance_sessions")
+        .select("id, punch_in_at, punch_out_at")
+        .eq("user_id", profile.id)
+        .or(`punch_out_at.is.null,punch_out_at.gte.${dayStart}`)
+        .order("punch_in_at", { ascending: false }),
     ]);
+
+  const sessions = punches ?? [];
+  const open = sessions.find((s) => !s.punch_out_at) ?? null;
+  const closedMs = workedMs(
+    sessions.filter((s) => s.punch_out_at),
+    dayStart,
+    new Date(),
+  );
+  const openCountedFrom = open
+    ? new Date(Math.max(new Date(open.punch_in_at).getTime(), new Date(dayStart).getTime())).toISOString()
+    : null;
 
   const { data: voting } = await supabase
     .from("burger_holidays")
@@ -79,6 +102,14 @@ export default async function DashboardPage() {
         })}
       />
       <Greeting fullName={profile.full_name} today={today} />
+      <PunchCard
+        officeLabel={office?.label ?? null}
+        openSince={open?.punch_in_at ?? null}
+        openCountedFrom={openCountedFrom}
+        closedMs={closedMs}
+        lastPunch={lastPunchAt(sessions)}
+        today={sessions}
+      />
       <StatCards
         cards={computeDashboardStats({
           pendingLeaves: pendingLeaves ?? 0,

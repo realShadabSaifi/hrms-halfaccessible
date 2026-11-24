@@ -22,7 +22,7 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  width: 220px;
+  width: min(280px, 100%);
   min-height: 64px;
   padding: 10px 12px;
   border: 1px solid rgba(57, 50, 90, 0.09);
@@ -61,12 +61,10 @@
 .title {
   display: block;
   margin-top: 2px;
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 600;
   line-height: 1.3;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .here {
@@ -74,7 +72,7 @@
   align-items: center;
   gap: 4px;
   color: $purple;
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
 }
