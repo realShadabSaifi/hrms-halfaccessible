@@ -36,12 +36,13 @@ describe("getNavItems", () => {
     expect(getNavItems("employee").some((i) => i.id === "settings")).toBe(false);
   });
 
-  it("gives cxo the same nav as admin", () => {
+  it("gives cxo the admin nav plus invoices and expenses", () => {
     const admin = getNavItems("admin", 2).map((i) => i.id);
     const cxo = getNavItems("cxo", 2).map((i) => i.id);
-    expect(cxo).toHaveLength(13);
-    expect(cxo).toEqual(admin);
+    expect(cxo).toHaveLength(15);
+    expect(cxo).toEqual([...admin, "invoices", "expenses"]);
     expect(cxo.indexOf("cxo-windows")).toBe(cxo.indexOf("users") + 1);
+    expect(admin).not.toContain("invoices");
   });
 
   it("badges unread chat conversations", () => {

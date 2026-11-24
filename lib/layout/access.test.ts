@@ -48,4 +48,16 @@ describe("portal access", () => {
     expect(canVisitPath("cxo", "/settings")).toBe(false);
     expect(canVisitPath("cxo", "/")).toBe(true);
   });
+
+  it("keeps invoices and expenses to CXOs", () => {
+    expect(canVisitPath("cxo", "/invoices")).toBe(true);
+    expect(canVisitPath("cxo", "/invoices/new")).toBe(true);
+    expect(canVisitPath("cxo", "/expenses")).toBe(true);
+    for (const role of ["employee", "lead", "admin", "super_admin"] as const) {
+      expect(canVisitPath(role, "/invoices")).toBe(false);
+      expect(canVisitPath(role, "/invoices/abc")).toBe(false);
+      expect(canVisitPath(role, "/expenses")).toBe(false);
+    }
+    expect(canVisitPath("employee", "/invoicesx")).toBe(true);
+  });
 });
