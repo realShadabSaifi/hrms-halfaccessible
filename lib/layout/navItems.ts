@@ -100,6 +100,22 @@ const CXO_WINDOWS: NavItem = {
   sub: "add time slots for people to book.",
 };
 
+const INVOICES: NavItem = {
+  id: "invoices",
+  href: "/invoices",
+  label: "invoices",
+  title: "invoices",
+  sub: "bill clients. GST done for you.",
+};
+
+const EXPENSES: NavItem = {
+  id: "expenses",
+  href: "/expenses",
+  label: "expenses",
+  title: "expenses",
+  sub: "where the money went, by month.",
+};
+
 const SETTINGS: NavItem = {
   id: "settings",
   href: "/settings",
@@ -116,9 +132,11 @@ export function getNavItems(
   const items =
     role === "super_admin"
       ? [SETTINGS, USERS, HOLIDAYS]
-      : role === "admin" || role === "cxo"
-        ? [...BASE, USERS, CXO_WINDOWS]
-        : BASE;
+      : role === "cxo"
+        ? [...BASE, USERS, CXO_WINDOWS, INVOICES, EXPENSES]
+        : role === "admin"
+          ? [...BASE, USERS, CXO_WINDOWS]
+          : BASE;
   return items.map((item) => ({
     ...item,
     badge:
